@@ -22,6 +22,7 @@ author:
 
 normative:
   RFC2119:
+  RFC1464:
 
 informative:
 
@@ -42,9 +43,9 @@ Domain verification on the web is often DNS-based. This document lays out the di
 
 # Introduction
 
-Several providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated to that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records.
+Several providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated with that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate for. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records. This document focuses on DNS techniques for domain verification; other techniques (such as email verification) are out-of-scope.
 
-In practice, what this looks like is the provider generating a random value and asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for.
+In practice, DNS-based verification often looks like the provider generating a random value and asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for. Generally only one DNS record is sufficient for proving domain ownership.
 
 # Conventions and Definitions
 
@@ -53,17 +54,49 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
-# TXT based
+# Verification Techniques
 
-## Google
+## TXT based
 
-## Let's Encrypt
+{{RFC1464}} describes how to use DNS TXT records to store attributes in the form of ASCII text key-value pairs for a particular domain.
 
-## GitHub
+       host.widgets.com   IN   TXT   "printer=lpr5"
 
-## DigiCert
+One domain can have multiple TXT records.
 
-# CNAME based
+TXT record-based DNS domain verification is usually the default option for DNS verification. The provider asks the user to add a DNS TXT record at the domain with a certain value. Then, the provider does a DNS TXT query for the domain being verified and checks that the value exists. In practice, DNS TXT records used for domain verification often do not follow the practice of key=value pairs, as evidenced in the examples.
+
+### Examples
+
+#### Google Workspace
+
+#### Let's Encrypt
+
+#### GitHub
+
+#### DigiCert
+
+#### Facebook Business Manager
+
+#### Amazon SES
+
+
+
+## CNAME based
+
+### Examples
+
+#### Google
+
+#### AWS Certificate Manager (ACM)
+
+# Recommendations
+
+## TXT vs CNAME
+
+## TXT recommendations
+
+## CNAME recommendations
 
 
 # Security Considerations
