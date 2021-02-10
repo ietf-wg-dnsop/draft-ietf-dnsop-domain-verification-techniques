@@ -43,15 +43,15 @@ informative:
 
 --- abstract
 
-Domain verification on the web is often DNS-based. This document lays out the different techniques and the pros and cons of each.
+Domain verification on the web often relies on adding or editing DNS records to prove ownership of the domain. This document lays out the various techniques and the pros and cons of each.
 
 --- middle
 
 # Introduction
 
-Several providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated with that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate for. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records. This document focuses on DNS techniques for domain verification; other techniques (such as email verification) are out-of-scope.
+Several providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated with that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate for. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records. This document focuses on DNS techniques for domain verification; other techniques (such as email or HTML verification) are out-of-scope.
 
-In practice, DNS-based verification often looks like the provider generating a random value and asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for. Generally only one DNS record is sufficient for proving domain ownership.
+In practice, DNS-based verification often looks like the provider generating a random value and asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
 
 # Conventions and Definitions
 
