@@ -20,6 +20,12 @@ author:
     organization: Salesforce
     email: shivankaulsahib@gmail.com
 
+ -
+    ins: S. Huque
+    name: Shumon Huque
+    organization: Salesforce
+    email: shuque@gmail.com
+
 normative:
   RFC2119:
   RFC1464:
