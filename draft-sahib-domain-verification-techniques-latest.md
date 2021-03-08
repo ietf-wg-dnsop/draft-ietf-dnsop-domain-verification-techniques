@@ -32,12 +32,47 @@ normative:
 
 informative:
 
+
+    RFC8555:
+
     LETSENCRYPT:
         title: "Challenge Types: DNS-01 challenge"
         date: 2020
         author:
           - ins: Let's Encrypt
         target: https://letsencrypt.org/docs/challenge-types/#dns-01-challenge
+
+    GOOGLE-WORKSPACE-TXT:
+        title: "TXT record values"
+        author:
+          - ins: Google
+        target: https://support.google.com/a/answer/2716802
+
+    GOOGLE-WORKSPACE-CNAME:
+        title: "CNAME record values"
+        author:
+          - ins: Google
+        target: https://support.google.com/a/answer/112038
+
+    ACM-CNAME:
+        title: "Option 1: DNS Validation"
+        author:
+          - ins: AWS
+        target: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html
+
+    GITHUB-TXT:
+        title: "Verifying your organization's domain"
+        author:
+          - ins: GitHub
+        target: https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/verifying-your-organizations-domain
+
+
+
+
+
+
+
+
 
 
 
@@ -82,17 +117,30 @@ In practice, DNS TXT records used for domain verification often do not follow th
 
 ### Examples
 
+#### Let's Encrypt
+
+Let's Encrypt {{LETSENCRYPT}} has a challenge type  `DNS-01` that lets a user prove domain ownership in accordance with the ACME protocol {{RFC8555}}. In this challenge, Let's Encrypt asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`. For example, if you wanted to prove domain ownership of `example.com`, Let's Encrypt could ask you to create the DNS record:
+
+        _acme-challenge.example.com.  IN  TXT "cE3A8qQpEzAIYq-T9DWNdLJ1_YRXamdxcjGTbzrOH5L"
+
+{{RFC8555}} (section 8.4) poses requirements on the random value.
+
+
 #### Google Workspace
 
-#### Let's Encrypt
+{{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their verification token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. For the "Host" field, if a domain is being verified, then either blank or "@" is recommended, and if a subdomain is being verified, then the "Host" field will contain the subdomain name.
+
+
 
 #### GitHub
 
-#### DigiCert
+GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<your-domain>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
+
+<!-- #### DigiCert
 
 #### Facebook Business Manager
 
-#### Amazon SES
+#### Amazon SES -->
 
 
 
@@ -105,8 +153,16 @@ One disadvantage of using a CNAME is that there can only be one CNAME at a parti
 ### Examples
 
 #### Google
+{{GOOGLE-WORKSPACE-CNAME}} lets you specify a CNAME record for verifying domain ownership. The user gets a unique 12-character string that is added as "Host", with TTL 3600 (or default) and Destination an 86-character string beginning with "gv-" and ending with ".domainverify.googlehosted.com.".
+
+To verify a subdomain, the unique 12-character string is appended with the subdomain name for "Host" field for e.g. JLKDER712AFP.subdomain where subdomain is the subdomain being verified.
+
 
 #### AWS Certificate Manager (ACM)
+
+To get issued a certificate by AWS Certificate Manager (ACM), you can create a CNAME record to verify domain ownership {{ACM-CNAME}}. The record name for the CNAME looks like `_<random-token1>.example.com`, which would point to `_<random-token2>.<random-token3>.acm-validations.aws.`
+
+Note that if there are more than 5 CNAMEs being chained, then this method does not work.
 
 # Recommendations
 
@@ -119,7 +175,7 @@ One disadvantage of using a CNAME is that there can only be one CNAME at a parti
 
 # Security Considerations
 
-TODO Security
+TODO
 
 
 # IANA Considerations
@@ -133,4 +189,4 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+TODO
