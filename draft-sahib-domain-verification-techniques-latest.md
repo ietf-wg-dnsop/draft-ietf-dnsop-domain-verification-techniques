@@ -27,8 +27,11 @@ author:
     email: shuque@gmail.com
 
 normative:
+  RFC1034:
+  RFC1035:
   RFC2119:
   RFC1464:
+  RFC4033:
 
 informative:
 
@@ -78,13 +81,13 @@ informative:
 
 --- abstract
 
-Domain verification on the web often relies on adding or editing DNS records to prove ownership of the domain. This document lays out the various techniques and the pros and cons of each.
+Verification of ownership of domains in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}} often relies on adding or editing DNS records within the domain. This document lays out the various techniques and the pros and cons of each.
 
 --- middle
 
 # Introduction
 
-Several providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated with that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate for. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records. This document focuses on DNS techniques for domain verification; other techniques (such as email or HTML verification) are out-of-scope.
+Many providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated with that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate for. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records. This document focuses on DNS techniques for domain verification; other techniques (such as email or HTML verification) are out-of-scope.
 
 In practice, DNS-based verification often looks like the provider generating a random value and asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
 
@@ -99,20 +102,19 @@ when, and only when, they appear in all capitals, as shown here.
 
 ## TXT based
 
-{{RFC1464}} describes how to use DNS TXT records to store attributes in the form of ASCII text key-value pairs for a particular domain.
+Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain.
 
        host.widgets.com   IN   TXT   "printer=lpr5"
 
-One domain can have multiple TXT records.
+In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model.
+
+The same domain name can have multiple distinct TXT records (a TXT Record Set).
 
 TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then, the service provider does a DNS TXT query for the domain being verified and checks that the value exists. For example, this is what a DNS TXT verification record could look like:
 
-       @   IN   TXT   "foo-verification=bar"
+       example.com.   IN   TXT   "foo-verification=bar"
 
-Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. Note that the "Host" field is "@" which indicates that the TXT record is applicable for the primary host. This field could also be blank, if allowed by the DNS provider. If a specific subdomain is required to be verified, then the "Host" field would be that subdomain name. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
-
-In practice, DNS TXT records used for domain verification often do not follow the practice of key=value pairs, as evidenced in the examples.
-
+Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
 
 
 ### Examples
@@ -123,13 +125,12 @@ Let's Encrypt {{LETSENCRYPT}} has a challenge type  `DNS-01` that lets a user pr
 
         _acme-challenge.example.com.  IN  TXT "cE3A8qQpEzAIYq-T9DWNdLJ1_YRXamdxcjGTbzrOH5L"
 
-{{RFC8555}} (section 8.4) poses requirements on the random value.
+{{RFC8555}} (section 8.4) places requirements on the random value.
 
 
 #### Google Workspace
 
-{{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their verification token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. For the "Host" field, if a domain is being verified, then either blank or "@" is recommended, and if a subdomain is being verified, then the "Host" field will contain the subdomain name.
-
+{{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their verification token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain neme being verified.
 
 
 #### GitHub
@@ -146,9 +147,8 @@ GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION
 
 ## CNAME based
 
-Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership by adding a CNAME record. This is used in case the user cannot create TXT records or the service provider cannot verify them (either by policy or technical limitation).
+Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. This is used in case the user cannot create TXT records. One common reason is that the domain name may already have CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name ({{RFC1034}}, Section 3.6.2).. The CNAME based domain verification method teypically uses a randomized label prepended to the domain name being verified.
 
-One disadvantage of using a CNAME is that there can only be one CNAME at a particular domain - no other DNS records are allowed.
 
 ### Examples
 
@@ -175,7 +175,7 @@ Note that if there are more than 5 CNAMEs being chained, then this method does n
 
 # Security Considerations
 
-TODO
+DNSSEC {{RFC4033}} should be employed by the domain owner to protect against domain name spoofing.
 
 
 # IANA Considerations
