@@ -116,6 +116,8 @@ TXT record-based DNS domain verification is usually the default option for DNS v
 
 Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
 
+One drawback of this method is that the TXT record is typically placed at the domain name being verified. If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. Since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, increasing the size of the response. There is no way to surgically query only the TXT record for a specific service.
+
 
 ### Examples
 
