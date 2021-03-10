@@ -1,7 +1,7 @@
 ---
 title: "Survey of Domain Verification Techniques using DNS"
 abbrev: "Domain Verification Techniques"
-docname: draft-sahib-domain-verification-techniques
+docname: draft-sahib-domain-verification-techniques-latest
 category: info
 
 ipr: trust200902
@@ -68,13 +68,6 @@ informative:
         author:
           - ins: GitHub
         target: https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/verifying-your-organizations-domain
-
-
-
-
-
-
-
 
 
 
