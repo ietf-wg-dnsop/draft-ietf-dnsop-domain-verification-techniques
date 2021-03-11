@@ -74,7 +74,7 @@ informative:
 
 --- abstract
 
-Verification of ownership of domains in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}} often relies on adding or editing DNS records within the domain. This document lays out the various techniques and the pros and cons of each.
+Verification of ownership of domains in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}} often relies on adding or editing DNS records within the domain. This document surveys various techniques in wide use today, the pros and cons of each, and possible improvements.
 
 --- middle
 
@@ -109,8 +109,9 @@ TXT record-based DNS domain verification is usually the default option for DNS v
 
 Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
 
-One drawback of this method is that the TXT record is typically placed at the domain name being verified. If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. Since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, increasing the size of the response. There is no way to surgically query only the TXT record for a specific service.
+One drawback of this method is that the TXT record is most commonly placed at the domain name being verified. If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. Since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, increasing the size of the response. There is no way to surgically query only the TXT record for a specific service.
 
+A better method is to place the TXT record at a subdomain of the domain being verified that is specially reserved for use by the application service in question. This method is employed by Let's Encrypt {{LETSENCRYPT}} as described later.
 
 ### Examples
 
@@ -142,7 +143,7 @@ GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION
 
 ## CNAME based
 
-Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. This is used in case the user cannot create TXT records. One common reason is that the domain name may already have CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name ({{RFC1034}}, Section 3.6.2).. The CNAME based domain verification method teypically uses a randomized label prepended to the domain name being verified.
+Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. This is used in case the user cannot create TXT records. One common reason is that the domain name may already have CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name ({{RFC1034}}, Section 3.6.2).. The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified.
 
 
 ### Examples
