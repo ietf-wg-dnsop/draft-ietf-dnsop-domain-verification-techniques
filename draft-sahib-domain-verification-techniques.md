@@ -69,6 +69,12 @@ informative:
           - ins: GitHub
         target: https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/verifying-your-organizations-domain
 
+    ATLASSIAN-VERIFY:
+        title: "Verify over DNS"
+        author:
+          - ins: Atlassian
+        target: https://support.atlassian.com/user-management/docs/verify-a-domain-to-manage-accounts/#Verifyadomainforyourorganization-VerifyoverDNS
+
 
 
 
@@ -77,6 +83,8 @@ informative:
 Verification of ownership of domains in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}} often relies on adding or editing DNS records within the domain. This document surveys various techniques in wide use today, the pros and cons of each, and possible improvements.
 
 --- middle
+
+
 
 # Introduction
 
@@ -91,27 +99,22 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
+Provider: an internet-based provider of a service, for e.g., Let's Encrypt provides a certificate authority service or GitHub provides code-hosting services. These services often require a user to verify that they control a domain.
+
+
+
 # Verification Techniques
 
 ## TXT based
-
-Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain.
-
-       host.widgets.com   IN   TXT   "printer=lpr5"
-
-In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model.
-
-The same domain name can have multiple distinct TXT records (a TXT Record Set).
 
 TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then, the service provider does a DNS TXT query for the domain being verified and checks that the value exists. For example, this is what a DNS TXT verification record could look like:
 
        example.com.   IN   TXT   "foo-verification=bar"
 
-Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
+Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the rdata portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
 
-One drawback of this method is that the TXT record is most commonly placed at the domain name being verified. If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. Since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, increasing the size of the response. There is no way to surgically query only the TXT record for a specific service.
+The same domain name can have multiple distinct TXT records (a TXT Record Set).
 
-A better method is to place the TXT record at a subdomain of the domain being verified that is specially reserved for use by the application service in question. This method is employed by Let's Encrypt {{LETSENCRYPT}} as described later.
 
 ### Examples
 
@@ -131,13 +134,7 @@ Let's Encrypt {{LETSENCRYPT}} has a challenge type  `DNS-01` that lets a user pr
 
 #### GitHub
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<your-domain>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
-
-<!-- #### DigiCert
-
-#### Facebook Business Manager
-
-#### Amazon SES -->
+GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
 
 
 
@@ -160,13 +157,37 @@ To get issued a certificate by AWS Certificate Manager (ACM), you can create a C
 
 Note that if there are more than 5 CNAMEs being chained, then this method does not work.
 
+## Common Patterns
+
+### Name
+
+ACME and GitHub have a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`, while for GitHub it is `_github-challenge-ORGANIZATION-<YOUR_DOMAIN>`. Both these patterns are useful for doing targeted domain verification, as discussed in section (#targeted-domain-verification) because if the provider knows what it is looking for (domain in the case of ACME, organization name + domain in case of GitHub) it can specifically do a DNS query for that TXT record, as opposed to having to do a TXT query for the apex.
+
+ACME does the same name construction for CNAME records.
+
+
+### RDATA
+
+One pattern that quite a few providers follow (Dropbox, Atlassian) is constructing the rdata of the TXT DNS record in the form of `PROVIDER-SERVICE-domain-verification=` followed by the random value being checked for. This is in accordance with {{RFC1464}} which mandates that attributes must be stored as key-value pairs.
+
 # Recommendations
+
+## Targeted Domain Verification
+
+The TXT record being used for domain verification is most commonly placed at the domain name being verified. For example, if `example.com` is being verified, then the DNS TXT record will have `example.com` in the Name section.
+
+If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. There is no way to surgically query only the TXT record for a specific service, resulting in extra work for a verifying service to sift through the records for its own domain verification record. In addition, since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, which leads to a bloating of DNS responses. This could cause truncation and expensive retrying over TCP.
+
+A better method is to place the TXT record at a subdomain of the domain being verified that is specially reserved for use by the application service in question.
+
 
 ## TXT vs CNAME
 
-## TXT recommendations
+TODO
 
-## CNAME recommendations
+## Continuous checking
+
+After domain verification is done, there is no need for the TXT or CNAME record to continue to exist as the existence of the domain verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done. However, despite this, some services ask the record to exist in perpetuity {{ATLASSIAN-VERIFY}}.
 
 
 # Security Considerations
