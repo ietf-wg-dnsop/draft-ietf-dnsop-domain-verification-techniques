@@ -185,9 +185,10 @@ A better method is to place the TXT record at a subdomain of the domain being ve
 
 TODO
 
-## Continuous checking
+## Time-bound checking
 
-After domain verification is done, there is no need for the TXT or CNAME record to continue to exist as the existence of the domain verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done. However, despite this, some services ask the record to exist in perpetuity {{ATLASSIAN-VERIFY}}.
+After domain verification is done, there is no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done and the service provider doing the verification should specify how long the verification will take (i.e. after how much time can the verifying DNS record be deleted).
+However, despite this, some services ask the record to exist in perpetuity {{ATLASSIAN-VERIFY}}.
 
 
 # Security Considerations
