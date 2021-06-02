@@ -80,7 +80,7 @@ informative:
 
 --- abstract
 
-Verification of ownership of domains in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}} often relies on adding or editing DNS records within the domain. This document surveys various techniques in wide use today, the pros and cons of each, and possible improvements.
+Many services on the Internet need to verify ownership or control of domains in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}}. This verification often relies on adding or editing DNS records within the domain. This document surveys various techniques in wide use today, the pros and cons of each, and possible improvements.
 
 --- middle
 
@@ -90,7 +90,7 @@ Verification of ownership of domains in the Domain Name System (DNS) {{RFC1034}}
 
 Many providers on the internet need users to prove that they control a particular domain before granting them some sort of privilege associated with that domain. For instance, certificate authorities like Let's Encrypt {{LETSENCRYPT}} ask requesters of TLS certificates to prove that they operate the domain they're requesting the certificate for. Providers generally allow for several different ways of proving domain control, some of which include manipulating DNS records. This document focuses on DNS techniques for domain verification; other techniques (such as email or HTML verification) are out-of-scope.
 
-In practice, DNS-based verification often looks like the provider generating a random value and asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
+In practice, DNS-based verification often takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
 
 # Conventions and Definitions
 
@@ -109,11 +109,11 @@ Provider: an internet-based provider of a service, for e.g., Let's Encrypt provi
 
 TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then, the service provider does a DNS TXT query for the domain being verified and checks that the value exists. For example, this is what a DNS TXT verification record could look like:
 
-       example.com.   IN   TXT   "foo-verification=bar"
+       example.com.   IN   TXT   "foo-verification=bar-237943648324687364"
 
-Here, the value "bar" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the rdata portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
+Here, the value "bar-bar-237943648324687364" for the attribute "foo-verification" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the rdata portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a randomly-generated token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. The TXT record is usually placed at the domain being verified ("example.com" in the example above). After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain.
 
-The same domain name can have multiple distinct TXT records (a TXT Record Set).
+The same domain name can have multiple distinct TXT records (a TXT Record Set), where each TXT record may be associated with a distinct service.
 
 
 ### Examples
@@ -176,9 +176,9 @@ One pattern that quite a few providers follow (Dropbox, Atlassian) is constructi
 
 The TXT record being used for domain verification is most commonly placed at the domain name being verified. For example, if `example.com` is being verified, then the DNS TXT record will have `example.com` in the Name section.
 
-If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. There is no way to surgically query only the TXT record for a specific service, resulting in extra work for a verifying service to sift through the records for its own domain verification record. In addition, since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, which leads to a bloating of DNS responses. This could cause truncation and expensive retrying over TCP.
+If many services are attempting to verify the domain name, many distinct TXT records end up being placed at that name. There is no way to surgically query only the TXT record for a specific service, resulting in extra work for a verifying service to sift through the records for its own domain verification record. In addition, since DNS Resource Record sets are treated atomically, all TXT records must be returned to the querier, which leads to a bloating of DNS responses. This could cause truncation and retrying DNS queries over TCP, which is more resource intensive.
 
-A better method is to place the TXT record at a subdomain of the domain being verified that is specially reserved for use by the application service in question.
+A better method is to place the TXT record at a subdomain of the domain being verified that is specially reserved for use by the application service in question. The LetsEncrypt ACME challenge mentioned earlier uses this method.
 
 
 ## TXT vs CNAME
