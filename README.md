@@ -47,8 +47,8 @@ make
 make next # this generates the versioned doc
 # Once you're happy with it, upload the XML file: https://datatracker.ietf.org/submit/
 # Then, upload the new tag to GitHub
-git tag draft-sahib-domain-verification-techniques-01 # the version you just uploaded to datatracker
-git push origin draft-sahib-domain-verification-techniques-01
+git tag draft-sahib-domain-verification-techniques-03 # the version you just uploaded to datatracker
+git push origin draft-sahib-domain-verification-techniques-03
 ```
 
 This is the manual process outlined in the [I-D template docs](https://github.com/martinthomson/i-d-template/blob/main/doc/SUBMITTING.md#manual-process). 
