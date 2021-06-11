@@ -44,7 +44,7 @@ You have to use git tags to version the doc correctly. If the last tag is `00` t
 When you're ready to cut a new version, do:
 ```sh
 make 
-make submit # this generates the versioned doc
+make next # this generates the versioned doc
 # Once you're happy with it, upload the XML file: https://datatracker.ietf.org/submit/
 # Then, upload the new tag to GitHub
 git tag draft-sahib-domain-verification-techniques-01 # the version you just uploaded to datatracker
