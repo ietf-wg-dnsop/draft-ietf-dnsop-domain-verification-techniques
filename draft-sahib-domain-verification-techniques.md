@@ -121,7 +121,7 @@ The TXT record being used for domain verification is most commonly placed at the
 
 When a DNS administrator sees 15 DNS TXT records for their domain based on only random letters, they can no longer determine which service or vendor the DNS TXT records were added for. This causes administrators to leave all DNS TXT records in there, as they want to avoid breaking a service. Over time, the domain ends up with a lot of unnecessary, unknown and untraceable DNS TXT records.
 
-It is RECOMMENDED that providers use a prefix (eg "\_foo.example.com") instead of using the top of the domain ("APEX") directly, such as:
+It is recommended that providers use a prefix (eg "\_foo.example.com") instead of using the top of the domain ("APEX") directly, such as:
 
     _foo.example.com.  IN   TXT    "bar-237943648324687364"
 
@@ -136,15 +136,15 @@ CNAME records cannot co-exist with any other data. What happens when both a CNAM
 
 Another issue with CNAME records is that they MUST NOT point to another CNAME. But where this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected.
 
-Early web-based DNS administration tools did not always have the TXT record available in the menu for DNS record types, while CNAME would be available. However as many anti-spam measures now require TXT records, they are now widely supported. It is RECOMMENDED that the CNAME method is only used for delegating authorization to an actual subdomain, for example:
+Early web-based DNS administration tools did not always have the TXT record available in the menu for DNS record types, while CNAME would be available. However as many anti-spam measures now require TXT records, they are now widely supported. The CNAME method should only be used for delegating authorization to an actual subdomain, for example:
 
-    recruitement.example.com.   IN   CNAME   example.recruitement-vendor.com.
+    recruitment.example.com.   IN   CNAME   example.recruitment-vendor.com.
 
 ## Time-bound checking
 
 After domain verification is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done and the service provider doing the verification should specify how long the verification will take (i.e. after how much time can the verifying DNS record be deleted).
 
-If a provider will use the DNS TXT record only for a one-time verification, it is RECOMMENDED that they clearly indicate this in the RDATA of the TXT record, so a DNS administrator at the target domain can easily spot an obsolete record in the future. For example:
+If a provider will use the DNS TXT record only for a one-time verification, they should clearly indicate this in the RDATA of the TXT record, so a DNS administrator at the target domain can easily spot an obsolete record in the future. For example:
 
     _provider-token.example.com.   IN   TXT "type=activation_only expiry=2023-10-12 token=TOKENDATA"
 
@@ -162,11 +162,11 @@ Some vendors use a hosted service that wants to generate emails that appear to b
 
 Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-It is RECOMMENDED that DNSSEC {{RFC4033}} is employed by the domain owner to protect against domain name spoofing.
+DNSSEC {{RFC4033}} can be employed by the domain owner to protect against domain name spoofing.
 
 # Operational Considerations
 
-It is often consumers of the provider services that are not DNS experts that need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information. It is RECOMMENDED that providers offer extremely detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. It is recommended that any instructions given by the provider contains the entire DNS record using a Fully Qualified Domain Name (FQDN).
+Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers should offer extremely detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added should be provided along with help instructions.
 
 # IANA Considerations
 
