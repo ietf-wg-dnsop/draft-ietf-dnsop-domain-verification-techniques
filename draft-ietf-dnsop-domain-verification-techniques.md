@@ -1,16 +1,14 @@
 ---
 title: "Survey of Domain Verification Techniques using DNS"
 abbrev: "Domain Verification Techniques"
-docname: draft-sahib-domain-verification-techniques-latest
+docname: draft-ietf-dnsop-domain-verification-techniques-latest
 category: info
 
 ipr: trust200902
-area: General
-workgroup: Network Working Group
 keyword: Internet-Draft
-stream: IETF
 
 stand_alone: yes
+stream: IETF
 smart_quotes: no
 pi: [toc, sortrefs, symrefs]
 
@@ -49,6 +47,43 @@ informative:
     RFC7489:
     RFC9210:
 
+    LETSENCRYPT:
+        title: "Challenge Types: DNS-01 challenge"
+        date: 2020
+        author:
+          - ins: Let's Encrypt
+        target: https://letsencrypt.org/docs/challenge-types/#dns-01-challenge
+
+    GOOGLE-WORKSPACE-TXT:
+        title: "TXT record values"
+        author:
+          - ins: Google
+        target: https://support.google.com/a/answer/2716802
+
+    GOOGLE-WORKSPACE-CNAME:
+        title: "CNAME record values"
+        author:
+          - ins: Google
+        target: https://support.google.com/a/answer/112038
+
+    ACM-CNAME:
+        title: "Option 1: DNS Validation"
+        author:
+          - ins: AWS
+        target: https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html
+
+    GITHUB-TXT:
+        title: "Verifying your organization's domain"
+        author:
+          - ins: GitHub
+        target: https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/verifying-your-organizations-domain
+
+    ATLASSIAN-VERIFY:
+        title: "Verify over DNS"
+        author:
+          - ins: Atlassian
+        target: https://support.atlassian.com/user-management/docs/verify-a-domain-to-manage-accounts/#Verify-over-DNS
+
 
 
 --- abstract
@@ -79,7 +114,7 @@ Provider: an internet-based provider of a service, for e.g., a Certificate Autho
 
 # Verification Techniques
 
-## TXT based
+## TXT based {#txt-based}
 
 TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then, the service provider does a DNS TXT query for the domain being verified and checks that the value exists. For example, this is what a DNS TXT verification record could look like:
 
@@ -176,7 +211,32 @@ This document has no IANA actions.
 
 --- back
 
-# Acknowledgments
-{:numbered="false"}
+# Appendix
 
-TODO
+The survey done in this document found several varying methods for DNS domain verification techniques across providers. This Appendix lists them, for completeness.
+
+## Let's Encrypt
+
+The ACME example in {{txt-based}} is implemented by Let's Encrypt {{LETSENCRYPT}}.
+
+## Google Workspace
+
+{{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their verification token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain neme being verified.
+
+{{GOOGLE-WORKSPACE-CNAME}} lets you specify a CNAME record for verifying domain ownership. The user gets a unique 12-character string that is added as "Host", with TTL 3600 (or default) and Destination an 86-character string beginning with "gv-" and ending with ".domainverify.googlehosted.com.".
+
+## GitHub
+
+GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days. This fits under {{targeted-domain-verification}}.
+
+## AWS Certificate Manager (ACM)
+
+To get issued a certificate by AWS Certificate Manager (ACM), you can create a CNAME record to verify domain ownership {{ACM-CNAME}}. The record name for the CNAME looks like:
+
+     `_<random-token1>.example.com.   IN   CNAME _RANDOM-TOKEN.acm-validations.aws.`
+
+Note that if there are more than 5 CNAMEs being chained, then this method does not work.
+
+## Atlassian
+
+Some services ask the DNS record to exist in perpetuity {{ATLASSIAN-VERIFY}}. If the record is removed, the user gets a limited amount of time to re-add it before they lose domain verification status.
