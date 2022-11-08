@@ -118,7 +118,7 @@ Provider: an internet-based provider of a service, for e.g., a Certificate Autho
 Random Token: a random value that uniquely identifies the DNS domain verification challenge.
 
 
-# Verification Techniques
+# Survey of Verification Techniques
 
 ## TXT based {#txt-based}
 
@@ -126,7 +126,7 @@ TXT record-based DNS domain verification is usually the default option for DNS v
 
     example.com.   IN   TXT   "237943648324687364"
 
-Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the RDATA [{{RFC1034}}] portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. Some providers expire the code after a set amount of time. See {{appendix}} for a survey of different implementations.
+Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Note that in this construction provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the RDATA [{{RFC1034}}] portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. Some providers expire the code after a set amount of time. See {{appendix}} for a survey of different implementations.
 
 Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification. The ACME protocol {{RFC8555}} has a challenge type  `DNS-01` that lets a user prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
 
@@ -158,11 +158,11 @@ Another issue with CNAME records is that they must not point to another CNAME. B
 After domain verification is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done and the service provider doing the verification should specify how long the verification will take (i.e. after how much time can the verifying DNS record be deleted).
 
 
-### Recommendation
+### Recommendations
 
 #### TXT Record
 
-DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix (e.g. "\_foo.example.com") to the domain name being validated. The RDATA of the TXT resource record MUST be the output of the following:
+DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The RDATA of the TXT resource record MUST be the output of the following:
 
 1. Generate a Random Token with at least 128 bits of entropy.
 2. Take the SHA-256 digest output {{SHA256}} of it.
@@ -172,11 +172,11 @@ See {{RFC4086}} for additional information on randomness requirements.
 
 For example:
 
-    _foo.example.com.  IN   TXT  "3419...3d206c4"
+    _foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 If a provider has an application-specific need to have multiple verifications for the same label, multiple prefixes can be used:
 
-    _feature1._foo.example.com.  IN   TXT  "3419...3d206c4"
+    _feature1._foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS verification record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
 
