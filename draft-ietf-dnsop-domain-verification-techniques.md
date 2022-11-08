@@ -37,7 +37,7 @@ normative:
   RFC2119:
   RFC1464:
   RFC4033:
-  
+
   SHA256:
       title: "Secure Hash Standard (SHS), NIST FIPS 180-4"
       date: 2015
@@ -46,8 +46,7 @@ normative:
       target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
 
 informative:
-
-
+    RFC4086:
     RFC8555:
     RFC6376:
     RFC7208:
@@ -129,7 +128,7 @@ TXT record-based DNS domain verification is usually the default option for DNS v
 
 Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the RDATA [{{RFC1034}}] portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. The generated token typically expires in a few days. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. Some providers expire the code after a set amount of time. See {{appendix}} for a survey of different implementations.
 
-Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification, as discussed in {{targeted-domain-verification}}. The ACME protocol {{RFC8555}} has a challenge type  `DNS-01` that lets a user prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
+Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification. The ACME protocol {{RFC8555}} has a challenge type  `DNS-01` that lets a user prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
 
     _acme-challenge.example.com.  IN  TXT "cE3A8qQpEzAIYq-T9DWNdLJ1_YRXamdxcjGTbzrOH5L"
 
@@ -154,14 +153,14 @@ Another issue with CNAME records is that they must not point to another CNAME. B
 [[OPEN ISSUE: is there a technical reason providers offer CNAME-based DNS verification options if you can just add a prefix label?]]
 
 
-## Time-bound checking 
+## Time-bound checking
 
 After domain verification is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done and the service provider doing the verification should specify how long the verification will take (i.e. after how much time can the verifying DNS record be deleted).
 
 
 ### Recommendation
 
-#### TXT Record 
+#### TXT Record
 
 DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix (e.g. "\_foo.example.com") to the domain name being validated. The RDATA of the TXT resource record MUST be the output of the following:
 
@@ -169,7 +168,7 @@ DNS TXT records are the RECOMMENDED method of doing DNS-based domain verificatio
 2. Take the SHA-256 digest output {{SHA256}} of it.
 3. base64url encode it.
 
-See {{RFC4086}} for additional information on randomness requirements. 
+See {{RFC4086}} for additional information on randomness requirements.
 
 For example:
 
@@ -179,9 +178,9 @@ If a provider has an application-specific need to have multiple verifications fo
 
     _feature1._foo.example.com.  IN   TXT  "3419...3d206c4"
 
-This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS verification record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation. 
+This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS verification record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
 
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record(s) provisioned for a DNS-based domain verification challenge once the challenge is complete. 
+Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record(s) provisioned for a DNS-based domain verification challenge once the challenge is complete.
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
 
@@ -217,7 +216,7 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{LETSENCRYPT}
 
 ## GitHub
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days. This fits under {{targeted-domain-verification}}.
+GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
 
 ## AWS Certificate Manager (ACM)
 
