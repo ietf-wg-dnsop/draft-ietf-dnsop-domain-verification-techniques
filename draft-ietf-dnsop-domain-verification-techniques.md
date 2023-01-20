@@ -185,13 +185,15 @@ Early web-based DNS administration tools did not always have the TXT record avai
 
 After domain verification is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done and the service provider doing the verification should specify how long the verification will take (i.e. after how much time can the verifying DNS record be deleted).
 
-If a provider will use the DNS TXT record only for a one-time verification, they should clearly indicate this in the RDATA of the TXT record, so a DNS administrator at the target domain can easily spot an obsolete record in the future. For example:
+If a provider will use the DNS TXT record only for a one-time verification, they should clearly indicate this in the RDATA of the TXT record, so a DNS administrator at the target domain can easily spot an obsolete record in the future. For example (split in two lines for readability):
 
-    _provider-token.example.com.   IN   TXT "type=activation_only expiry=2023-10-12 token=TOKENDATA"
+    _provider-token.example.com.   IN   TXT \
+             "type=activation_only expiry=2023-10-12 token=TOKENDATA"
 
 If a provider requires the continued presence of the TXT record as proof that the domain owner is still authorizing the service, this should also be clear from the TXT record RDATA. For example:
 
-    _provider-service.example.com.   IN   TXT "type=continued_service expiry=never token=TOKENDATA"
+    _provider-service.example.com.   IN   TXT \
+             "type=continued_service expiry=never token=TOKENDATA"
 
 # Email sending authorization
 
