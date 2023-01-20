@@ -189,7 +189,7 @@ If a provider requires the continued presence of the TXT record as proof that th
 
 # Email sending authorization
 
-Some vendors use a hosted service that wants to generate emails that appear to be from the customer. When a customer has deployed anti-spam meassures such as DKIM {{RFC6376}}, DMARC {{RFC7489}} or SPF {{RFC7208}}, the vendor's mail service needs to be added to the list of allowed mail servers. However, some customers might not want to give permission for a vendor to send emails from their entire domain. It is recommended that a vendor uses a subdomain. If the vendor's domain is example-vendor.com, and the customer domain is example-customer.com, the vendor could use the subdomain example-customer.example-vendor.com to send emails. Alternatively, the customer could delegate a subdomain example-vendor.example-customer.com to the vendoer for email sending, as those email addresses would have a stronger origin appearance of being emails send by the customer to their clients.
+Some vendors use a hosted service that wants to generate emails that appear to be from the customer. When a customer has deployed anti-spam measures such as DKIM {{RFC6376}}, DMARC {{RFC7489}} or SPF {{RFC7208}}, the vendor's mail service needs to be added to the list of allowed mail servers. However, some customers might not want to give permission for a vendor to send emails from their entire domain. It is recommended that a vendor uses a subdomain. If the vendor's domain is example-vendor.com, and the customer domain is example-customer.com, the vendor could use the subdomain example-customer.example-vendor.com to send emails. Alternatively, the customer could delegate a subdomain example-vendor.example-customer.com to the vendor for email sending, as those email addresses would have a stronger origin appearance of being emails sent by the customer to their clients.
 
  Besides requiring proof of ownership of the domain, the customer needs to authorize the hosted service to send email on their behalf.
 
@@ -201,7 +201,7 @@ DNSSEC {{RFC4033}} can be employed by the domain owner to protect against domain
 
 # Operational Considerations
 
-Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers should offer extremely detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added should be provided along with help instructions.
+Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers should offer extremely detailed help pages, that are accessible without needing a login on the provider website, as the DNS administrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added should be provided along with help instructions.
 
 # IANA Considerations
 
