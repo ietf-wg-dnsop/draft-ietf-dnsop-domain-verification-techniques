@@ -111,6 +111,12 @@ when, and only when, they appear in all capitals, as shown here.
 
 Provider: an internet-based provider of a service, for e.g., a Certificate Authority or a service that allows for user-controlled websites. These services often require a user to verify that they control a domain.
 
+APEX: the 'top' of the domain name. From the user perspective, the highest level of "their" domain name.
+
+    # this record is at the APEX of the domain example.com.
+    example.com.   IN   NS   a.iana-servers.net.
+    # this record is NOT at the APEX of the domain example.com.
+    something.example.com.   IN   A   192.0.2.1
 
 # Verification Techniques
 
@@ -140,7 +146,7 @@ Less commonly than TXT record verification, service providers also provide the a
 
 ### Name
 
-Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification, as discussed in {{targeted-domain-verification}} because if the provider knows what it is looking for (domain in the case of ACME) it can specifically do a DNS query for that TXT record, as opposed to having to do a TXT query for the apex.
+Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification, as discussed in {{targeted-domain-verification}} because if the provider knows what it is looking for (domain in the case of ACME) it can specifically do a DNS query for that TXT record, as opposed to having to do a TXT query for the APEX of the domain.
 
 ACME does the same name construction for CNAME records.
 
@@ -152,11 +158,11 @@ One pattern that quite a few providers follow is constructing the rdata of the T
 
 ## Targeted Domain Verification {#targeted-domain-verification}
 
-The TXT record being used for domain verification is most commonly placed at the domain name being verified. For example, if `example.com` is being verified, then the DNS TXT record will have `example.com` in the Name section. Unfortunately, this practice does not scale very well. Many services are now attempting to verify domain names, causing many of these TXT records to be placed at that same location at the top of the domain (the APEX).
+The TXT record being used for domain verification is most commonly placed at the domain name being verified. For example, if `example.com` is being verified, then the DNS TXT record will have `example.com` in the Name section. Unfortunately, this practice does not scale very well. Many services are now attempting to verify domain names, causing many of these TXT records to be placed at that same location at the APEX of the domain.
 
 When a DNS administrator sees 15 DNS TXT records for their domain based on only random letters, they can no longer determine which service or vendor the DNS TXT records were added for. This causes administrators to leave all DNS TXT records in there, as they want to avoid breaking a service. Over time, the domain ends up with a lot of unnecessary, unknown and untraceable DNS TXT records.
 
-It is recommended that providers use a prefix (eg "\_foo.example.com") instead of using the top of the domain ("APEX") directly, such as:
+It is recommended that providers use a prefix (eg "\_foo.example.com") instead of using the APEX of the domain directly, such as:
 
     _foo.example.com.  IN   TXT    "bar-237943648324687364"
 
