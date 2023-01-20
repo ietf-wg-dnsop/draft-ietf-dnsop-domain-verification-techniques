@@ -205,7 +205,9 @@ Some vendors use a hosted service that wants to generate emails that appear to b
 
 Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-DNSSEC {{RFC4033}} can be employed by the domain owner to protect against domain name spoofing.
+DNSSEC {{draft-ietf-dnsop-dnssec-bcp-06}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
+
+DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued and when no DNSSEC support is detected for the domain owner zone, SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on (preferably) unpredictable geographically diverse IP addressses to reduce an attackers capability of DNS spoofing. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 # Operational Considerations
 
