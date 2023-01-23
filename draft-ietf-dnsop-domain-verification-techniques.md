@@ -134,7 +134,7 @@ Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of t
 
 {{RFC8555}} (section 8.4) places requirements on the Random Token.
 
-An operational issue arises from the DNS protocol only being able to query for "all TXT records" at a single location: if multiple services all require TXT records, this can cause the DNS answer for TXT records to become very large. It has been observed that some well known domains had so many services deployed that their DNS TXT answer did not fit in a single UDP DNS packet. This results in fragmentation which is known to be vulnerable to various attacks {{!AVOID-FRAGMENTATION=I-D.ietf-dnsop-avoid-fragmentation}}. It can also lead to UDP packet truncation, causing a retry over TCP. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional {{RFC9210}}.
+An operational issue arises from the DNS protocol only being able to query for "all TXT records" at a single location: if multiple services all require TXT records, this can cause the DNS answer for TXT records to become very large. It has been observed that some well known domains had so many services deployed that their DNS TXT answer did not fit in a single UDP DNS packet. This results in fragmentation which is known to be vulnerable to various attacks ({{!AVOID-FRAGMENTATION=I-D.ietf-dnsop-avoid-fragmentation}}). It can also lead to UDP packet truncation, causing a retry over TCP. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ({{RFC9210}}).
 
 A malicious service that promises to deliver something after domain verification could surreptitiously ask another service provider to start processing or sending mail for the target domain and then present the victim domain administrator with this DNS TXT record pretending to be for their service. Once the administrator has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer replay this without the DNS administrator noticing this.
 
@@ -145,10 +145,6 @@ Less commonly than TXT record verification, service providers also provide the a
     _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
 
 [[OPEN ISSUE: describe why we need random token 1 AND 2]]
-
-CNAME records cannot co-exist with any other data. What happens when both a CNAME and other data such as a TXT record or NS record exist depends on the DNS implementation. But most likely, either the CNAME or the other records will be silently ignored. The user interface for adding a record might not check for this. It might also break in unexpected ways: if a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break.
-
-Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records. It is therefor NOT RECOMMENDED to use the CNAME method.
 
 
 ## Time-bound checking
@@ -181,6 +177,12 @@ This again allows the provider to query only for application-specific records it
 Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record(s) provisioned for a DNS-based domain verification challenge once the challenge is complete.
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
+
+## CNAME Record
+
+CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records. 
+
+It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
 
 # Security Considerations
