@@ -148,9 +148,7 @@ Less commonly than TXT record verification, service providers also provide the a
 
 CNAME records cannot co-exist with any other data. What happens when both a CNAME and other data such as a TXT record or NS record exist depends on the DNS implementation. But most likely, either the CNAME or the other records will be silently ignored. The user interface for adding a record might not check for this. It might also break in unexpected ways: if a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break.
 
-Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected.
-
-[[OPEN ISSUE: is there a technical reason providers offer CNAME-based DNS verification options if you can just add a prefix label?]]
+Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records. It is therefor NOT RECOMMENDED to use the CNAME method.
 
 
 ## Time-bound checking
