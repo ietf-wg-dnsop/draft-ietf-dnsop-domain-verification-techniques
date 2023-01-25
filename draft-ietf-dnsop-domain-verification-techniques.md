@@ -33,10 +33,8 @@ author:
 
 normative:
   RFC1034:
-  RFC1035:
   RFC2119:
   RFC1464:
-  RFC4033:
   RFC8174:
   I-D.ietf-dnsop-dnssec-bcp:
 
@@ -50,9 +48,6 @@ normative:
 informative:
     RFC4086:
     RFC8555:
-    RFC6376:
-    RFC7208:
-    RFC7489:
     RFC9210:
 
     LETSENCRYPT:
@@ -135,7 +130,7 @@ TXT record-based DNS domain verification is usually the default option for DNS v
 
     example.com.   IN   TXT   "237943648324687364"
 
-Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Note that in this construction provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the RDATA [{{RFC1034}}] portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days. See {{appendix}} for a survey of different implementations.
+Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Note that in this construction provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days. See {{appendix}} for a survey of different implementations.
 
 Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification. The ACME protocol {{RFC8555}} has a challenge type  `DNS-01` that lets a user prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
 
@@ -149,7 +144,7 @@ A malicious service that promises to deliver something after domain verification
 
 ## CNAME based
 
-Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name [{{RFC1034}}, Section 3.6.2]. The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
+Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name ({{RFC1034}}, Section 3.6.2). The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
 
     _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
 
@@ -198,7 +193,7 @@ It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
 Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-DNSSEC [{{I-D.ietf-dnsop-dnssec-bcp}}] SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
+DNSSEC {{I-D.ietf-dnsop-dnssec-bcp}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
 
 DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued and when no DNSSEC support is detected for the domain owner zone, SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on (preferably) unpredictable geographically diverse IP addressses to reduce an attackers capability of DNS spoofing. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
