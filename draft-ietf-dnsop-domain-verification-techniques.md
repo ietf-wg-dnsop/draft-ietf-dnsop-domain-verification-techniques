@@ -151,7 +151,8 @@ Less commonly than TXT record verification, service providers also provide the a
 
     _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
 
-[[OPEN ISSUE: describe why we need random token 1 AND 2]]
+
+When a third-party validation provider is used, both the client and the service provider need to give the validation provider a random token, so that the validation provider can confirm the client request is unique and bound to the service provider's request.
 
 ## Time-bound checking
 
