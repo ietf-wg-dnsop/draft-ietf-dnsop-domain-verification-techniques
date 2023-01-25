@@ -37,6 +37,8 @@ normative:
   RFC2119:
   RFC1464:
   RFC4033:
+  RFC8174:
+  draft-ietf-dnsop-dnssec-bcp:
 
   SHA256:
       title: "Secure Hash Standard (SHS), NIST FIPS 180-4"
@@ -110,7 +112,7 @@ This document describes common practices and pitfalls associated with using DNS 
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in BCP 14 {{RFC2119}} {{!RFC8174}}
+document are to be interpreted as described in BCP 14 {{RFC2119}} {{RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
 Provider: an internet-based provider of a service, for e.g., a Certificate Authority or a service that allows for user-controlled websites. These services often require a user to verify that they control a domain.
@@ -147,7 +149,7 @@ A malicious service that promises to deliver something after domain verification
 
 ## CNAME based
 
-Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name ({{RFC1034}}, Section 3.6.2). The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
+Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name [{{RFC1034}}, Section 3.6.2]. The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
 
     _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
 
@@ -187,7 +189,7 @@ Consumers of the provider services need to relay information from a provider's w
 
 ## CNAME Record
 
-CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records. 
+CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
 
 It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
@@ -196,7 +198,7 @@ It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
 Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-DNSSEC {{draft-ietf-dnsop-dnssec-bcp-06}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
+DNSSEC [{{draft-ietf-dnsop-dnssec-bcp}}] SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
 
 DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued and when no DNSSEC support is detected for the domain owner zone, SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on (preferably) unpredictable geographically diverse IP addressses to reduce an attackers capability of DNS spoofing. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
