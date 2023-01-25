@@ -38,7 +38,7 @@ normative:
   RFC1464:
   RFC4033:
   RFC8174:
-  draft-ietf-dnsop-dnssec-bcp:
+  I-D.ietf-dnsop-dnssec-bcp:
 
   SHA256:
       title: "Secure Hash Standard (SHS), NIST FIPS 180-4"
@@ -198,7 +198,7 @@ It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
 Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-DNSSEC [{{draft-ietf-dnsop-dnssec-bcp}}] SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
+DNSSEC [{{I-D.ietf-dnsop-dnssec-bcp}}] SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
 
 DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued and when no DNSSEC support is detected for the domain owner zone, SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on (preferably) unpredictable geographically diverse IP addressses to reduce an attackers capability of DNS spoofing. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
