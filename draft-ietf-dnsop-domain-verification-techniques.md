@@ -94,7 +94,7 @@ informative:
 
 --- abstract
 
-Many services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS) {{RFC1034}} {{RFC1035}}. This verification is often done by requesting a specific DNS record to be visible in the domain. There are a variety of techniques in use today, with different pros and cons. This document proposes some practices to avoid known problems.
+Many services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). This verification is often done by requesting a specific DNS record to be visible in the domain. There are a variety of techniques in use today, with different pros and cons. This document proposes some practices to avoid known problems.
 
 --- middle
 
