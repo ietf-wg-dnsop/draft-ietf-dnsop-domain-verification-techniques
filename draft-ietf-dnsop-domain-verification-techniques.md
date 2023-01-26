@@ -144,7 +144,7 @@ A malicious service that promises to deliver something after domain verification
 
 ## CNAME based
 
-Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name ({{RFC1034}}, Section 3.6.2). The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
+Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name {{Section 3.6.2 of RFC1034}}. The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
 
     _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
 
