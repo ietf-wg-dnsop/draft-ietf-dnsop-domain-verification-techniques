@@ -49,6 +49,7 @@ informative:
     RFC4086:
     RFC8555:
     RFC9210:
+    RFC6672:
 
     LETSENCRYPT:
         title: "Challenge Types: DNS-01 challenge"
@@ -150,6 +151,11 @@ Less commonly than TXT record verification, service providers also provide the a
 
 
 When a third-party validation provider is used, both the client and the service provider need to give the validation provider a random token, so that the validation provider can confirm the client request is unique and bound to the service provider's request.
+
+### DNAME
+
+DNAME-based {{RFC6672}} domain verification is theoretically possible (though no examples were found). Since DNAME redirects the entire subtree of names underneath the owner of the DNAME, you cannot place an underscore name under the DNAME itself - it would have to be placed under the DNAME target name, since any lookups for an underscore at the DNAME will be redirected to the corresponding label under the DNAME target.
+
 
 ## Time-bound checking
 
