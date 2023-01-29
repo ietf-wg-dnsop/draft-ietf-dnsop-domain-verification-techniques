@@ -177,7 +177,7 @@ If a provider has an application-specific need to have multiple verifications fo
 
 This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS verification record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
 
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record(s) provisioned for a DNS-based domain verification challenge once the challenge is complete.
+Providers MUST provide clear instructions on when a verifying record can be removed. As a corollary, if the provider periodically re-validates the domain, then the provider MUST clarify this and the time after which it does so.  The user SHOULD de-provision the resource record(s) provisioned for a DNS-based domain verification challenge once the challenge is complete in order to prevent bloat.
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
 
