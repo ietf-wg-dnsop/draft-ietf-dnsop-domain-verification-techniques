@@ -36,6 +36,7 @@ normative:
   RFC2119:
   RFC1464:
   RFC8174:
+  RFC8499:
   I-D.ietf-dnsop-dnssec-bcp:
 
   SHA256:
@@ -196,6 +197,8 @@ Both the provider and the service being authenticated and authorized should be o
 DNSSEC {{I-D.ietf-dnsop-dnssec-bcp}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
 
 DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued and when no DNSSEC support is detected for the domain owner zone, SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on (preferably) unpredictable geographically diverse IP addressses to reduce an attackers capability of DNS spoofing. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
+
+Providers MUST NOT verify domains above the Public Suffix {{Section 9 of RFC8499}}.
 
 
 # IANA Considerations
