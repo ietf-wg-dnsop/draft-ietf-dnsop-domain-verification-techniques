@@ -49,6 +49,7 @@ informative:
     RFC4086:
     RFC8555:
     RFC9210:
+    RFC6672:
 
     LETSENCRYPT:
         title: "Challenge Types: DNS-01 challenge"
@@ -154,7 +155,6 @@ CNAME records cannot co-exist with any other data; what happens when both a CNAM
 
 It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
-
 # Security Considerations
 
 Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
@@ -228,6 +228,10 @@ To get issued a certificate by AWS Certificate Manager (ACM), you can create a C
      `_<random-token1>.example.com.   IN   CNAME _RANDOM-TOKEN.acm-validations.aws.`
 
 Note that if there are more than 5 CNAMEs being chained, then this method does not work.
+
+### DNAME
+
+DNAME-based {{RFC6672}} domain verification is theoretically possible (though no examples were found). Since DNAME redirects the entire subtree of names underneath the owner of the DNAME, you cannot place an underscore name under the DNAME itself - it would have to be placed under the DNAME target name, since any lookups for an underscore at the DNAME will be redirected to the corresponding label under the DNAME target.
 
 ### Time-bound checking
 
