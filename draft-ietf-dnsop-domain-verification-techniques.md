@@ -127,13 +127,25 @@ Random Token: a random value that uniquely identifies the DNS domain verificatio
 
 ## TXT Record
 
-DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The RDATA of the TXT resource record MUST be the output of the following:
+DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
+
+The RDATA of the TXT resource record MUST contain a unique token identifying the challenge constructed as the output of the following:
 
 1. Generate a Random Token with at least 128 bits of entropy.
 2. Take the SHA-256 digest output {{SHA256}} of it.
 3. base64url encode it.
 
 See {{RFC4086}} for additional information on randomness requirements.
+
+Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain verification challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}} using the key `expiry`. If this is done, the token should have a key `token`. For example:
+
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
+
+Alternatively, if the record should never expire (i.e. if the same challenge is used repeatedly), the `expiry` can set to be `never`.
+
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
+
+If metadata is not used, then the unique token generated as-above can be placed as the only contents of the RDATA.
 
 For example:
 
@@ -144,8 +156,6 @@ If a provider has an application-specific need to have multiple verifications fo
     _feature1._foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS verification record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
-
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record(s) provisioned for a DNS-based domain verification challenge once the challenge is complete.
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
 
