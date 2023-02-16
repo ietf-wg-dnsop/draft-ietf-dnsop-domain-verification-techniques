@@ -1,10 +1,8 @@
-# Survey of Domain Verification Techniques using DNS
+# Domain Verification Techniques using DNS
 
-This is the working area for the individual Internet-Draft, "Survey of Domain Verification Techniques using DNS".
+This is the working area for the DNSOP Internet-Draft, "Domain Verification Techniques using DNS".
 
-* [Editor's Copy](https://ShivanKaul.github.io/draft-sahib-domain-verification-techniques/#go.draft-sahib-domain-verification-techniques-latest.html)
-* [Individual Draft](https://tools.ietf.org/html/draft-sahib-domain-verification-techniques-latest)
-* [Compare Editor's Copy to Individual Draft](https://ShivanKaul.github.io/draft-sahib-domain-verification-techniques/#go.draft-sahib-domain-verification-techniques-latest.diff)
+* [Editor's Copy](https://ietf-wg-dnsop.github.io/draft-ietf-dnsop-domain-verification-techniques/#go.draft-ietf-domain-verification-techniques-latest.html)
 
 The repo uses Martin Thomson's [I-D template](https://github.com/martinthomson/i-d-template).
 
@@ -44,10 +42,10 @@ When you're ready to cut a new version, do:
 ```sh
 make 
 make next # this generates the versioned doc
-# Once you're happy with it, upload the XML file: https://datatracker.ietf.org/submit/
+# Once you're happy with it, upload the XML file (generated in versioned/): https://datatracker.ietf.org/submit/
 # Then, upload the new tag to GitHub
-git tag draft-ietf-dnsop-domain-verification-techniques-01 # the version you just uploaded to datatracker
-git push origin draft-ietf-dnsop-domain-verification-techniques-01
+git tag draft-ietf-dnsop-domain-verification-techniques-02 # the version you just uploaded to datatracker
+git push origin draft-ietf-dnsop-domain-verification-techniques-02
 ```
 
 This is the manual process outlined in the [I-D template docs](https://github.com/martinthomson/i-d-template/blob/main/doc/SUBMITTING.md#manual-process). 
@@ -55,4 +53,4 @@ This is the manual process outlined in the [I-D template docs](https://github.co
 ## Contributing Guidelines
 
 See the
-[guidelines for contributions](https://github.com/ShivanKaul/draft-sahib-domain-verification-techniques/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ShivanKaul/draft-ietf-dnsop-domain-verification-techniques/blob/main/CONTRIBUTING.md).
