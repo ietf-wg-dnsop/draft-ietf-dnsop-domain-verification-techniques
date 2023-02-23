@@ -129,13 +129,7 @@ Random Token: a random value that uniquely identifies the DNS domain verificatio
 
 DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
 
-The RDATA of the TXT resource record MUST contain a unique token identifying the challenge constructed as the output of the following:
-
-1. Generate a Random Token with at least 128 bits of entropy.
-2. Take the SHA-256 digest output {{SHA256}} of it.
-3. base64url encode it.
-
-See {{RFC4086}} for additional information on randomness requirements.
+The RDATA of the TXT resource record MUST contain a unique token identifying the challenge. This value MUST have at least 128 bits of entropy. It MUST NOT contain any characters outside the base64url alphabet, including padding characters ("="). See {{RFC4086}} for additional information on randomness requirements.
 
 Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain verification challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}} using the key `expiry`. If this is done, the token should have a key `token`. For example:
 
