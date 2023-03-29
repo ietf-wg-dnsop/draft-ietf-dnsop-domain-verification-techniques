@@ -2,6 +2,8 @@
 
 This is the working area for the DNSOP Internet-Draft, "Domain Verification Techniques using DNS".
 
+[Datatracker.](https://datatracker.ietf.org/doc/draft-ietf-dnsop-domain-verification-techniques/)
+
 * [Editor's Copy](https://ietf-wg-dnsop.github.io/draft-ietf-dnsop-domain-verification-techniques/#go.draft-ietf-domain-verification-techniques-latest.html)
 
 The repo uses Martin Thomson's [I-D template](https://github.com/martinthomson/i-d-template).
