@@ -100,7 +100,7 @@ Many services on the Internet need to verify ownership or control of a domain in
 
 # Introduction
 
-Many providers of internet services need domain owners to prove that they control a particular domain before they can operate a services or grant some privilege to the associated domain. For instance, certificate authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving domain control. In practice, DNS-based verification takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
+Many providers of internet services need domain owners to prove that they control a particular domain before the provider  can operate a services or grant some privilege to the associated domain. For instance, certificate authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving domain control. In practice, DNS-based verification takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
 
 This document describes common practices and pitfalls associated with using DNS-based techniques for domain verification in the {{appendix}}, and recommends using TXT-based domain verification which is time-bound and targeted to the service. Other techniques such as email or HTTP(S) based verification are out-of-scope.
 
@@ -127,7 +127,7 @@ Random Token: a random value that uniquely identifies the DNS domain verificatio
 
 ## TXT Record
 
-DNS TXT records are the RECOMMENDED method of doing DNS-based domain verification. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
+The RECOMMENDED method of doing DNS-based domain verification uses DNS TXT records. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
 
 The RDATA of the TXT resource record MUST contain a unique token identifying the challenge constructed as the output of the following:
 
@@ -137,7 +137,7 @@ The RDATA of the TXT resource record MUST contain a unique token identifying the
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain verification challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}} using the key `expiry`. If this is done, the token should have a key `token`. For example:
+Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain verification challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key `expiry` to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the verification token should use the key `token`. For example:
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
 
@@ -161,17 +161,17 @@ Consumers of the provider services need to relay information from a provider's w
 
 ## CNAME Record
 
-CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
+CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
 
 It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
 
 # Security Considerations
 
-Both the provider and the service being authenticated and authorized should be obvious from the TXT content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+Both the provider and the service being authenticated and authorized should be unambiguous from the TXT record owner name and RDATA content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-DNSSEC {{I-D.ietf-dnsop-dnssec-bcp}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks.
+DNSSEC {{I-D.ietf-dnsop-dnssec-bcp}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks that would let a different (unauthorized) entity successfully complete the domain-verification challenge described by this document.
 
-DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued and when no DNSSEC support is detected for the domain owner zone, SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on (preferably) unpredictable geographically diverse IP addresses to reduce an attacker's ability to spoof DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
+DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued.  When no DNSSEC support is detected for the domain owner zone, service providers verifying domain verification records SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 
 # IANA Considerations
@@ -189,7 +189,7 @@ The survey done in this document found several varying methods for DNS domain ve
 
 ### TXT based {#txt-based}
 
-TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then the service provider does a DNS TXT query for the domain being verified and checks that the value exists. For example, this is what a DNS TXT verification record could look like for a provider Foo:
+TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then the service provider does a DNS TXT query for the domain being verified and checks that the correct value is present. For example, this is what a DNS TXT verification record could look like for a provider Foo:
 
     example.com.   IN   TXT   "237943648324687364"
 
@@ -213,11 +213,9 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{LETSENCRYPT}
 
 {{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their verification token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain neme being verified.
 
-{{GOOGLE-WORKSPACE-CNAME}} lets you specify a CNAME record for verifying domain ownership. The user gets a unique 12-character string that is added as "Host", with TTL 3600 (or default) and Destination an 86-character string beginning with "gv-" and ending with ".domainverify.googlehosted.com.".
-
 #### GitHub
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION-<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
+GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
 
 ### CNAME based
 
