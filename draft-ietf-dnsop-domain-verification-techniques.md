@@ -1,6 +1,6 @@
 ---
-title: "Domain Verification Techniques using DNS"
-abbrev: "Domain Verification Techniques"
+title: "Domain Control Validation using DNS"
+abbrev: "Domain Control Validation using DNS"
 docname: draft-ietf-dnsop-domain-verification-techniques-latest
 category: bcp
 
@@ -92,7 +92,7 @@ informative:
 
 --- abstract
 
-Many services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). This verification is often done by requesting a specific DNS record to be visible in the domain. There are a variety of techniques in use today, with different pros and cons. This document proposes some practices to avoid known problems.
+Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). This verification can be done using a variety of methods such as e-mail, HTTP/HTTPS, the DNS itself, or other avenues. This document focusses only on DNS based methods for domain control validation. This is typically done by the application provider requesting a specific DNS record to be visible in the requestor's domain. There are a wide variety of DNS based methods in use today, with differing pros and cons. This document proposes some best practices to avoid known problems.
 
 --- middle
 
@@ -100,7 +100,7 @@ Many services on the Internet need to verify ownership or control of a domain in
 
 # Introduction
 
-Many providers of internet services need domain owners to prove that they control a particular domain before the provider  can operate a services or grant some privilege to the associated domain. For instance, certificate authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving domain control. In practice, DNS-based verification takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
+Many providers of internet services need domain owners to prove that they control a particular DNS domain before the provider  can operate services or grant some privilege to the associated domain. For instance, certificate authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving domain control. In practice, DNS-based verification takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
 
 This document describes common practices and pitfalls associated with using DNS-based techniques for domain verification in the {{appendix}}, and recommends using TXT-based domain verification which is time-bound and targeted to the service. Other techniques such as email or HTTP(S) based verification are out-of-scope.
 
