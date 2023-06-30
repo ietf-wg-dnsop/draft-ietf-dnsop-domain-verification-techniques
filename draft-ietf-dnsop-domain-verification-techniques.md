@@ -51,18 +51,32 @@ informative:
     RFC9210:
     RFC6672:
 
-    LETSENCRYPT:
+    DNS-01:
         title: "Challenge Types: DNS-01 challenge"
         date: 2020
         author:
           - ins: Let's Encrypt
         target: https://letsencrypt.org/docs/challenge-types/#dns-01-challenge
 
+    LETSENCRYPT-90-DAYS-RENEWAL:
+        title: "Why ninety-day lifetimes for certificates?"
+        date: 2015
+        author:
+          - ins: Let's Encrypt
+        target: https://letsencrypt.org/2015/11/09/why-90-days.html
+
     GOOGLE-WORKSPACE-TXT:
         title: "TXT record values"
         author:
           - ins: Google
         target: https://support.google.com/a/answer/2716802
+
+    CLOUDFLARE-DELEGATED:
+        title: "Auto-renew TLS certificates with DCV Delegation"
+        date: 2023
+        author:
+          - ins: Google
+        target: https://blog.cloudflare.com/introducing-dcv-delegation/
 
     GOOGLE-WORKSPACE-CNAME:
         title: "CNAME record values"
@@ -120,16 +134,17 @@ APEX: the 'top' of the domain name. From the user perspective, the highest level
     # this record is NOT at the APEX of the domain example.com.
     something.example.com.   IN   A   192.0.2.1
 
-Random Token: a random value that uniquely identifies the DNS domain control validation challenge.
+Random Token: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
 
+# Validation Record Format {#format}
 
-# Recommendations
+## Name {#name}
 
-## TXT Record
+Domain Control Validation records are constructed by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
 
-The RECOMMENDED method of doing DNS-based domain control validation uses DNS TXT records. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
+## Random Token {#random-token}
 
-The RDATA of the TXT resource record MUST contain a unique token identifying the challenge constructed as the output of the following:
+A unique token used in the challenge is constructed as the output of the following:
 
 1. Generate a Random Token with at least 128 bits of entropy.
 2. Take the SHA-256 digest output {{SHA256}} of it.
@@ -137,17 +152,14 @@ The RDATA of the TXT resource record MUST contain a unique token identifying the
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain control validation challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key `expiry` to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the validation token should use the key `token`. For example:
+This random token is placed in the RDATA as described in {{recommendations}}.
 
-    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
 
-Alternatively, if the record should never expire (i.e. if the same challenge is used repeatedly), the `expiry` can set to be `never`.
+# Recommendations {#recommendations}
 
-    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
+## TXT Record {#txt-record}
 
-If metadata is not used, then the unique token generated as-above can be placed as the only contents of the RDATA.
-
-For example:
+The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
 
     _foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
@@ -159,11 +171,35 @@ This again allows the provider to query only for application-specific records it
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
 
+### Metadata {#metadata}
+
+Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for DNS-based domain control validation once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key `expiry` to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the verification token should use the key `token`. For example:
+
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
+
+Alternatively, if the record should never expire (i.e. if the same challenge is used repeatedly), the `expiry` can set to be `never`.
+
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
+
+
 ## CNAME Record
 
-CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
+CNAME records MAY be used instead of TXT records. Note that CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and a TXT record is added for a different service, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
 
-It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain control validation.
+### Delegated Domain Control Validation {#delegated}
+
+CNAME records enable delegated domain control validation, which lets the user delegate the domain control validation process for their domain to an intermediary without having to hand over full DNS access. The intermediary provides the user with a CNAME record to add for the domain and provider being validated that points to the intermediary's DNS, where the actual verifying TXT record is placed. The record name and random tokens are generated as in {{format}}. For example:
+
+    _foo-challenge.example.com.  IN   CNAME  "<random-token-given-by-intermediary>.intermediarydns.com"
+
+The intermediary then adds the actual verifying record:
+
+    <random-token-given-by-intermediary>.intermediarydns.com. TXT "<random-token-given-by-service>"
+
+Such a setup is especially useful when the provider wants to periodically re-issue the challenge. CNAMEs allow automating the renewal process by letting the intermediary place the random token in their DNS instead of needing continuous write access to the user's DNS.
+
+See {{cname-examples}} for examples.
+
 
 # Security Considerations
 
@@ -207,7 +243,7 @@ A malicious service that promises to deliver something after domain control vali
 
 #### Let's Encrypt
 
-The ACME example in {{txt-based}} is implemented by Let's Encrypt {{LETSENCRYPT}}.
+The ACME example in {{txt-based}} is implemented by Let's Encrypt {{DNS-01}}.
 
 #### Google Workspace
 
@@ -217,13 +253,11 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{LETSENCRYPT}
 
 GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
 
-### CNAME based
+### CNAME based {#cname-examples}
 
-Less commonly than TXT record validation, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name {{Section 3.6.2 of RFC1034}}. The CNAME based domain control validation method typically uses a randomized label prepended to the domain name being verified. For example:
+#### Cloudflare
 
-    _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
-
-When a third-party validation provider is used, both the client and the service provider need to give the validation provider a random token, so that the validation provider can confirm the client request is unique and bound to the service provider's request.
+In order to be issued a TLS cert from a Certificate Authority like Let’s Encrypt, the requester needs to prove that they control the domain. Typically, this is done via the {{DNS-01}} challenge. Let’s Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Cloudflare offer to automate this process using a CNAME record in the user's DNS that points to the verifying record in Cloudflare's zone {{CLOUDFLARE-DELEGATED}}.
 
 #### Google Workspace
 
@@ -231,7 +265,7 @@ When a third-party validation provider is used, both the client and the service 
 
 #### AWS Certificate Manager (ACM)
 
-To get issued a certificate by AWS Certificate Manager (ACM), you can create a CNAME record to verify domain ownership {{ACM-CNAME}}. The record name for the CNAME looks like:
+AWS Certificate Manager {{ACM-CNAME}} allows delegated domain control validation {{delegated}}. The record name for the CNAME looks like:
 
      `_<random-token1>.example.com.   IN   CNAME _RANDOM-TOKEN.acm-validations.aws.`
 
