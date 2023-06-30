@@ -1,6 +1,6 @@
 ---
-title: "Domain Verification Techniques using DNS"
-abbrev: "Domain Verification Techniques"
+title: "Domain Control Validation Techniques using DNS"
+abbrev: "Domain Control Validation Techniques"
 docname: draft-ietf-dnsop-domain-verification-techniques-latest
 category: bcp
 
@@ -92,7 +92,7 @@ informative:
 
 --- abstract
 
-Many services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). This verification is often done by requesting a specific DNS record to be visible in the domain. There are a variety of techniques in use today, with different pros and cons. This document proposes some practices to avoid known problems.
+Many services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). This domain control validation is often done by requesting a specific DNS record to be visible in the domain. There are a variety of techniques in use today, with different pros and cons. This document proposes some practices to avoid known problems.
 
 --- middle
 
@@ -100,9 +100,9 @@ Many services on the Internet need to verify ownership or control of a domain in
 
 # Introduction
 
-Many providers of internet services need domain owners to prove that they control a particular domain before the provider  can operate a services or grant some privilege to the associated domain. For instance, certificate authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving domain control. In practice, DNS-based verification takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
+Many providers of internet services need domain owners to prove that they control a particular domain before the provider  can operate a services or grant some privilege to the associated domain. For instance, certificate authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving domain control. In practice, DNS-based control validation takes the form of the provider generating a random value visible only to the requester, and then asking the requester to create a DNS record containing this random value and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
 
-This document describes common practices and pitfalls associated with using DNS-based techniques for domain verification in the {{appendix}}, and recommends using TXT-based domain verification which is time-bound and targeted to the service. Other techniques such as email or HTTP(S) based verification are out-of-scope.
+This document describes common practices and pitfalls associated with using DNS-based techniques for domain control validation in the {{appendix}}, and recommends using TXT-based domain control validation which is time-bound and targeted to the service. Other techniques such as email or HTTP(S) based validation are out-of-scope.
 
 # Conventions and Definitions
 
@@ -120,14 +120,14 @@ APEX: the 'top' of the domain name. From the user perspective, the highest level
     # this record is NOT at the APEX of the domain example.com.
     something.example.com.   IN   A   192.0.2.1
 
-Random Token: a random value that uniquely identifies the DNS domain verification challenge.
+Random Token: a random value that uniquely identifies the DNS domain control validation challenge.
 
 
 # Recommendations
 
 ## TXT Record
 
-The RECOMMENDED method of doing DNS-based domain verification uses DNS TXT records. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
+The RECOMMENDED method of doing DNS-based domain control validation uses DNS TXT records. The provider constructs the validation domain name by prepending a provider-relevant prefix followed by "-challenge" to the domain name being validated (e.g. "\_foo-challenge.example.com").
 
 The RDATA of the TXT resource record MUST contain a unique token identifying the challenge constructed as the output of the following:
 
@@ -137,7 +137,7 @@ The RDATA of the TXT resource record MUST contain a unique token identifying the
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain verification challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key `expiry` to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the verification token should use the key `token`. For example:
+Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for a DNS-based domain control validation challenge once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key `expiry` to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the validation token should use the key `token`. For example:
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
 
@@ -151,11 +151,11 @@ For example:
 
     _foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
-If a provider has an application-specific need to have multiple verifications for the same label, multiple prefixes can be used:
+If a provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used:
 
     _feature1._foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
-This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS verification record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
+This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
 
@@ -163,15 +163,15 @@ Consumers of the provider services need to relay information from a provider's w
 
 CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and for another service a TXT record is added, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
 
-It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain verification.
+It is therefore NOT RECOMMENDED to use CNAMEs for DNS domain control validation.
 
 # Security Considerations
 
 Both the provider and the service being authenticated and authorized should be unambiguous from the TXT record owner name and RDATA content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
 
-DNSSEC {{RFC9364}} SHOULD be employed by the domain owner to protect their domain verification records against DNS spoofing attacks that would let a different (unauthorized) entity successfully complete the domain-verification challenge described by this document.
+DNSSEC {{RFC9364}} SHOULD be employed by the domain owner to protect their domain control validation records against DNS spoofing attacks that would let a different (unauthorized) entity successfully complete the validation challenge described by this document.
 
-DNSSEC validation MUST be enabled by service providers that verify domain verification records they have issued.  When no DNSSEC support is detected for the domain owner zone, service providers verifying domain verification records SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
+DNSSEC validation MUST be enabled by service providers that verify domain control validation records they have issued.  When no DNSSEC support is detected for the domain owner zone, service providers verifying records SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 
 # IANA Considerations
@@ -183,19 +183,19 @@ This document has no IANA actions.
 
 # Appendix {#appendix}
 
-The survey done in this document found several varying methods for DNS domain verification techniques across providers. This Appendix lists them, for completeness.
+The survey done in this document found several varying methods for DNS domain control validation techniques across providers. This Appendix lists them, for completeness.
 
-## Survey of Verification Techniques
+## Survey of Techniques
 
 ### TXT based {#txt-based}
 
-TXT record-based DNS domain verification is usually the default option for DNS verification. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then the service provider does a DNS TXT query for the domain being verified and checks that the correct value is present. For example, this is what a DNS TXT verification record could look like for a provider Foo:
+TXT records is usually the default option for domain control validation. The service provider asks the user to add a DNS TXT record (perhaps through their domain host or DNS provider) at the domain with a certain value. Then the service provider does a DNS TXT query for the domain being verified and checks that the correct value is present. For example, this is what a DNS TXT record could look like for a provider Foo:
 
     example.com.   IN   TXT   "237943648324687364"
 
-Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Note that in this construction provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain verification, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days. See {{appendix}} for a survey of different implementations.
+Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo provider. Note that in this construction provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain control validation, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e. the person managing the account at Foo provider) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the service provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days. See {{appendix}} for a survey of different implementations.
 
-Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain verification. The ACME protocol {{RFC8555}} has a challenge type  `DNS-01` that lets a user prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
+Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain control validation. The ACME protocol {{RFC8555}} has a challenge type  `DNS-01` that lets a user prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
 
     _acme-challenge.example.com.  IN  TXT "cE3A8qQpEzAIYq-T9DWNdLJ1_YRXamdxcjGTbzrOH5L"
 
@@ -203,7 +203,7 @@ Some providers use a suffix of `_PROVIDER_NAME-challenge` in the Name field of t
 
 An operational issue arises from the DNS protocol only being able to query for "all TXT records" at a single location: if multiple services all require TXT records, this can cause the DNS answer for TXT records to become very large. It has been observed that some well known domains had so many services deployed that their DNS TXT answer did not fit in a single UDP DNS packet. This results in fragmentation which is known to be vulnerable to various attacks ({{!AVOID-FRAGMENTATION=I-D.ietf-dnsop-avoid-fragmentation}}). It can also lead to UDP packet truncation, causing a retry over TCP. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ({{RFC9210}}).
 
-A malicious service that promises to deliver something after domain verification could surreptitiously ask another service provider to start processing or sending mail for the target domain and then present the victim domain administrator with this DNS TXT record pretending to be for their service. Once the administrator has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer replay this without the DNS administrator noticing this.
+A malicious service that promises to deliver something after domain control validation could surreptitiously ask another service provider to start processing or sending mail for the target domain and then present the victim domain administrator with this DNS TXT record pretending to be for their service. Once the administrator has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer replay this without the DNS administrator noticing this.
 
 #### Let's Encrypt
 
@@ -211,7 +211,7 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{LETSENCRYPT}
 
 #### Google Workspace
 
-{{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their verification token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain neme being verified.
+{{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain neme being verified.
 
 #### GitHub
 
@@ -219,7 +219,7 @@ GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION
 
 ### CNAME based
 
-Less commonly than TXT record verification, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name {{Section 3.6.2 of RFC1034}}. The CNAME based domain verification method typically uses a randomized label prepended to the domain name being verified. For example:
+Less commonly than TXT record validation, service providers also provide the ability to verify domain ownership via CNAME records. One reason for using CNAME is for the case where the user cannot create TXT records; for example, when the domain name may already have a CNAME record that aliases it to a 3rd-party target domain. CNAMEs have a technical restriction that no other record types can be placed along side them at the same domain name {{Section 3.6.2 of RFC1034}}. The CNAME based domain control validation method typically uses a randomized label prepended to the domain name being verified. For example:
 
     _random-token1.example.com.   IN   CNAME _random-token2.validation.com.`
 
@@ -239,12 +239,12 @@ Note that if there are more than 5 CNAMEs being chained, then this method does n
 
 ### DNAME
 
-DNAME-based {{RFC6672}} domain verification is theoretically possible (though no examples were found). Since DNAME redirects the entire subtree of names underneath the owner of the DNAME, you cannot place an underscore name under the DNAME itself - it would have to be placed under the DNAME target name, since any lookups for an underscore at the DNAME will be redirected to the corresponding label under the DNAME target.
+DNAME-based {{RFC6672}} domain control validation is theoretically possible (though no examples were found). Since DNAME redirects the entire subtree of names underneath the owner of the DNAME, you cannot place an underscore name under the DNAME itself - it would have to be placed under the DNAME target name, since any lookups for an underscore at the DNAME will be redirected to the corresponding label under the DNAME target.
 
 ### Time-bound checking
 
-After domain verification is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the verification is done and the service provider doing the verification should specify how long the verification will take (i.e. after how much time can the verifying DNS record be deleted).
+After domain control validation is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the validation is done and the service provider doing the validation should specify how long the validation will take (i.e. after how much time can the verifying DNS record be deleted).
 
 #### Atlassian
 
-Some services ask the DNS record to exist in perpetuity {{ATLASSIAN-VERIFY}}. If the record is removed, the user gets a limited amount of time to re-add it before they lose domain verification status.
+Some services ask the DNS record to exist in perpetuity {{ATLASSIAN-VERIFY}}. If the record is removed, the user gets a limited amount of time to re-add it before they lose domain validation status.
