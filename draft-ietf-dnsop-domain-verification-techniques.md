@@ -84,6 +84,12 @@ informative:
           - ins: Google
         target: https://support.google.com/a/answer/112038
 
+    DOCUSIGN-CNAME:
+        title: "Claim a Domain"
+        author:
+          - ins: DocuSign Admin for Organization Management
+        target: https://support.docusign.com/s/document-item?rsc_301=&bundleId=rrf1583359212854&topicId=gso1583359141256_1.html
+
     ACM-CNAME:
         title: "Option 1: DNS Validation"
         author:
@@ -184,7 +190,7 @@ Alternatively, if the record should never expire (i.e. if the same challenge is 
 
 ## CNAME Record
 
-CNAME records MAY be used instead of TXT records. Note that CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and a TXT record is added for a different service, the TXT record might work but the CNAME record might break. Another issue with CNAME records is that they must not point to another CNAME. But while this might be true in an initial deployment, if the target that the CNAME points to is changed from a non-CNAME record to a CNAME record, some DNS software might no longer resolve this as expected. However, when using a properly named prefix, existing CNAME records should never conflict with regular CNAME records.
+CNAME records MAY be used instead of TXT records. Note that CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and a TXT record is added for a different service, the TXT record might work but the CNAME record might break. See {{cname-examples}} for examples.
 
 ### Delegated Domain Control Validation {#delegated}
 
@@ -198,7 +204,7 @@ The intermediary then adds the actual verifying record:
 
 Such a setup is especially useful when the provider wants to periodically re-issue the challenge. CNAMEs allow automating the renewal process by letting the intermediary place the random token in their DNS instead of needing continuous write access to the user's DNS.
 
-See {{cname-examples}} for examples.
+See {{delegated-examples}} for examples.
 
 
 # Security Considerations
@@ -255,15 +261,21 @@ GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION
 
 ### CNAME based {#cname-examples}
 
-#### Cloudflare
+#### DocuSign
 
-In order to be issued a TLS cert from a Certificate Authority like Let’s Encrypt, the requester needs to prove that they control the domain. Typically, this is done via the {{DNS-01}} challenge. Let’s Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Cloudflare offer to automate this process using a CNAME record in the user's DNS that points to the verifying record in Cloudflare's zone {{CLOUDFLARE-DELEGATED}}.
+{{DOCUSIGN-CNAME}} asks the user to add a CNAME record with the "Host Name" set to be a 32-digit random value pointing to `verifydomain.docusign.net.`.
 
 #### Google Workspace
 
 {{GOOGLE-WORKSPACE-CNAME}} lets you specify a CNAME record for verifying domain ownership. The user gets a unique 12-character string that is added as "Host", with TTL 3600 (or default) and Destination an 86-character string beginning with "gv-" and ending with ".domainverify.googlehosted.com.".
 
-#### AWS Certificate Manager (ACM)
+#### Delegated Domain Control Validation {#delegated-examples}
+
+##### Cloudflare
+
+In order to be issued a TLS cert from a Certificate Authority like Let’s Encrypt, the requester needs to prove that they control the domain. Typically, this is done via the {{DNS-01}} challenge. Let’s Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Cloudflare offer to automate this process using a CNAME record in the user's DNS that points to the verifying record in Cloudflare's zone {{CLOUDFLARE-DELEGATED}}.
+
+##### AWS Certificate Manager (ACM)
 
 AWS Certificate Manager {{ACM-CNAME}} allows delegated domain control validation {{delegated}}. The record name for the CNAME looks like:
 
