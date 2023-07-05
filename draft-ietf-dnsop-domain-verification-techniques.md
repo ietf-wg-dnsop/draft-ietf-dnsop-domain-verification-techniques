@@ -171,7 +171,7 @@ Both the provider and the service being authenticated and authorized should be u
 
 DNSSEC {{RFC9364}} SHOULD be employed by the domain owner to protect their domain control validation records against DNS spoofing attacks that would let a different (unauthorized) entity successfully complete the validation challenge described by this document.
 
-DNSSEC validation SHOULD be enabled by service providers that verify domain control validation records they have issued.  When no DNSSEC support is detected for the domain owner zone, service providers verifying records SHOULD attempt to query and confirm by matching the validation record using multiple DNS validators on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
+DNSSEC validation SHOULD be performed by service providers that verify domain control validation records they have issued.  If no DNSSEC support is detected for the domain owner zone or if DNSSEC validation is not being performed, service providers verifying records SHOULD attempt to query and confirm by matching the validation record using multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 
 # IANA Considerations
