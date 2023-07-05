@@ -152,9 +152,8 @@ Domain Control Validation records are constructed by prepending a provider-relev
 
 A unique token used in the challenge is constructed as the output of the following:
 
-1. Generate a Random Token with at least 128 bits of entropy.
-2. Take the SHA-256 digest output {{SHA256}} of it.
-3. base64url encode it.
+1. Generate a random value. This value MUST have at least 128 bits of entropy.
+2. base64url ({{!RFC4648, Section 5}}) encode the random value.
 
 See {{RFC4086}} for additional information on randomness requirements.
 
@@ -179,14 +178,21 @@ Consumers of the provider services need to relay information from a provider's w
 
 ### Metadata {#metadata}
 
-Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for DNS-based domain control validation once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key `expiry` to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the verification token should use the key `token`. For example:
+Providers MUST provide clear instructions on when a verifying record can be removed. The user SHOULD de-provision the resource record provisioned for DNS-based domain control validation once the one-time challenge is complete. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key "expiry" to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the verification token should use the key "token". For example:
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
 
-Alternatively, if the record should never expire (i.e. if the same challenge is used repeatedly), the `expiry` can set to be `never`.
+Alternatively, if the record should never expire (for instance, if it may be checked periodically by the provider) and should not be removed, the key "expiry" can be set to have value "never".
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
 
+The "expiry" key MAY be omitted in cases where the provider has clarified the record expiry policy out-of-band ({{github}}).
+
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
+
+Note that this is semantically the same as:
+
+    _foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 ## CNAME Record
 
@@ -255,7 +261,7 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{DNS-01}}.
 
 {{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain neme being verified.
 
-#### GitHub
+#### GitHub {#github}
 
 GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
 
@@ -290,6 +296,8 @@ DNAME-based {{RFC6672}} domain control validation is theoretically possible (tho
 ### Time-bound checking
 
 After domain control validation is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain-verifying DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the verifying DNS record once the validation is done and the service provider doing the validation should specify how long the validation will take (i.e. after how much time can the verifying DNS record be deleted).
+
+One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual verifying TXT record cannot be removed.
 
 #### Atlassian
 
