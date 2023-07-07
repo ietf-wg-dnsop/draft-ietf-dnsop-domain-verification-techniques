@@ -210,6 +210,8 @@ The intermediary then adds the actual verifying record:
 
 Such a setup is especially useful when the provider wants to periodically re-issue the challenge. CNAMEs allow automating the renewal process by letting the intermediary place the random token in their DNS instead of needing continuous write access to the user's DNS.
 
+Importantly, the CNAME record also contains a random token which proves to the intermediary that example.com is controlled by the user.
+
 See {{delegated-examples}} for examples.
 
 
@@ -285,7 +287,17 @@ In order to be issued a TLS cert from a Certificate Authority like Let’s Encry
 
 AWS Certificate Manager {{ACM-CNAME}} allows delegated domain control validation {{delegated}}. The record name for the CNAME looks like:
 
-     `_<random-token1>.example.com.   IN   CNAME _RANDOM-TOKEN.acm-validations.aws.`
+     `_<random-token1>.example.com.   IN   CNAME _<random-token2>.acm-validations.aws.`
+
+The CNAME points to:
+
+     `_<random-token2>.acm-validations.aws.   IN   TXT <random-token3>`
+
+Here, the random tokens are used for the following:
+
+* `<random-token1>`: Unique sub-domain, so there's no clashes when looking up the verifying record.
+* `<random-token2>`: Proves to ACM that the requester controls the DNS for the requested domain.
+* `<random-token3>`: The actual token being verified.
 
 Note that if there are more than 5 CNAMEs being chained, then this method does not work.
 
