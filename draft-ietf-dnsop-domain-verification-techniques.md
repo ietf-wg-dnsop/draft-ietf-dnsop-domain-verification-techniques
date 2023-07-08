@@ -112,7 +112,7 @@ informative:
 
 --- abstract
 
-Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). This domain control validation can be done using a variety of methods such as email, HTTP/HTTPS, the DNS itself, or other avenues. This document focuses only on DNS-based methods for domain control validation. This is typically done by the service provider requesting a specific DNS record to be visible in the requestor's domain. There are a wide variety of DNS-based methods in use today, with differing pros and cons. This document proposes some best practices to avoid known problems.
+Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, the DNS itself, or in other ways. This document focuses only on DNS-based methods. These typically involve the application service provider requesting a specific DNS record to be visible in the requester's domain. There is wide variation in the details of these methods today. This document proposes some best practices to avoid known problems.
 
 --- middle
 
@@ -136,6 +136,15 @@ when, and only when, they appear in all capitals, as shown here.
 * `Provider`: an internet-based provider of a service, for e.g., a Certificate Authority or a service that allows for user-controlled websites. These services often require a user to verify that they control a domain.
 
 * `Random Token`: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
+
+# Common Pitfalls
+
+A very common but unfortunate technique in use today is to employ a DNS TXT record as the verifying record and placing it at the exact domain name being verified. This has a number of known operational issues. If the domain owner uses multiple application services using this technique, it will end up deploying a DNS TXT record "set" at the domain name, containing one TXT record for each of the services.
+
+Since DNS resource record sets are treated atomically, a query for the verifying record will return all TXT records in the response. There is no way for the verifier to surgically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
+
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the response is large enough that it does not fit into a single DNS UDP packet (UDP being the most common DNS transport today), this may result in fragmentation, which often does not work reliably on the Internet today due to firewalls and middleboxes, and also is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on the configuration of the DNS infrastructure, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
+
 
 # Validation Record Format {#format}
 
@@ -248,8 +257,6 @@ Some providers use a prefix of `_PROVIDER_NAME-challenge` in the Name field of t
     _acme-challenge.example.com.  IN  TXT "cE3A8qQpEzAIYq-T9DWNdLJ1_YRXamdxcjGTbzrOH5L"
 
 {{RFC8555}} (section 8.4) places requirements on the Random Token.
-
-An operational issue arises from the DNS protocol only being able to query for "all TXT records" at a single location: if multiple services all require TXT records, this can cause the DNS answer for TXT records to become very large. It has been observed that some well known domains had so many services deployed that their DNS TXT answer did not fit in a single UDP DNS packet. This results in fragmentation which is known to be vulnerable to various attacks ({{?AVOID-FRAGMENTATION=I-D.ietf-dnsop-avoid-fragmentation}}). It can also lead to UDP packet truncation, causing a retry over TCP. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ({{RFC9210}}).
 
 #### Let's Encrypt
 
