@@ -145,6 +145,14 @@ Since DNS resource record sets are treated atomically, a query for the verifying
 
 Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the response is large enough that it does not fit into a single DNS UDP packet (UDP being the most common DNS transport today), this may result in fragmentation, which often does not work reliably on the Internet today due to firewalls and middleboxes, and also is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on the configuration of the DNS infrastructure, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
 
+# Scope of Validation
+
+For security reasons, it is crucial to understand the scope of the domain name being validated. Both application service providers and the domain owner need to clearly specify and understand whether the validation request is for a single hostname or for the entire domain rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
+
+In the case of X.509 certificate issuance, the request is clear about whether it is for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS challenge mechanism ({{DNS-01}}) does not appear to differentiate these cases in the DNS verifying record. In the absence of this distinction, the DNS administrator tasked with deploying the verifying record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the domain owner intended.
+
+In the more general case of an Internet application service granting authority to a domain owner, again no existing DNS challenge scheme makes this distinction today. These services should very clearly indicate the scope of the validation in their public documentation so that the domain administrator can use this information to assess whether the verifying record is granting the apropriately scoped authority.
+
 
 # Validation Record Format {#format}
 
@@ -179,6 +187,7 @@ If a provider has an application-specific need to have multiple validations for 
 This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple verifying records can exist for the same domain is up to the implementation.
 
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
+
 
 ### Metadata For Expiry {#metadata}
 
