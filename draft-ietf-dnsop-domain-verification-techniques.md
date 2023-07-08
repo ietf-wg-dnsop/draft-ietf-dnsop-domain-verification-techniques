@@ -189,9 +189,6 @@ This again allows the provider to query only for application-specific records it
 Consumers of the provider services need to relay information from a provider's website to their local DNS administrators. The exact DNS record type, content and location is often not clear when the DNS administrator receives the information, especially to consumers who are not DNS experts. Providers SHOULD offer detailed help pages, that are accessible without needing a login on the provider website, as the DNS adminstrator often has no login account on the provider service website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
 
 
-TODO: Should the format of the verifying record be enhanced to include an indication of scope: e.g. single hostname vs entire domain? This could be done in a number of ways, e.g adding a "wildcard" substring or label into the DNS record owner name, or by specifying a wildcard attribute in the TXT RDATA string.
-
-
 ### Metadata For Expiry {#metadata}
 
 Providers MUST provide clear instructions on when a verifying record can be removed. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key "expiry" to hold a time after which it is safe to remove the verifying record. If this key-value format is used, the verification token should use the key "token". For example:
