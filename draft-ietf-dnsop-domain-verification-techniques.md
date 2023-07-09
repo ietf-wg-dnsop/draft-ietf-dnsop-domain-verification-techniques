@@ -137,13 +137,16 @@ when, and only when, they appear in all capitals, as shown here.
 
 * `Random Token`: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
 
-# Common Pitfalls
+# Common Pitfalls {#pitfalls}
 
 A very common but unfortunate technique in use today is to employ a DNS TXT record as the verifying record and placing it at the exact domain name being verified. This has a number of known operational issues. If the domain owner uses multiple application services using this technique, it will end up deploying a DNS TXT record "set" at the domain name, containing one TXT record for each of the services.
 
 Since DNS resource record sets are treated atomically, a query for the verifying record will return all TXT records in the response. There is no way for the verifier to surgically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
 Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the response is large enough that it does not fit into a single DNS UDP packet (UDP being the most common DNS transport today), this may result in fragmentation, which often does not work reliably on the Internet today due to firewalls and middleboxes, and also is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on the configuration of the DNS infrastructure, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
+
+Other possible issues may occur. If a TXT record (or any other record type) is designed to be place at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
+
 
 # Scope of Validation
 
@@ -212,7 +215,9 @@ The user SHOULD de-provision the resource record provisioned for DNS-based domai
 
 ## CNAME Record
 
-CNAME records MAY be used instead of TXT records. Note that CNAME records cannot co-exist with any other data; what happens when both a CNAME and other records exist depends on the DNS implementation, and such configurations might break in unexpected ways. If a CNAME is added for continuous authorization, and a TXT record is added for a different service, the TXT record might work but the CNAME record might break. See {{cname-examples}} for examples.
+CNAME records MAY be used instead of TXT records, but they should not be placed at the same domain name that is being validated. This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an application specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types. In practice, many application services that employ CNAMEs today use a random subdomain label, which also works to avoid collisions. But adding an application specific component makes it easier for the domain owner to keep track of why and for what service a verifying record has been deployed.
+
+Note that some DNS implementations permit the deployment of CNAME records co-existing with other record types. These implementations are in violation of the DNS protocol. Furthermore, they can cause resolution failures in unpredictable ways depending on the behavior of DNS resolvers, the order in which query types for the name are processed etc. In short, they cannot work reliably and these implementations should be fixed.
 
 ### Delegated Domain Control Validation {#delegated}
 
