@@ -246,7 +246,7 @@ One exception is if the record is being used as part of a delegated domain contr
 
 ## DNAME
 
-Domain control validation in the presence of a DNAME {{RFC6672}} is theoretically possible. Since a DNAME record redirects the entire subtree of names underneath the owner of the DNAME, it is not possible to place a validation record under the DNAME owner itself. It would have to be placed under the DNAME target name, since any lookups for an name under the DNAME owner will be redirected to the corresponding name under the DNAME target.
+Domain control validation in the presence of a DNAME {{RFC6672}} is theoretically possible. Since a DNAME record redirects the entire subtree of names underneath the owner of the DNAME, it is not possible to place a validation record under the DNAME owner itself. It would have to be placed under the DNAME target name, since any lookups for a name under the DNAME owner will be redirected to the corresponding name under the DNAME target.
 
 
 # Security Considerations
