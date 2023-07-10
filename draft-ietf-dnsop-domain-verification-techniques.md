@@ -238,6 +238,16 @@ Importantly, the CNAME record also contains a random token which proves to the i
 
 See {{delegated-examples}} for examples.
 
+## Time-bound checking
+
+After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the service provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
+
+One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed.
+
+## DNAME
+
+Domain control validation in the presence of a DNAME {{RFC6672}} is theoretically possible. Since a DNAME record redirects the entire subtree of names underneath the owner of the DNAME, it is not possible to place a validation record under the DNAME owner itself. It would have to be placed under the DNAME target name, since any lookups for a name under the DNAME owner will be redirected to the corresponding name under the DNAME target.
+
 
 # Security Considerations
 
@@ -320,16 +330,6 @@ Here, the random tokens are used for the following:
 * `<random-token3>`: The actual token being verified.
 
 Note that if there are more than 5 CNAMEs being chained, then this method does not work.
-
-### DNAME
-
-DNAME-based {{RFC6672}} domain control validation is theoretically possible (though no examples were found). Since DNAME redirects the entire subtree of names underneath the owner of the DNAME, you cannot place an underscore name under the DNAME itself - it would have to be placed under the DNAME target name, since any lookups for an underscore at the DNAME will be redirected to the corresponding label under the DNAME target.
-
-### Time-bound checking
-
-After domain control validation is done, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the service provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
-
-One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed.
 
 #### Atlassian
 
