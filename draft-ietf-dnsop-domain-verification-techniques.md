@@ -160,13 +160,15 @@ In the case of X.509 certificate issuance, the request is clear about whether it
 In the more general case of an Internet application service granting authority to a domain owner, again no existing DNS challenge scheme makes this distinction today. These services should very clearly indicate the scope of the validation in their public documentation so that the domain administrator can use this information to assess whether the validation record is granting the appropriately scoped authority.
 
 
-# Validation Record Format {#format}
+# Recommendations {#recommendations}
 
-## Name {#name}
+## Validation Record Format {#format}
+
+### Name {#name}
 
 The RECOMMENDED format is application-specific underscore prefix labels. Domain Control Validation records are constructed by the provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefixed "_" is used to avoid collisions with existing hostnames.
 
-## Random Token {#random-token}
+### Random Token {#random-token}
 
 A unique token used in the challenge. It should be a random value with the following properties:
 
@@ -175,10 +177,7 @@ A unique token used in the challenge. It should be a random value with the follo
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-This random token is placed in the RDATA as described in {{recommendations}}.
-
-
-# Recommendations {#recommendations}
+This random token is placed in the RDATA as described in the rest of this section.
 
 ## TXT Record {#txt-record}
 
