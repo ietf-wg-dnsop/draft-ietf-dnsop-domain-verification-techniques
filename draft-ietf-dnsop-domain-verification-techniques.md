@@ -31,6 +31,12 @@ author:
     organization: Aiven
     email: paul.wouters@aiven.io
 
+ -
+    ins: E. Nygren
+    name: Erik Nygren
+    organization: Akamai Technologies
+    email: erik+ietf@nygren.org
+
 normative:
   RFC1034:
   RFC2119:
