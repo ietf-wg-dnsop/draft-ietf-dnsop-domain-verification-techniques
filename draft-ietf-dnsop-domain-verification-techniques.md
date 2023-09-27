@@ -264,7 +264,7 @@ The intermediary then adds the actual validation record in a domain they control
 
 Such a setup is especially useful when the provider wants to periodically re-issue the challenge. CNAMEs allow automating the renewal process by letting the intermediary place the random token in their DNS instead of needing continuous write access to the user's DNS.
 
-Importantly, the CNAME record target also contains a random token issued by the intermediary to the user (preferably over a secure channel) which proves to the intermediary that example.com is controlled by the user. The intermediary must keep an association of users and domain names to the associated intermediary-random-tokens. Without a linkage validated by the intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "Subdomain takover" attack ({{SUBDOMAIN-TAKEOVER}}).
+Importantly, the CNAME record target also contains a random token issued by the intermediary to the user (preferably over a secure channel) which proves to the intermediary that example.com is controlled by the user. The intermediary must keep an association of users and domain names to the associated intermediary-random-tokens. Without a linkage validated by the intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
 
 When a user stops using the intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the intermediary.
 
