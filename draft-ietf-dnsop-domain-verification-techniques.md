@@ -153,7 +153,7 @@ Other possible issues may occur. If a TXT record (or any other record type) is d
 
 # Scope of Validation {#scope}
 
-For security reasons, it is crucial to understand the scope of the domain name being validated. Both application service providers and the domain owner need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain. 
+For security reasons, it is crucial to understand the scope of the domain name being validated. Both application service providers and the domain owner need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
 
 In the case of X.509 certificate issuance, the request is clear about whether it is for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}) does not differentiate these cases in the DNS validation record. In the absence of this distinction, the DNS administrator tasked with deploying the validation record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the domain owner intended.
 
@@ -172,9 +172,9 @@ The RECOMMENDED format is application-specific underscore prefix labels. Domain 
 
 For applications that may apply more broadly than to a single host name, the RECOMMENDED approach is to differentiate the application-specific underscore prefix labels to also include the scope (see #scope). In particular:
 
-* "\_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com" applies only to the specific host name of "example.com" anything underneath it.
-* "\_<PROVIDER_RELEVANT_NAME>-wildcard-challenge.example.com" applies to all host names at the level immediately underneath "example.com". For example, it would apply to "foo.example.com" but not "example.com" nor "quux.bar.example.com"
-* "\_<PROVIDER_RELEVANT_NAME>-domain-challenge.example.com" applies to the entire domain "example.com" as well as its subdomains. For example, it would apply to all of "example.com", "foo.example.com", and "quux.bar.example.com"
+* "`_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com`" applies only to the specific host name of "example.com" anything underneath it.
+* "`_<PROVIDER_RELEVANT_NAME>-wildcard-challenge.example.com`" applies to all host names at the level immediately underneath "example.com". For example, it would apply to "foo.example.com" but not "example.com" nor "quux.bar.example.com"
+* "`_<PROVIDER_RELEVANT_NAME>-domain-challenge.example.com`" applies to the entire domain "example.com" as well as its subdomains. For example, it would apply to all of "example.com", "foo.example.com", and "quux.bar.example.com"
 
 ### Random Token {#random-token}
 
