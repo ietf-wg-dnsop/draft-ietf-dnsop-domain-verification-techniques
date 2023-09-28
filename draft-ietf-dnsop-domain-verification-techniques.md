@@ -43,6 +43,23 @@ informative:
     RFC8555:
     RFC9210:
     RFC6672:
+    RFC8659:
+    RFC8499:
+    I-D.draft-tjw-dbound2-problem-statement:
+
+    PSL:
+        title: "Public Suffix List"
+        date: 2022
+        author:
+          - ins: Mozilla Foundation
+        target: https://publicsuffix.org/
+
+    PSL-DIVISIONS:
+        title: "Public Suffix List format"
+        date: 2022
+        author:
+          - ins: J. Frakes
+        target: "https://github.com/publicsuffix/list/wiki/Format#divisions"
 
     AVOID-FRAGMENTATION:
         title: "Fragmentation Avoidance in DNS"
@@ -151,13 +168,19 @@ Additionally, placing many such TXT records at the same name increases the size 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be place at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
 
-# Scope of Validation
+# Scope of Validation {#scope}
 
 For security reasons, it is crucial to understand the scope of the domain name being validated. Both application service providers and the domain owner need to clearly specify and understand whether the validation request is for a single hostname or for the entire domain rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
 
 In the case of X.509 certificate issuance, the request is clear about whether it is for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS challenge mechanism ({{DNS-01}}) does not appear to differentiate these cases in the DNS validation record. In the absence of this distinction, the DNS administrator tasked with deploying the validation record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the domain owner intended.
 
 In the more general case of an Internet application service granting authority to a domain owner, again no existing DNS challenge scheme makes this distinction today. These services should very clearly indicate the scope of the validation in their public documentation so that the domain administrator can use this information to assess whether the validation record is granting the appropriately scoped authority.
+
+## Domain Boundaries {#domain-boundaries}
+
+The hierarchical structure of domain names do not necessarily define boundaries of ownership and administrative control (e.g., as discussed in {{I-D.draft-tjw-dbound2-problem-statement}}). Some domain names are "public suffixes" ({{RFC8499}}) where care may need to be taken when validating control. For example, there are security risks if a provider can be tricked into believing that an attacker has control over ".co.uk" or ".com". The volunteer-managed Public Suffix List {{PSL}} is one mechanism available today that can be useful for identifying public suffixes.
+
+Future specifications may provide better mechanisms or recommendations for defining domain boundaries or for enabling organizational administrators to place constraints on domains and subdomains. See {{constraint-examples}} for cases where DNS records can be used as constraints complementary to domain verification.
 
 
 # Recommendations {#recommendations}
@@ -256,6 +279,19 @@ A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect va
 
 DNSSEC validation SHOULD be performed by service providers that verify validation records they have requested to be deployed.  If no DNSSEC support is detected for the domain owner zone, or if DNSSEC validation cannot be performed, service providers SHOULD attempt to query and confirm the validation record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, service providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
+## Public Suffixes {#public-suffixes}
+
+As discussed above in {{domain-boundaries}}, there are risks in allowing control to be demonstrated over domains which are "public suffixes" (such as ".co.uk" or ".com"). The volunteer-managed Public Suffix List ({{PSL}}) is one mechanism that can be used. It includes two "divisions" ({{PSL-DIVISIONS}}) covering both registry-owned public suffixes (the "ICANN" division) and a "PRIVATE" division covering domains submitted by the domain owner.
+
+Operators of public suffix domains which are in the "PRIVATE" division often provide multi-tenant services such as dynamic DNS, web hosting, and CDN services. As such, they sometimes allow their sub-tenants to provision names as subdomains of their public suffix. There are use-cases that require operators of public suffix domains to demonstrate control over their domain, such as to be added to the Public Suffix List ({{psl-example}}) or to provision a wildcard certificate. At the same time, if an operator of such a domain allows its customers or tenants to create names starting with an underscore ("_") then it opens up substantial risk to the domain operator for attackers to provision services on their domain.
+
+Whether or not it is appropriate to allow domain verification on a public suffix will depend on the application.  In the general case:
+
+* Providers SHOULD NOT allow verification of ownership for domains which are public suffixes in the "ICANN" division. For example, "\_foo-challenge.co.uk" would not be allowed.
+* Providers MAY allow verification of ownership for domains which are public suffixes in the "PRIVATE" division, although it would be preferable to apply additional safety checks in this case.
+
+
+
 
 # IANA Considerations
 
@@ -296,6 +332,12 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{DNS-01}}.
 
 GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
 
+#### Public Suffix List {#psl-example}
+
+The Public Suffix List ({{PSL}}) asks for owners of private domains to authenticate by creating a TXT record containing the pull request URL for adding the domain to the Public Suffix List.  For example, to authenticate "example.com" submitted under pull request 100, a requestor would add:
+
+    _psl.example.com.  IN TXT "https://github.com/publicsuffix/list/pull/100"
+
 ### CNAME based {#cname-examples}
 
 #### DocuSign
@@ -333,3 +375,9 @@ Note that if there are more than 5 CNAMEs being chained, then this method does n
 #### Atlassian
 
 Some services ask the DNS record to exist in perpetuity {{ATLASSIAN-VERIFY}}. If the record is removed, the user gets a limited amount of time to re-add it before they lose domain validation status.
+
+#### Constraints on Domains and Subdomains {#constraint-examples}
+
+##### CAA records
+
+While the ACME protocol ([RFC8555]) specifies a way to demonstrate ownership over a given domain, Certificate Authorities are required to use it in-conjunction with {{RFC8659}} that specifies CAA records. CAA allows a domain owner to apply policy across a domain and its subdomains to limit which Certificate Authorities may issue certificates.
