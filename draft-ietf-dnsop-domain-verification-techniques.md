@@ -117,7 +117,7 @@ informative:
         target: https://support.atlassian.com/user-management/docs/verify-a-domain-to-manage-accounts/#Verify-over-DNS
 
     SUBDOMAIN-TAKEOVER:
-        title: "Subdomain takovers"
+        title: "Subdomain takeovers"
         author:
           - ins: Mozilla
         target: https://developer.mozilla.org/en-US/docs/Web/Security/Subdomain_takeovers
