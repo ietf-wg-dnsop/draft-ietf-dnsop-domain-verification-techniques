@@ -194,7 +194,7 @@ A unique token used in the challenge. It should be a random value issued to the 
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-Hexadecimal base16 encoding is recommended when the random token would exist in a DNS label such as in a CNAME target.
+Hexadecimal base16 encoding is RECOMMENDED when the random token would exist in a DNS label such as in a CNAME target.  This is because base64 relies mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.
 
 This random token is placed in the RDATA as described in the rest of this section.
 
