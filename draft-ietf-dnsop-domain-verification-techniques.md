@@ -217,14 +217,14 @@ The RECOMMENDED format is application-specific underscore prefix labels. Domain 
 
 ### Random Token {#random-token}
 
-A unique token used in the challenge. It should be a random value issued to the user by the provider with the following properties:
+A unique token used in the challenge. It should be a random value issued between parties (provider to user, provider to intermediary, or intermediary to user) with the following properties:
 
 1. MUST have at least 128 bits of entropy.
-2. base64url ({{!RFC4648, Section 5}}) encoded or base16 ({{!RFC4648, Section 8}}) encoded.
+2. base64url ({{!RFC4648, Section 5}}) encoded, base32 ({{!RFC4648, Section 6}}) encoded, or base16 ({{!RFC4648, Section 8}}) encoded.
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-Hexadecimal base16 encoding is RECOMMENDED when the random token would exist in a DNS label such as in a CNAME target.  This is because base64 relies mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.
+Base32 encoding or hexadecimal base16 encoding are RECOMMENDED to be specified when the random token would exist in a DNS label such as in a CNAME target.  This is because base64 relies mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
 
 This random token is placed in the RDATA as described in the rest of this section.
 
@@ -278,13 +278,13 @@ Note that some DNS implementations permit the deployment of CNAME records co-exi
 
 ### CNAME Records for Domain Control Validation {#cname-dcv}
 
-A provider may specify using CNAME records instead of TXT records for Domain Control Validation. In this case, the target of the CNAME would contain the base16-encoded random token followed by a suffix specified by the provider. For example:
+A provider may specify using CNAME records instead of TXT records for Domain Control Validation. In this case, the target of the CNAME would contain the base16-encoded (or base32-encoded) random token followed by a suffix specified by the provider. For example:
 
     _foo-challenge.example.com.  IN   CNAME <random-token>.dcv.provider.example.
 
 ### Delegated Domain Control Validation {#delegated}
 
-Separately, CNAME records also enable delegated domain control validation, which lets the user delegate the domain control validation process for their domain to an intermediary without having to hand over full DNS access. The intermediary gives the user a CNAME record to add for the domain and provider being validated that points to the intermediary's DNS, where the actual validation TXT record is placed. The record name and base16-encoded random tokens are generated as in {{format}}. For example:
+Separately, CNAME records also enable delegated domain control validation, which lets the user delegate the domain control validation process for their domain to an intermediary without having to hand over full DNS access. The intermediary gives the user a CNAME record to add for the domain and provider being validated that points to the intermediary's DNS, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) random tokens are generated as in {{format}}. For example:
 
     _foo-challenge.example.com.  IN   CNAME  "<intermediary-random-token>.dcv.intermediary.example."
 
@@ -299,6 +299,22 @@ Importantly, the CNAME record target also contains a random token issued by the 
 When a user stops using the intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the intermediary.
 
 See {{delegated-examples}} for examples.
+
+### Domain Control Validation Supporting Multiple Intermediaries {#multiple}
+
+There are use-cases where a user may wish to simultaneously use multiple intermediaries or multiple independent accounts with a provider.  For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
+
+To support this, providers may support prefixing the challenge with a label containing an unique account identifier of the form "\_<identifier-token>" and following the requirements of {{random-token}}, specified as either base32 or base16 encoded. This identifier token should be stable over time and would be provided to the user by the provider, or by an intermediary in the case where domain validation is delegated ({{delegated}}).
+
+The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
+
+    _<identifier-token>._foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
+
+or
+
+    _<identifier-token>._foo-challenge.example.com.  IN   CNAME  "<intermediary-random-token>.dcv.intermediary.example."
+
+When performing validation, the provider would resolve the DNS name containing the appropriate identifier token.
 
 ## Time-bound checking
 
