@@ -304,7 +304,7 @@ See {{delegated-examples}} for examples.
 
 There are use-cases where a user may wish to simultaneously use multiple intermediaries or multiple independent accounts with a provider.  For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
-To support this, providers may support prefixing the challenge with a label containing an unique account identifier of the form "\_<identifier-token>" and following the requirements of {{random-token}}, specified as either base32 or base16 encoded. This identifier token should be stable over time and would be provided to the user by the provider, or by an intermediary in the case where domain validation is delegated ({{delegated}}).
+To support this, providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-token>` and following the requirements of {{random-token}}, specified as either base32 or base16 encoded. This identifier token should be stable over time and would be provided to the user by the provider, or by an intermediary in the case where domain validation is delegated ({{delegated}}).
 
 The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
 
