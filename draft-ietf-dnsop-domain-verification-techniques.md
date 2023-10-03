@@ -218,7 +218,7 @@ The RECOMMENDED format is application-specific underscore prefix labels. Domain 
 
 For applications that may apply more broadly than to a single host name, the RECOMMENDED approach is to differentiate the application-specific underscore prefix labels to also include the scope (see #scope). In particular:
 
-* "`_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com`" applies only to the specific host name of "example.com" anything underneath it.
+* "`_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com`" applies only to the specific host name of "example.com" and not to anything underneath it.
 * "`_<PROVIDER_RELEVANT_NAME>-wildcard-challenge.example.com`" applies to all host names at the level immediately underneath "example.com". For example, it would apply to "foo.example.com" but not "example.com" nor "quux.bar.example.com"
 * "`_<PROVIDER_RELEVANT_NAME>-domain-challenge.example.com`" applies to the entire domain "example.com" as well as its subdomains. For example, it would apply to all of "example.com", "foo.example.com", and "quux.bar.example.com"
 
