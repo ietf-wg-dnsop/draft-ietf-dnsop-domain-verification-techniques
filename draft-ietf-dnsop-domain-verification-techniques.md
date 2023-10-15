@@ -193,11 +193,11 @@ Other possible issues may occur. If a TXT record (or any other record type) is d
 
 # Scope of Validation {#scope}
 
-For security reasons, it is crucial to understand the scope of the domain name being validated. Both application service providers and the domain owner need to clearly specify and understand whether the validation request is for a single hostname or for the entire domain rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
+For security reasons, it is crucial to understand the scope of the domain name being validated. Both application service providers and the domain owner need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
 
-In the case of X.509 certificate issuance, the request is clear about whether it is for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS challenge mechanism ({{DNS-01}}) does not appear to differentiate these cases in the DNS validation record. In the absence of this distinction, the DNS administrator tasked with deploying the validation record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the domain owner intended.
+In the case of X.509 certificate issuance, the request is clear about whether it is for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}) does not differentiate these cases in the DNS validation record. In the absence of this distinction, the DNS administrator tasked with deploying the validation record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the domain owner intended.
 
-In the more general case of an Internet application service granting authority to a domain owner, again no existing DNS challenge scheme makes this distinction today. These services should very clearly indicate the scope of the validation in their public documentation so that the domain administrator can use this information to assess whether the validation record is granting the appropriately scoped authority.
+In the more general case of an Internet application service granting authority to a domain owner, again no existing DNS challenge scheme makes this distinction today. New applications should consider having different application names for different scopes, as described below in {{scope-indication}}. Regardless, services should very clearly indicate the scope of the validation in their public documentation so that the domain administrator can use this information to assess whether the validation record is granting the appropriately scoped authority.
 
 ## Domain Boundaries {#domain-boundaries}
 
@@ -213,6 +213,14 @@ Future specifications may provide better mechanisms or recommendations for defin
 ### Name {#name}
 
 The RECOMMENDED format is application-specific underscore prefix labels. Domain Control Validation records are constructed by the provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefixed "_" is used to avoid collisions with existing hostnames.
+
+### Scope Indication {#scope-indication}
+
+For applications that may apply more broadly than to a single host name, the RECOMMENDED approach is to differentiate the application-specific underscore prefix labels to also include the scope (see #scope). In particular:
+
+* "`_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com`" applies only to the specific host name of "example.com" and not to anything underneath it.
+* "`_<PROVIDER_RELEVANT_NAME>-wildcard-challenge.example.com`" applies to all host names at the level immediately underneath "example.com". For example, it would apply to "foo.example.com" but not "example.com" nor "quux.bar.example.com"
+* "`_<PROVIDER_RELEVANT_NAME>-domain-challenge.example.com`" applies to the entire domain "example.com" as well as its subdomains. For example, it would apply to all of "example.com", "foo.example.com", and "quux.bar.example.com"
 
 ### Random Token {#random-token}
 
@@ -313,6 +321,8 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is theoreticall
 # Security Considerations
 
 A malicious service that promises to deliver something after domain control validation could surreptitiously ask another service provider to start processing or sending mail for the target domain and then present the victim domain administrator with this DNS TXT record pretending to be for their service. Once the administrator has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer replay this without the DNS administrator noticing this. Both the provider and the service being authenticated and authorized should be unambiguous from the TXT record owner name and RDATA content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+
+Amiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single host name, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope in as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator.
 
 Providers and intermediaries should use authenticated channels to convey instructions and random tokens to users. Otherwise an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the user.
 
