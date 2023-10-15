@@ -191,6 +191,10 @@ Additionally, placing many such TXT records at the same name increases the size 
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be place at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
+When multiple distinct services create domain validation records at the same domain name, there is no way to delegate an application specific domain validation record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications share the domain name.
+
+This specification proposes the use of application-specific labels in the domain validation record to address these issues.
+
 
 # Scope of Validation {#scope}
 
