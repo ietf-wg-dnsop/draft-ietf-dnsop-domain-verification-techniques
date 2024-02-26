@@ -84,6 +84,17 @@ informative:
           - ins: Let's Encrypt
         target: https://letsencrypt.org/docs/challenge-types/#dns-01-challenge
 
+    ACME-SCOPED-CHALLENGE:
+        title: "ACME Scoped DNS Challenges"
+        date: 2024
+        author:
+          - ins: A. A. Chariton
+          - ins: A. A. Omidi
+          - ins: J. Kasten
+          - ins: F. Loukos
+          - ins: S. A. Janikowski
+        target: https://datatracker.ietf.org/doc/draft-ietf-acme-scoped-dns-challenges/
+
     LETSENCRYPT-90-DAYS-RENEWAL:
         title: "Why ninety-day lifetimes for certificates?"
         date: 2015
@@ -227,6 +238,11 @@ For applications that may apply more broadly than to a single host name, the REC
 * "`_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com`" applies only to the specific host name of "example.com" and not to anything underneath it.
 * "`_<PROVIDER_RELEVANT_NAME>-wildcard-challenge.example.com`" applies to all host names at the level immediately underneath "example.com". For example, it would apply to "foo.example.com" but not "example.com" nor "quux.bar.example.com"
 * "`_<PROVIDER_RELEVANT_NAME>-domain-challenge.example.com`" applies to the entire domain "example.com" as well as its subdomains. For example, it would apply to all of "example.com", "foo.example.com", and "quux.bar.example.com"
+
+The application provider will normally know which of these scoped DNS records to query based on the user's requested configuration. So this does not typically result in multiple queries for different possible scopes. If discovery of scope is needed for a specific application as part of the domain control validation process, then the scope could alternatively be encoded in a key value pair in the record data.
+
+Note that a proposed update to the ACME DNS challenge specification {{ACME-SCOPED-CHALLENGE}} has incorporated this scope indication format.
+
 
 ### Random Token {#random-token}
 
