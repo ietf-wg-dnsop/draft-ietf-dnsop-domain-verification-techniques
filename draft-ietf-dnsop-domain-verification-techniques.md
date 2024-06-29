@@ -158,6 +158,11 @@ informative:
           - ins: Mozilla
         target: https://developer.mozilla.org/en-US/docs/Web/Security/Subdomain_takeovers
 
+    ATPROTO:
+        title: "atproto RFC1464 DNS TXT Method"
+        author:
+          - ins: Bluesky
+        target: https://atproto.com/specs/handle#dns-txt-method
 
 
 --- abstract
@@ -273,6 +278,15 @@ Consumers of the provider services need to relay information from a provider's w
 
 Providers MUST validate that a random token in the TXT record matches the one that they gave to the user for that specific domain name.
 
+### Using RFC1464 to Store Arbitrary String Attributes
+
+The Authenticated Transfer Protocol (atproto) is used for federated social media applications.  An example is how Bluesky uses this:
+
+    _atproto.bsky.app.  IN  TXT "did=did:plc:z72i7hdynmk6r22z27h6tvur"
+
+FIXME - change to example.app ?
+
+More details can be found here {{ATPROTO}}.
 
 ### Metadata For Expiry {#metadata}
 
