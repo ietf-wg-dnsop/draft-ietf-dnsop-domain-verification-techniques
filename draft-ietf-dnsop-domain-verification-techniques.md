@@ -108,6 +108,12 @@ informative:
           - ins: Google
         target: https://support.google.com/a/answer/2716802
 
+    ATPROTO-TXT:
+        title: "DNS TXT Method"
+        author:
+          - ins: Bluesky
+        target: https://atproto.com/specs/handle#dns-txt-method
+
     CLOUDFLARE-DELEGATED:
         title: "Auto-renew TLS certificates with DCV Delegation"
         date: 2023
@@ -273,7 +279,6 @@ Consumers of the provider services need to relay information from a provider's w
 
 Providers MUST validate that a random token in the TXT record matches the one that they gave to the user for that specific domain name.
 
-
 ### Metadata For Expiry {#metadata}
 
 Providers MUST provide clear instructions on when a validation record can be removed. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key "expiry" to hold a time after which it is safe to remove the validation record. If this key-value format is used, the verification token should use the key "token". For example:
@@ -418,6 +423,12 @@ The ACME example in {{txt-based}} is implemented by Let's Encrypt {{DNS-01}}.
 #### Google Workspace
 
 {{GOOGLE-WORKSPACE-TXT}} asks the user to sign in with their administrative account and obtain their token as part of the setup process for Google Workspace. The verification token is a 68-character string that begins with "google-site-verification=", followed by 43 characters. Google recommends a TTL of 3600 seconds. The owner name of the TXT record is the domain or subdomain name being verified.
+
+#### The AT Protocol
+
+The Authenticated Transfer (AT) Protocol supports DNS TXT records for resolving social media "handles" (human-readable identifiers) to the user's persistent account identifier {{ATPROTO-TXT}}. For example, this is how the handle `bsky.app` would be resolved:
+
+    _atproto.bsky.app.  IN  TXT "did=did:plc:z72i7hdynmk6r22z27h6tvur"
 
 #### GitHub {#github}
 
