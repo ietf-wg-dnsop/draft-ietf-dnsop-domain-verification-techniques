@@ -290,7 +290,6 @@ Alternatively, if the record should never expire (for instance, if it may be che
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
 
-
 The "expiry" key MAY be omitted in cases where the provider has clarified the record expiry policy out-of-band ({{github}}).
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
