@@ -39,6 +39,7 @@ author:
 
 normative:
   RFC1034:
+  RFC2308:
   RFC2119:
   RFC1464:
   RFC8174:
@@ -231,19 +232,13 @@ Future specifications may provide better mechanisms or recommendations for defin
 
 # Recommendations {#recommendations}
 
-## TTL Considerations
-
-In creating these DNS records, the RECOMMENDED setting for the TTL should be relatively short to allow recovering from potential misconfigurations. These records should not be polled frequently so caching or resolver load should not be issue.
-
-Additionally, a long SOA TTL (ie, negative caching TTL) could also cause issues. Once the service provider issues the challenge the validator may start polling for its presence. The first attempts are likely to get an NXDOMAIN, and if the NXDOMAIN is cached too long this could cause userconfusion and/or delay the validation.
-
 ## Validation Record Format {#format}
 
 ### Name {#name}
 
 The RECOMMENDED format is application-specific underscore prefix labels. Domain Control Validation records are constructed by the provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefixed "_" is used to avoid collisions with existing hostnames.
 
-### Scope Indication {#scope-indication}
+#### Scope Indication {#scope-indication}
 
 For applications that may apply more broadly than to a single host name, the RECOMMENDED approach is to differentiate the application-specific underscore prefix labels to also include the scope (see #scope). In particular:
 
@@ -254,7 +249,6 @@ For applications that may apply more broadly than to a single host name, the REC
 The application provider will normally know which of these scoped DNS records to query based on the user's requested configuration. So this does not typically result in multiple queries for different possible scopes. If discovery of scope is needed for a specific application as part of the domain control validation process, then the scope could alternatively be encoded in a key value pair in the record data.
 
 Note that a proposed update to the ACME DNS challenge specification {{ACME-SCOPED-CHALLENGE}} has incorporated this scope indication format.
-
 
 ### Random Token {#random-token}
 
@@ -268,6 +262,12 @@ See {{RFC4086}} for additional information on randomness requirements.
 Base32 encoding or hexadecimal base16 encoding are RECOMMENDED to be specified when the random token would exist in a DNS label such as in a CNAME target.  This is because base64 relies mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
 
 This random token is placed in the RDATA as described in the rest of this section.
+
+### TTL Considerations
+
+The TTL {{RFC1034}} for validation records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so caching or resolver load will not be an issue.
+
+Similarly, the SOA TTL (i.e. negative caching TTL) {{RFC2308}} for validation records SHOULD be short as well. Once the validation record is given to the user, the provider may start polling for its presence. The first attempts are likely to get an NXDOMAIN {{RFC2308}}, and if the NXDOMAIN is cached too long this would delay the validation.
 
 ## TXT Record {#txt-record}
 
