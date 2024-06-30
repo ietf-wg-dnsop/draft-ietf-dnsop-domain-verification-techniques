@@ -254,7 +254,7 @@ The application provider will normally know which of these scoped DNS records to
 
 Note that a proposed update to the ACME DNS challenge specification {{ACME-SCOPED-CHALLENGE}} has incorporated this scope indication format.
 
-Application owners should consult the IANA Underscore registry {{UNDERSCORE-REGISTRY}} to confirm there are no collisions with existing entries.
+Application owners SHOULD consult the IANA "Underscored and Globally Scoped DNS Node Names" registry {{UNDERSCORE-REGISTRY}} to confirm there are no collisions with existing entries.
 
 ### Random Token {#random-token}
 
