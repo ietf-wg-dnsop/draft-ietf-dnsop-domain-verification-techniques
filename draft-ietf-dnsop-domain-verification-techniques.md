@@ -322,6 +322,8 @@ In practice, many providers that employ CNAMEs for domain control validation tod
 
 Note that some DNS implementations permit the deployment of CNAME records co-existing with other record types. These implementations are in violation of the DNS protocol. Furthermore, they can cause resolution failures in unpredictable ways depending on the behavior of DNS resolvers, the order in which query types for the name are processed etc. In short, they cannot work reliably and these implementations should be fixed.
 
+If a CNAME record is being used for `_foo-challenge.example.com.`, then `_foo-challenge.example.com.` MUST NOT be a zone cut, and also can not also have any TXT or NS records.
+
 ### CNAME Records for Domain Control Validation {#cname-dcv}
 
 A provider may specify using CNAME records instead of TXT records for Domain Control Validation. In this case, the target of the CNAME would contain the base16-encoded (or base32-encoded) random token followed by a suffix specified by the provider. For example:
