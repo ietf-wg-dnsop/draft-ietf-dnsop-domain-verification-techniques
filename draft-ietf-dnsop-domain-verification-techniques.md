@@ -165,6 +165,11 @@ informative:
           - ins: Mozilla
         target: https://developer.mozilla.org/en-US/docs/Web/Security/Subdomain_takeovers
 
+    UNDERSCORE-REGISTRY:
+          title: "Underscored and Globally Scoped DNS Node Name"
+          author:
+            - ins: IANA
+        target: https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#underscored-globally-scoped-dns-node-names
 
 
 --- abstract
@@ -240,7 +245,7 @@ The RECOMMENDED format is application-specific underscore prefix labels. Domain 
 
 #### Scope Indication {#scope-indication}
 
-For applications that may apply more broadly than to a single host name, the RECOMMENDED approach is to differentiate the application-specific underscore prefix labels to also include the scope (see #scope). In particular:
+For applications that may apply more broadly than to a single host name, the RECOMMENDED approach is to differentiate the application-specific underscore prefix labels to also include the scope (see {{scope}}). In particular:
 
 * "`_<PROVIDER_RELEVANT_NAME>-host-challenge.example.com`" applies only to the specific host name of "example.com" and not to anything underneath it.
 * "`_<PROVIDER_RELEVANT_NAME>-wildcard-challenge.example.com`" applies to all host names at the level immediately underneath "example.com". For example, it would apply to "foo.example.com" but not "example.com" nor "quux.bar.example.com"
@@ -249,6 +254,8 @@ For applications that may apply more broadly than to a single host name, the REC
 The application provider will normally know which of these scoped DNS records to query based on the user's requested configuration. So this does not typically result in multiple queries for different possible scopes. If discovery of scope is needed for a specific application as part of the domain control validation process, then the scope could alternatively be encoded in a key value pair in the record data.
 
 Note that a proposed update to the ACME DNS challenge specification {{ACME-SCOPED-CHALLENGE}} has incorporated this scope indication format.
+
+Application owners SHOULD consult the IANA "Underscored and Globally Scoped DNS Node Names" registry {{UNDERSCORE-REGISTRY}} to confirm there are no collisions with existing entries.
 
 ### Random Token {#random-token}
 
