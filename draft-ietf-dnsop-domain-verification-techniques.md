@@ -231,6 +231,12 @@ Future specifications may provide better mechanisms or recommendations for defin
 
 # Recommendations {#recommendations}
 
+## TTL Considerations
+
+In creating these DNS records, the RECOMMENDED setting for the TTL should be relatively short to allow recovering from potential misconfigurations. These records should not be polled frequently so caching or resolver load should not be issue.
+
+Additionally, a long SOA TTL (ie, negative caching TTL) could also cause issues. Once the service provider issues the challenge the validator may start polling for its presence. The first attempts are likely to get an NXDOMAIN, and if the NXDOMAIN is cached too long this could cause userconfusion and/or delay the validation.
+
 ## Validation Record Format {#format}
 
 ### Name {#name}
