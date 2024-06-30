@@ -282,6 +282,10 @@ Providers MUST provide clear instructions on when a validation record can be rem
 
 When a expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{RFC3339, Section 5.6}}.
 
+A simpler variation of the expiry time is also ISO 8601 valid and can also be specified, using the "full-date" format. For example:
+
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08"
+
 Alternatively, if the record should never expire (for instance, if it may be checked periodically by the provider) and should not be removed, the key "expiry" SHALL be set to have value "never".
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
