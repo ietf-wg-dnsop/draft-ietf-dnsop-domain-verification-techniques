@@ -181,7 +181,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many providers of internet services need domain owners to prove that they control a particular DNS domain before the provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership, although sometimes the DNS record must be kept in the zone to prove continued ownership of the domain.
+Many providers of internet services need domain owners to prove that they control a particular DNS domain before the provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
 
 This document describes pitfalls associated with some common practices using DNS-based techniques deployed today, and recommends using TXT based domain control validation in a way that is time-bound and targeted to the service. The {{appendix}} includes a more detailed survey of different methods used by a set of application service providers.
 
@@ -365,6 +365,8 @@ When performing validation, the provider would resolve the DNS name containing t
 ## Time-bound checking
 
 After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a user with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the service provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
+
+Some application providers currently require the validation record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed secret are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
 
 One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed as long as the user is still relying on the intermediary.
 
