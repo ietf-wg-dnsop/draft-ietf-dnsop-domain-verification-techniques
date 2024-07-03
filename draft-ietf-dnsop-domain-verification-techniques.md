@@ -281,7 +281,7 @@ If a provider has an application-specific need to have multiple validations for 
 
 This again allows the provider to query only for application-specific records it needs, while giving flexibility to the user adding the DNS record (i.e. they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple validation records can exist for the same domain is up to the provider's application specification.
 
-Validation records need to be relayed from a provider to a DNS administrator. Providers SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the provider's website. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name) to be added SHOULD be provided along with help instructions.
+Validation records need to be securely relayed from a provider to a DNS administrator. Providers and intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the provider or intermediary. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name and DNS record type) to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
 
 Providers MUST validate that a random token in the TXT record matches the one that they gave to the user for that specific domain name.
 
