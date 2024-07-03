@@ -274,7 +274,8 @@ This random token is placed in the RDATA as described in the rest of this sectio
 
 The TTL {{RFC1034}} for validation records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so caching or resolver load will not be an issue.
 
-Similarly, the SOA TTL (i.e. negative caching TTL) {{RFC2308}} for validation records SHOULD be short as well. Once the validation record is given to the user, the provider may start polling for its presence. The first attempts are likely to get an NXDOMAIN {{RFC2308}}, and if the NXDOMAIN is cached too long this would delay the validation.
+The service provider looking up these records may have to wait for the SOA TTL (negative caching TTL) to become visible if it has been previously queried. If the application user wants to make this visible more quickly they may need to work with the DNS administrator to see if they are willing to lower it, or ask the verifier to flush their DNS cache and re-querying it.
+
 
 ## TXT Record {#txt-record}
 
