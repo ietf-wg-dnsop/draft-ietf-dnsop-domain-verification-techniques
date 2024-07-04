@@ -263,6 +263,7 @@ A unique token used in the challenge. It should be a random value issued between
 
 1. MUST have at least 128 bits of entropy.
 2. base64url ({{!RFC4648, Section 5}}) encoded, base32 ({{!RFC4648, Section 6}}) encoded, or base16 ({{!RFC4648, Section 8}}) encoded.
+3. MUST NOT start with an underscore to avoid attacks where tokens are maliciously used as a scope label.
 
 See {{RFC4086}} for additional information on randomness requirements.
 
