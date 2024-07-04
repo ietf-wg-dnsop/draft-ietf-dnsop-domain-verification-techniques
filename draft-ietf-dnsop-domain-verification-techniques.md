@@ -166,9 +166,9 @@ informative:
         target: https://developer.mozilla.org/en-US/docs/Web/Security/Subdomain_takeovers
 
     UNDERSCORE-REGISTRY:
-          title: "Underscored and Globally Scoped DNS Node Name"
-          author:
-            - ins: IANA
+        title: "Underscored and Globally Scoped DNS Node Name"
+        author:
+          - ins: IANA
         target: https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#underscored-globally-scoped-dns-node-names
 
 
