@@ -39,7 +39,6 @@ author:
 
 normative:
   RFC1034:
-  RFC2308:
   RFC2119:
   RFC1464:
   RFC8174:
