@@ -504,3 +504,7 @@ Some services ask the DNS record to exist in perpetuity {{ATLASSIAN-VERIFY}}. If
 ##### CAA records
 
 While the ACME protocol ([RFC8555]) specifies a way to demonstrate ownership over a given domain, Certification Authorities are required to use it in-conjunction with {{RFC8659}} that specifies CAA records. CAA allows a domain owner to apply policy across a domain and its subdomains to limit which Certification Authorities may issue certificates.
+
+# Acknowledgments
+
+Thank you to Tim Wicinski, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, and many others for their feedback and suggestions on this document.
