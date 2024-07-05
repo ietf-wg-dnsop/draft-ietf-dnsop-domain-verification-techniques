@@ -260,6 +260,8 @@ A unique token used in the challenge. It should be a random value issued between
 1. MUST have at least 128 bits of entropy.
 2. base64url ({{!RFC4648, Section 5}}) encoded, base32 ({{!RFC4648, Section 6}}) encoded, or base16 ({{!RFC4648, Section 8}}) encoded.
 3. MUST NOT start with an underscore to avoid attacks where tokens are maliciously used as a scope label.
+4. If there is additional metadata for the token, they MUST be encoded in a `token=value` format and seperated by spaces.
+5. If there are multiple tokens required, each one MUST be in a seperate RR to allow them to match up with any additional attributes.
 
 See {{RFC4086}} for additional information on randomness requirements.
 
@@ -294,19 +296,19 @@ Application Service Providers MUST validate that a random token in the TXT recor
 
 ### Metadata For Expiry {#metadata}
 
-Application Service Providers MUST provide clear instructions on when a validation record can be removed. These instructions SHOULD be encoded in the RDATA via comma-separated ASCII key-value pairs {{RFC1464}}, using the key "expiry" to hold a time after which it is safe to remove the validation record. If this key-value format is used, the verification token should use the key "token". For example:
+Application Service Providers MUST provide clear instructions on when a validation record can be removed. These instructions SHOULD be encoded in the RDATA via space-separated ASCII key-value pairs {{RFC1464}}, using the key "expiry" to hold a time after which it is safe to remove the validation record. If this key-value format is used, the verification token should use the key "token". For example:
 
-    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08T02:03:19+00:00"
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08T02:03:19+00:00"
 
 When a expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{RFC3339, Section 5.6}}.
 
 A simpler variation of the expiry time is also ISO 8601 valid and can also be specified, using the "full-date" format. For example:
 
-    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=2023-02-08"
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
 
 Alternatively, if the record should never expire (for instance, if it may be checked periodically by the Application Service Provider) and should not be removed, the key "expiry" SHALL be set to have value "never".
 
-    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4,expiry=never"
+    _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=never"
 
 The "expiry" key MAY be omitted in cases where the Application Service Provider has clarified the record expiry policy out-of-band ({{github}}).
 
@@ -318,6 +320,8 @@ Note that this is semantically the same as:
 
 
 The user SHOULD de-provision the resource record provisioned for DNS-based domain control validation once it is no longer required.
+
+If the token is not prefixed with `token=` then {{RFC1464}} encoding MUST NOT be assumed.
 
 ## CNAME Records
 
