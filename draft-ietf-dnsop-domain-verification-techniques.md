@@ -507,4 +507,4 @@ While the ACME protocol ([RFC8555]) specifies a way to demonstrate ownership ove
 
 # Acknowledgments
 
-Thank you to Tim Wicinski, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, and many others for their feedback and suggestions on this document.
+Thank you to Tim Wicinski, John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, and many others for their feedback and suggestions on this document.
