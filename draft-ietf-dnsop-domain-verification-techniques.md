@@ -303,7 +303,7 @@ It may be desirable to associate metadata with the token in a Validation Record.
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
 
-If there are multiple tokens required, each one MUST be in a seperate RR to allow them to match up with any additional attributes.  For example:
+If there are multiple tokens required, each one MUST be in a separate RR to allow them to match up with any additional attributes.  For example:
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 attr=bar"
                                  IN   TXT  "token=5454...45dc45a attr=quux"
