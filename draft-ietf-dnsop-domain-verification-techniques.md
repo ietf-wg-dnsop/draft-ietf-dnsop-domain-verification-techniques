@@ -344,7 +344,7 @@ Delegated domain control validation lets a User delegate the domain control vali
 
 The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's DNS, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) random tokens are generated as in {{random-token}}. For example:
 
-    _foo-challenge.example.com.  IN   CNAME  "<intermediary-random-token>.dcv.intermediary.example."
+    _foo-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
 
 The Intermediary then adds the actual Validation Record in a domain they control:
 
@@ -370,7 +370,7 @@ The resulting record could either directly contain a TXT record or a CNAME (as i
 
 or
 
-    _<identifier-token>._foo-challenge.example.com.  IN   CNAME  "<intermediary-random-token>.dcv.intermediary.example."
+    _<identifier-token>._foo-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
 
 When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier token.
 
@@ -404,7 +404,7 @@ CNAME records MAY be used instead of TXT records where specified by Application 
 
 Application Service Providers MAY include the random token in a domain name that is related to the domain name being validated.  An Application Service Provider including the random token in a domain name MUST specify the use of an underscore-prefixed label (e.g., `_<token>._foo` or `_foo-<token>`). The resource record is then a CNAME to a domain name specified by the Application Service Provider. The Application Service Provider uses the presence of a resource record with this domain name to perform the validation, validating the both presence of the record as well as the CNAME target. For example:
 
-    _<random-token>._foo-challenge.example.com.  IN   CNAME "dcv.provider.example."
+    _<random-token>._foo-challenge.example.com.  IN   CNAME dcv.provider.example.
 
 In practice, many Application Service Providers that employ CNAMEs for domain control validation today use an entirely random subdomain label which works to avoid accidential collisions, but which could allow for a malicious Application Service Provider to smuggle instructions from some other Application Service Provider. Adding an provider-specific component in addition (such as `_<token>._foo-challenge` or `_foo-<token>-challenge`) make it easier for the domain owner to keep track of why and for what service a Validation Record has been deployed.
 
@@ -414,7 +414,7 @@ Since the random token exists entirely in the challenge, it is not possible to d
 
 An Application Service Provider MAY specify using CNAME records instead of TXT records for Domain Control Validation. In this case, the target of the CNAME would contain the base16-encoded (or base32-encoded) random token followed by a suffix specified by the Application Service Provider. For example:
 
-    _foo-challenge.example.com.  IN   CNAME "<random-token>.dcv.provider.example."
+    _foo-challenge.example.com.  IN   CNAME <random-token>.dcv.provider.example.
 
 The Application Service Provider then validates that the target of the CNAME matches the token provided. This approach has similar properties to TXT records ({{txt-record}}) but does not allow for additional attributes such as expiry to be added.
 
@@ -527,7 +527,7 @@ In order to be issued a TLS cert from a Certification Authority like Let's Encry
 
 AWS Certificate Manager {{ACM-CNAME}} allows delegated domain control validation {{delegated}}. The record name for the CNAME looks like:
 
-     _<random-token1>.example.com.  IN   CNAME "_<random-token2>.acm-validations.aws."
+     _<random-token1>.example.com.  IN   CNAME _<random-token2>.acm-validations.aws.
 
 The CNAME points to:
 
