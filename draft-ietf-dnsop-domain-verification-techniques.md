@@ -378,7 +378,7 @@ Application Service Providers may wish to always prepend the `_<identifier-token
 
 ## Specification of Validation Records
 
-Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name and DNS record type) to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
+Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the entire DNS resource record (RR) using the Fully Qualified Domain Name to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
 
 ## Time-bound checking
 
