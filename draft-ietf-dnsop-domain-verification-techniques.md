@@ -209,7 +209,7 @@ Since DNS resource record sets are treated atomically, a query for the Validatio
 
 Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which often does not work reliably on the Internet today due to firewalls and middleboxes, and also is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
 
-Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
+Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
 When multiple distinct services create domain Validation Records at the same domain name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications share the domain name.
 
@@ -281,7 +281,7 @@ Application owners SHOULD consult the IANA "Underscored and Globally Scoped DNS 
 
 Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  The recommended format in {{name}} as well as others below all have this property.
 
-This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types.
+This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types.
 
 Note that some DNS implementations permit the deployment of CNAME records co-existing with other record types. These implementations are in violation of the DNS protocol. Furthermore, they can cause resolution failures in unpredictable ways depending on the behavior of DNS resolvers, the order in which query types for the name are processed etc. In short, they cannot work reliably and these implementations should be fixed.
 
@@ -378,7 +378,7 @@ Application Service Providers may wish to always prepend the `_<identifier-token
 
 ## Specification of Validation Records
 
-Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the exact and full DNS record (including a Fully Qualified Domain Name and DNS record type) to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
+Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the entire DNS resource record (RR) using the Fully Qualified Domain Name to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
 
 ## Time-bound checking
 
