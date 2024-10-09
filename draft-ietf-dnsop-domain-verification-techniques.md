@@ -213,7 +213,7 @@ Other possible issues may occur. If a TXT record (or any other record type) is d
 
 When multiple distinct services create domain Validation Records at the same domain name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications share the domain name.
 
-The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate utilized set of Application Service Providers.
+The presence of a Validation Record with a predictable owner name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate utilized set of Application Service Providers.
 
 This specification proposes the use of application-specific labels in the domain Validation Record to address these issues.
 
@@ -237,7 +237,7 @@ Future specifications may provide better mechanisms or recommendations for defin
 
 All Domain Control Validation mechanisms are implemented by a resource record with:
 
-1) A domain name related to the domain name being validated
+1) A domain name related to the domain name being validated, and
 2) A Validation Record, either directly in RDATA or as the target of a CNAME (or chain of CNAMEs)
 
 Both of these are issued to the User by either an Application Service Provider or an Intermediary. An issued random token then needs to exist in at least one of these to demonstrate the User has control over the domain name in-question. Variations on this approach exist to meet different uses.
@@ -281,7 +281,7 @@ Application owners SHOULD consult the IANA "Underscored and Globally Scoped DNS 
 
 Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  The recommended format in {{name}} as well as others below all have this property.
 
-This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types.
+This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types.
 
 Note that some DNS implementations permit the deployment of CNAME records co-existing with other record types. These implementations are in violation of the DNS protocol. Furthermore, they can cause resolution failures in unpredictable ways depending on the behavior of DNS resolvers, the order in which query types for the name are processed etc. In short, they cannot work reliably and these implementations should be fixed.
 
