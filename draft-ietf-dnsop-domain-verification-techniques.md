@@ -281,7 +281,7 @@ Application owners SHOULD consult the IANA "Underscored and Globally Scoped DNS 
 
 Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  The recommended format in {{name}} as well as others below all have this property.
 
-This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added to the domain to be verified. This ensures that the CNAME does not collide with other record types.
+This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain to be verified. This ensures that the CNAME does not collide with other record types.
 
 Note that some DNS implementations permit the deployment of CNAME records co-existing with other record types. These implementations are in violation of the DNS protocol. Furthermore, they can cause resolution failures in unpredictable ways depending on the behavior of DNS resolvers, the order in which query types for the name are processed etc. In short, they cannot work reliably and these implementations should be fixed.
 
