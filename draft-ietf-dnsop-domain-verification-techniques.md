@@ -281,7 +281,7 @@ Application owners SHOULD consult the IANA "Underscored and Globally Scoped DNS 
 
 Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  The recommended format in {{name}} as well as others below all have this property.
 
-This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added to the domain to be verified. This ensures that the CNAME does not collide with other record types.
+This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added to the domain to be verified. This ensures that the CNAME does not collide with other record types.
 
 Note that some DNS implementations permit the deployment of CNAME records co-existing with other record types. These implementations are in violation of the DNS protocol. Furthermore, they can cause resolution failures in unpredictable ways depending on the behavior of DNS resolvers, the order in which query types for the name are processed etc. In short, they cannot work reliably and these implementations should be fixed.
 
@@ -382,7 +382,7 @@ Validation Records need to be securely relayed from an Application Service Provi
 
 ## Time-bound checking
 
-After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has control of the domain at the time the code was generated. It should be safe to remove the validation record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
+After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
 
 Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed secret are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
 
