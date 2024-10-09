@@ -382,7 +382,7 @@ Validation Records need to be securely relayed from an Application Service Provi
 
 ## Time-bound checking
 
-After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
+After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e. after how much time can the validation DNS record be deleted).
 
 Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed secret are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
 
