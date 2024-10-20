@@ -267,7 +267,7 @@ The RECOMMENDED format for a Validation Record's owner name is as application-sp
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
-An Application Service Provider may also specify prepending a random token to the owner name of a validation record, such as "`<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge`". This can be done either as part of the challenge itself ({{cname-dcv}}, to support multiple Intermediaries ({{multiple}}), or to make it harder for a third party to scan what Application Service Providers are being used by a given domain name.
+An Application Service Provider may also specify prepending a random token to the owner name of a validation record, such as "`<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge`". This can be done either as part of the challenge itself ({{cname-dcv}}), to support multiple Intermediaries ({{multiple}}), or to make it harder for a third party to scan what Application Service Providers are being used by a given domain name.
 
 ### Scope Indication {#scope-indication}
 
