@@ -173,7 +173,7 @@ informative:
 
 --- abstract
 
-Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document proposes some best practices to avoid known problems.
+Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document provides some best practices to avoid known problems.
 
 --- middle
 
@@ -318,7 +318,7 @@ These instructions SHOULD be encoded in the RDATA as token metadata ({{metadata}
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08T02:03:19+00:00"
 
-When a expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{RFC3339, Section 5.6}}.
+When a expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
 
 A simpler variation of the expiry time is also ISO 8601 valid and can also be specified, using the "full-date" format. For example:
 
@@ -497,7 +497,7 @@ The Authenticated Transfer (AT) Protocol supports DNS TXT records for resolving 
 
 #### GitHub {#github}
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
+GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. Their systems will provide a string for the value of the TXT record, which will expire in 7 days.
 
 #### Public Suffix List {#psl-example}
 
