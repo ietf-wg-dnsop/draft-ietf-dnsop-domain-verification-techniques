@@ -497,7 +497,7 @@ The Authenticated Transfer (AT) Protocol supports DNS TXT records for resolving 
 
 #### GitHub {#github}
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. Their systems will provide a string for the value of the TXT record, which will expire in 7 days.
+To verify domains for organizations, GitHub asks the user to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name. The RDATA value for the provided TXT record is a string that expires in 7 days {{GITHUB-TXT}}.
 
 #### Public Suffix List {#psl-example}
 
