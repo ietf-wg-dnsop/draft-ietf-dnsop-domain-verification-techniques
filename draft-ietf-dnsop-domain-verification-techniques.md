@@ -287,7 +287,7 @@ Note that some DNS implementations permit the deployment of CNAME records co-exi
 
 ## TXT Record {#txt-record}
 
-The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
+The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If there are multiple RDATA strings for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
 
     _foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
