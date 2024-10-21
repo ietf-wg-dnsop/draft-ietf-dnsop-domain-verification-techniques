@@ -52,7 +52,6 @@ informative:
     RFC6672:
     RFC8659:
     RFC9499:
-    RFC3339:
     I-D.draft-tjw-dbound2-problem-statement:
 
     PSL:
@@ -265,7 +264,7 @@ This random token is placed in either the RDATA or an owner name, as described i
 
 ## Validation Record Owner Name {#name}
 
-The RECOMMENDED format for a Validation Record's owner name is as application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname.
+The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname.
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
@@ -287,7 +286,7 @@ Application owners SHOULD utilize the IANA "Underscored and Globally Scoped DNS 
 
 ### CNAME Considerations {#cname-considerations}
 
-Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  All Validation Records that are have a CNAME as their owner name MUST begin with an underscore so as to not be valid hostnames.  The recommended format in {{name}} as well as others below all have this property.
+Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  All Validation Records that have a CNAME as their owner name MUST begin with an underscore so as to not be valid hostnames.  The recommended format in {{name}} as well as others below all have this property.
 
 This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types.
 
