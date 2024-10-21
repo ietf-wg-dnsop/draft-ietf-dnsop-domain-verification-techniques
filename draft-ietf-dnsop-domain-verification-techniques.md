@@ -428,15 +428,31 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is theoreticall
 
 # Security Considerations
 
-A malicious service that promises to deliver something after domain control validation could surreptitiously ask another Application Service Provider to start processing or sending mail for the target domain and then present the victim domain administrator with this DNS TXT record pretending to be for their service. Once the administrator has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer forward a challenge from a different service without the DNS administrator noticing this. Both the Application Service Provider and the service being authenticated and authorized should be unambiguous from the TXT record owner name and RDATA content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+## Token Guessing
 
 If token values aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label.
 
+## Service Confusion {#service-confusion}
+
+A malicious Application Service Provider that promises to deliver something after domain control validation could surreptitiously ask another Application Service Provider to start processing or sending mail for the target domain and then present the victim User with this DNS TXT record pretending to be for their service. Once the User has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer forward a challenge from a different service without the User noticing. Both the Application Service Provider and the service being authenticated and authorized should be unambiguous from the Validation Record to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+
+## Service Collision
+
+As a corollary to {{service-confusion}}, if the Validation Record is not well-scoped and unambiguous with respect to the Application Service Provider, it could be used to authorize use of another Application Service Provider or service in addition to the original Application Service Provider or service.
+
+## Scope Confusion
+
 Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope in as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator.
 
-Application Service Providers and intermediaries should use authenticated channels to convey instructions and random tokens to Users. Otherwise an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
+## Authenticated Channels
+
+Application Service Providers and intermediaries should use authenticated channels to convey instructions and random tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
+
+## DNS Spoofing
 
 A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Validation Records against DNS spoofing attacks.
+
+## DNSSEC Validation
 
 DNSSEC validation SHOULD be performed by Application Service Providers that verify Validation Records they have requested to be deployed.  If no DNSSEC support is detected for the domain being validated, or if DNSSEC validation cannot be performed, Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
@@ -473,7 +489,7 @@ A TXT record is usually the default option for domain control validation. The Ap
 
     example.com.   IN   TXT   "237943648324687364"
 
-Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo Application Service Provider. Note that in this construction Application Service Provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain control validation, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e., the person managing the account at Application Service Provider Foo) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the Application Service Provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days.
+Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo Application Service Provider. Note that in this construction Application Service Provider Foo would have to query for all TXT records at "example.com" to get the Validation Record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain control validation, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e., the person managing the account at Application Service Provider Foo) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the Application Service Provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days.
 
 Some Application Service Providers use a prefix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain control validation. The ACME protocol ([RFC8555]) has a challenge type `DNS-01` that lets a User prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
 
@@ -553,4 +569,4 @@ While the ACME protocol ([RFC8555]) specifies a way to demonstrate ownership ove
 
 # Acknowledgments
 
-Thank you to Tim Wicinski, John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, and many others for their feedback and suggestions on this document.
+Thank you to Tim Wicinski, John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk and many others for their feedback and suggestions on this document.
