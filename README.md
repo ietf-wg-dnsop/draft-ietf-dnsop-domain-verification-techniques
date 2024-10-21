@@ -40,7 +40,7 @@ Then do a `git commit`. Note that a git commit will typically fail if the lint c
 
 ### Submitting 
 
-Current datatracker version is `4`. Next version will be `5`.
+Current datatracker version is `6`. Next version will be `7`.
 
 When you're ready to cut a new version, do:
 ```sh
@@ -49,8 +49,8 @@ make next # this generates the versioned doc
 # Once you're happy with it, upload the XML file generated in versioned/
 # https://datatracker.ietf.org/submit/
 # Then, upload the new tag to GitHub
-git tag draft-ietf-dnsop-domain-verification-techniques-05
-git push origin draft-ietf-dnsop-domain-verification-techniques-05
+git tag draft-ietf-dnsop-domain-verification-techniques-07
+git push origin draft-ietf-dnsop-domain-verification-techniques-07
 ```
 
 This is the manual process outlined in the [I-D template docs](https://github.com/martinthomson/i-d-template/blob/main/doc/SUBMITTING.md#manual-process). 
