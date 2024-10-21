@@ -173,7 +173,7 @@ informative:
 
 --- abstract
 
-Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document proposes some best practices to avoid known problems.
+Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document provides some best practices to avoid known problems.
 
 --- middle
 
@@ -181,7 +181,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Generally only one time-bound DNS record is sufficient for proving domain ownership.
 
 This document describes pitfalls associated with some common practices using DNS-based techniques deployed today, and recommends using TXT based domain control validation in a way that is time-bounded and targeted to the service. The {{appendix}} includes a more detailed survey of different methods used by a set of Application Service Providers.
 
@@ -318,7 +318,7 @@ These instructions SHOULD be encoded in the RDATA as token metadata ({{metadata}
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08T02:03:19+00:00"
 
-When a expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{RFC3339, Section 5.6}}.
+When an expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
 
 A simpler variation of the expiry time is also ISO 8601 valid and can also be specified, using the "full-date" format. For example:
 
@@ -497,7 +497,7 @@ The Authenticated Transfer (AT) Protocol supports DNS TXT records for resolving 
 
 #### GitHub {#github}
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
+To verify domains for organizations, GitHub asks the user to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name. The RDATA value for the provided TXT record is a string that expires in 7 days {{GITHUB-TXT}}.
 
 #### Public Suffix List {#psl-example}
 
@@ -521,7 +521,7 @@ The Public Suffix List ({{PSL}}) asks for owners of private domains to authentic
 
 ##### Content Delivery Networks (CDNs): Akamai and Cloudflare
 
-In order to be issued a TLS cert from a Certification Authority like Let's Encrypt, the requester needs to prove that they control the domain. Typically, this is done via the {{DNS-01}} challenge. Let's Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Akamai and Cloudflare offer to automate this process using a CNAME record in the User's DNS that points to the Validation Record in the CDN's zone ({{AKAMAI-DELEGATED}} and {{CLOUDFLARE-DELEGATED}}).
+In order to be issued a TLS cert from a Certification Authority like Let's Encrypt, the requester needs to prove that they control the domain. Often this is done via the {{DNS-01}} challenge. Let's Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Akamai and Cloudflare offer to automate this process using a CNAME record in the User's DNS that points to the Validation Record in the CDN's zone ({{AKAMAI-DELEGATED}} and {{CLOUDFLARE-DELEGATED}}).
 
 ##### AWS Certificate Manager (ACM)
 
