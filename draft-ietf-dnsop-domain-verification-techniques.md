@@ -173,7 +173,7 @@ informative:
 
 --- abstract
 
-Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document proposes some best practices to avoid known problems.
+Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document provides some best practices to avoid known problems.
 
 --- middle
 
@@ -181,7 +181,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Generally only one temporary DNS record is sufficient for proving domain ownership.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Generally only one time-bound DNS record is sufficient for proving domain ownership.
 
 This document describes pitfalls associated with some common practices using DNS-based techniques deployed today, and recommends using TXT based domain control validation in a way that is time-bounded and targeted to the service. The {{appendix}} includes a more detailed survey of different methods used by a set of Application Service Providers.
 
@@ -207,11 +207,11 @@ A very common but unfortunate technique in use today is to employ a DNS TXT reco
 
 Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
-Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which often does not work reliably on the Internet today due to firewalls and middleboxes, and also is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
-When multiple distinct services create domain Validation Records with the same owner name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications expect to find validation records at the same name.
+When multiple distinct services specify placing Validation Records at the same owner name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications expect to find validation records at the same name.
 
 The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate the utilized set of Application Service Providers.
 
@@ -239,10 +239,16 @@ Future specifications may provide better mechanisms or recommendations for defin
 
 All Domain Control Validation mechanisms are implemented by a resource record with:
 
-1) An owner name related to the domain name being validated
-2) One or more random tokens, to be placed in either the validation record's RDATA, in the target of a CNAME (or chain of CNAMEs), or as a label of the owner name.
+1) An owner name related to the domain name being validated, and
+2) One or more random tokens
 
-Both of these are issued to the User by either an Application Service Provider or an Intermediary. An issued random token then needs to exist in at least one of these to demonstrate the User has control over the domain name being validated. Variations on this approach exist to meet different uses.
+Both of these are issued to the User by either an Application Service Provider or an Intermediary. An issued random token then needs to exist in at least one of the following to demonstrate the User has control over the domain name being validated:
+
+1) Validation Record's RDATA
+2) The target of a CNAME (or chain of CNAMEs)
+3) Label of the owner name
+
+Variations on this approach exist to meet different uses.
 
 ## Random Token {#random-token}
 
@@ -263,7 +269,7 @@ The RECOMMENDED format for a Validation Record's owner name is as application-sp
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
-An Application Service Provider may also specify prepending a random token to the owner name of a validation record, such as "`_<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge`". This can be done either as part of the challenge itself ({{cname-dcv}}, to support multiple Intermediaries ({{multiple}}), or to make it harder for a third party to scan what Application Service Providers are being used by a given domain name.
+An Application Service Provider may also specify prepending a random token to the owner name of a validation record, such as "`_<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge`". This can be done either as part of the challenge itself ({{cname-dcv}}), to support multiple Intermediaries ({{multiple}}), or to make it harder for a third party to scan what Application Service Providers are being used by a given domain name.
 
 ### Scope Indication {#scope-indication}
 
@@ -277,7 +283,7 @@ The Application Service Provider will normally know which of these scoped DNS re
 
 Note that the ACME DNS challenge specification {{ACME-SCOPED-CHALLENGE}} has incorporated this scope indication format.
 
-Application owners SHOULD utilize the IANA "Underscored and Globally Scoped DNS Node Names" registry {{UNDERSCORE-REGISTRY}} to ensure that there are no collisions with existing entries.
+Application owners SHOULD utilize the IANA "Underscored and Globally Scoped DNS Node Names" registry {{UNDERSCORE-REGISTRY}} and avoid using underscore labels that already exist in the registry.
 
 ### CNAME Considerations {#cname-considerations}
 
@@ -289,13 +295,13 @@ Note that some DNS implementations permit the deployment of CNAME records co-exi
 
 ## TXT Record {#txt-record}
 
-The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
+The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If there are multiple RDATA strings for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
 
     _foo-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
-This again allows the Application Service Provider to query only for application-specific records it needs, while giving flexibility to the User adding the DNS record (i.e., they can be given permission to only add records under a specific prefix by the DNS administrator). Whether or not multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification.
+This again allows the Application Service Provider to query only for application-specific records it needs, while giving flexibility to the User adding the DNS record (i.e., they can be given permission to only add records under a specific prefix by the DNS administrator).
 
-Application Service Providers MUST validate that a random token in the TXT record matches the one that they gave to the User for that specific domain name.
+Application Service Providers MUST validate that a random token in the TXT record matches the one that they gave to the User for that specific domain name. Whether or not multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record matches.
 
 ### Token Metadata {#metadata}
 
@@ -320,7 +326,7 @@ These instructions SHOULD be encoded in the RDATA as token metadata ({{metadata}
 
     _foo-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08T02:03:19+00:00"
 
-When a expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{RFC3339, Section 5.6}}.
+When an expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
 
 A simpler variation of the expiry time is also ISO 8601 valid and can also be specified, using the "full-date" format. For example:
 
@@ -342,7 +348,7 @@ The User SHOULD de-provision the resource record provisioned for DNS-based domai
 
 ## Delegated Domain Control Validation {#delegated}
 
-Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without having to hand over full DNS access.  It is a variation of the above TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
+Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of the above TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
 
 The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) random tokens are generated as in {{random-token}}. For example:
 
@@ -352,7 +358,7 @@ The Intermediary then adds the actual Validation Record in a domain they control
 
     <intermediary-random-token>.dcv.intermediary.example.  IN   TXT "<provider-random-token>"
 
-Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS instead of needing continuous write access to the User's DNS.
+Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS zone instead of needing continuous write access to the User's DNS.
 
 Importantly, the CNAME record target also contains a random token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User. The Intermediary must keep an association of Users and domain names to the associated Intermediary-random-tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
 
@@ -380,7 +386,7 @@ Application Service Providers may wish to always prepend the `_<identifier-token
 
 ## Specification of Validation Records
 
-Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the entire DNS resource record (RR) using the Fully Qualified Domain Name to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
+Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and Intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the entire DNS resource record (RR) using the Fully Qualified Domain Name to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
 
 ## Time-bound checking
 
@@ -396,15 +402,15 @@ The TTL {{RFC1034}} for Validation Records SHOULD be short to allow recovering f
 
 The Application Service Provider looking up a Validation Record may have to wait for up to the SOA minimum TTL (negative caching TTL) of the enclosing zone for the record to become visible, if it has been previously queried. If the application User wants to make the Validation Record visible more quickly they may need to work with the DNS administrator to see if they are willing to lower the SOA minimum TTL (which has implications across the entire zone).
 
-Application Service Provider's verifiers MAY wish to either use dedicated DNS resolvers configured with a low maximum negative caching TTL or flush Validation Records from resolver caches prior to issuing queries.
+Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers configured with a low maximum negative caching TTL, flush Validation Records from resolver caches prior to issuing queries or just directly query authoritative name servers to avoid caching.
 
 ## CNAME Records for Domain Control Validation {#cname-dcv}
 
-CNAME records MAY be used instead of TXT records where specified by Application Service Providers to support Users who are unable to create TXT records. Two forms of this are common: including the challenge token in the owner name of a validation record, or including the challenge token as a part of the CNAME target. This approach has a number of limitatations relative to using TXT records.
+CNAME records MAY be used instead of TXT records where specified by Application Service Providers to support Users who are unable to create TXT records. Two forms of this are common: including the random token in the owner name of a validation record, or including the random token as a part of the CNAME target. This approach has a number of limitations relative to using TXT records.
 
-### Random Token in Domain Names
+### Random Token in Owner Names
 
-Application Service Providers MAY specify that a random token be included in the owner name of a validation record.  In this case an underscore-prefixed label MUST be used (e.g., `_<token>._foo` or `_foo-<token>`). The resource record is then a CNAME to a domain name specified by the Application Service Provider. The Application Service Provider uses the presence of a resource record at the CNAME target to perform the validation, validating the both presence of the record as well as the CNAME target. For example:
+Application Service Providers MAY specify that a random token be included in the owner name of a validation record.  In this case an underscore-prefixed label MUST be used (e.g., `_<token>._foo` or `_foo-<token>`). The resource record is then a CNAME to a domain name specified by the Application Service Provider. The Application Service Provider uses the presence of a resource record at the CNAME target to perform the validation, validating the both presence of the record as well as the CNAME target. The CNAME target of the Validation Record MUST exist in order to verify the domain. For example:
 
     _<random-token>._foo-challenge.example.com.  IN   CNAME dcv.provider.example.
 
@@ -430,15 +436,31 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is theoreticall
 
 # Security Considerations
 
-A malicious service that promises to deliver something after domain control validation could surreptitiously ask another Application Service Provider to start processing or sending mail for the target domain and then present the victim domain administrator with this DNS TXT record pretending to be for their service. Once the administrator has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer forward a challenge from a different service without the DNS administrator noticing this. Both the Application Service Provider and the service being authenticated and authorized should be unambiguous from the TXT record owner name and RDATA content to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+## Token Guessing
 
 If token values aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label.
 
+## Service Confusion {#service-confusion}
+
+A malicious Application Service Provider that promises to deliver something after domain control validation could surreptitiously ask another Application Service Provider to start processing or sending mail for the target domain and then present the victim User with this DNS TXT record pretending to be for their service. Once the User has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer forward a challenge from a different service without the User noticing. Both the Application Service Provider and the service being authenticated and authorized should be unambiguous from the Validation Record to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+
+## Service Collision
+
+As a corollary to {{service-confusion}}, if the Validation Record is not well-scoped and unambiguous with respect to the Application Service Provider, it could be used to authorize use of another Application Service Provider or service in addition to the original Application Service Provider or service.
+
+## Scope Confusion
+
 Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope in as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator.
 
-Application Service Providers and intermediaries should use authenticated channels to convey instructions and random tokens to Users. Otherwise an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
+## Authenticated Channels
+
+Application Service Providers and intermediaries should use authenticated channels to convey instructions and random tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
+
+## DNS Spoofing
 
 A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Validation Records against DNS spoofing attacks.
+
+## DNSSEC Validation
 
 DNSSEC validation SHOULD be performed by Application Service Providers that verify Validation Records they have requested to be deployed.  If no DNSSEC support is detected for the domain being validated, or if DNSSEC validation cannot be performed, Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
@@ -475,7 +497,7 @@ A TXT record is usually the default option for domain control validation. The Ap
 
     example.com.   IN   TXT   "237943648324687364"
 
-Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo Application Service Provider. Note that in this construction Application Service Provider Foo would have to query for all TXT records at "example.com" to get the validating record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain control validation, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e., the person managing the account at Application Service Provider Foo) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the Application Service Provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days.
+Here, the value "237943648324687364" serves as the randomly-generated TXT value being added to prove ownership of the domain to Foo Application Service Provider. Note that in this construction Application Service Provider Foo would have to query for all TXT records at "example.com" to get the Validation Record. Although the original DNS protocol specifications did not associate any semantics with the DNS TXT record, {{RFC1464}} describes how to use them to store attributes in the form of ASCII text key-value pairs for a particular domain. In practice, there is wide variation in the content of DNS TXT records used for domain control validation, and they often do not follow the key-value pair model. Even so, the RDATA {{RFC1034}} portion of the DNS TXT record has to contain the value being used to verify the domain. The value is usually a Random Token in order to guarantee that the entity who requested that the domain be verified (i.e., the person managing the account at Application Service Provider Foo) is the one who has (direct or delegated) access to DNS records for the domain. After a TXT record has been added, the Application Service Provider will usually take some time to verify that the DNS TXT record with the expected token exists for the domain. The generated token typically expires in a few days.
 
 Some Application Service Providers use a prefix of `_PROVIDER_NAME-challenge` in the Name field of the TXT record challenge. For ACME, the full Host is `_acme-challenge.<YOUR_DOMAIN>`. Such patterns are useful for doing targeted domain control validation. The ACME protocol ([RFC8555]) has a challenge type `DNS-01` that lets a User prove domain ownership. In this challenge, an implementing CA asks you to create a TXT record with a randomly-generated token at `_acme-challenge.<YOUR_DOMAIN>`:
 
@@ -499,7 +521,7 @@ The Authenticated Transfer (AT) Protocol supports DNS TXT records for resolving 
 
 #### GitHub {#github}
 
-GitHub asks you to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name {{GITHUB-TXT}}. The code is a numeric code that expires in 7 days.
+To verify domains for organizations, GitHub asks the user to create a DNS TXT record under `_github-challenge-ORGANIZATION.<YOUR_DOMAIN>`, where ORGANIZATION stands for the GitHub organization name. The RDATA value for the provided TXT record is a string that expires in 7 days {{GITHUB-TXT}}.
 
 #### Public Suffix List {#psl-example}
 
@@ -523,7 +545,7 @@ The Public Suffix List ({{PSL}}) asks for owners of private domains to authentic
 
 ##### Content Delivery Networks (CDNs): Akamai and Cloudflare
 
-In order to be issued a TLS cert from a Certification Authority like Let's Encrypt, the requester needs to prove that they control the domain. Typically, this is done via the {{DNS-01}} challenge. Let's Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Akamai and Cloudflare offer to automate this process using a CNAME record in the User's DNS that points to the Validation Record in the CDN's zone ({{AKAMAI-DELEGATED}} and {{CLOUDFLARE-DELEGATED}}).
+In order to be issued a TLS cert from a Certification Authority like Let's Encrypt, the requester needs to prove that they control the domain. Often this is done via the {{DNS-01}} challenge. Let's Encrypt only issues certs with a 90 day validity period for security reasons {{LETSENCRYPT-90-DAYS-RENEWAL}}. This means that after 90 days, the DNS-01 challenge has to be re-done and the random token has to be replaced with a new one. Doing this manually is error-prone. Content Delivery Networks like Akamai and Cloudflare offer to automate this process using a CNAME record in the User's DNS that points to the Validation Record in the CDN's zone ({{AKAMAI-DELEGATED}} and {{CLOUDFLARE-DELEGATED}}).
 
 ##### AWS Certificate Manager (ACM)
 
@@ -555,4 +577,4 @@ While the ACME protocol ([RFC8555]) specifies a way to demonstrate ownership ove
 
 # Acknowledgments
 
-Thank you to Tim Wicinski, John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, and many others for their feedback and suggestions on this document.
+Thank you to Tim Wicinski, John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk and many others for their feedback and suggestions on this document.
