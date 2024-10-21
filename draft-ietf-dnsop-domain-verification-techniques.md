@@ -215,6 +215,8 @@ When multiple distinct services create domain Validation Records with the same o
 
 The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate the utilized set of Application Service Providers.
 
+Using a CNAME as a Validation Record can give unintended powers to the target of the CNAME, at least when the owner name of the Validation Record is a valid hostname.  This can allow the Validation Record to itself be a hostname where services might be offered.
+
 This specification proposes the use of application-specific labels in the owner name of a Validation Record to address these issues.
 
 
@@ -257,11 +259,11 @@ This random token is placed in either the RDATA or an owner name, as described i
 
 ## Validation Record Owner Name {#name}
 
-The RECOMMENDED format for a Validation Record's owner name is as application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames.
+The RECOMMENDED format for a Validation Record's owner name is as application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_foo-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname.
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
-An Application Service Provider may also specify prepending a random token to the owner name of a validation record, such as "`<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge`". This can be done either as part of the challenge itself ({{cname-dcv}}, to support multiple Intermediaries ({{multiple}}), or to make it harder for a third party to scan what Application Service Providers are being used by a given domain name.
+An Application Service Provider may also specify prepending a random token to the owner name of a validation record, such as "`_<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge`". This can be done either as part of the challenge itself ({{cname-dcv}}, to support multiple Intermediaries ({{multiple}}), or to make it harder for a third party to scan what Application Service Providers are being used by a given domain name.
 
 ### Scope Indication {#scope-indication}
 
@@ -279,7 +281,7 @@ Application owners SHOULD utilize the IANA "Underscored and Globally Scoped DNS 
 
 ### CNAME Considerations {#cname-considerations}
 
-Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  The recommended format in {{name}} as well as others below all have this property.
+Any Validation Records that might include a CNAME MUST have a name that is distinct from the domain name being validated, as a CNAME MUST NOT be placed at the same domain name that is being validated.  All Validation Records that are have a CNAME as their owner name MUST begin with an underscore so as to not be valid hostnames.  The recommended format in {{name}} as well as others below all have this property.
 
 This is for the same reason already cited in {{pitfalls}}. CNAME records cannot co-exist with other (non-DNSSEC) data, and there may already be other record types that exist at the domain name. Instead, as with the TXT record recommendation, an Application Service Provider specific label should be added as a subdomain of the domain to be verified. This ensures that the CNAME does not collide with other record types.
 
@@ -374,7 +376,7 @@ or
 
 When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier token.
 
-Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.
+Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname.
 
 ## Specification of Validation Records
 
