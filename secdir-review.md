@@ -153,6 +153,8 @@ In §3 we write:
 
 Fragmentation is a touchy topic in the DNS space. I do agree that the phrase "often does not work reliably" needs something to buttress this comment.
 
+We have updated our comments on fragmentation based on other feedback.
+
 for an additional reference to RFC 9210, perhaps RFC7766 "DNS Transport over TCP - Implementation Requirements" would be useful.
 
 ### Direction of authority flow
@@ -169,20 +171,20 @@ have expected the authority to flow the other direction.
 
 ### Hiding provider use
 
-    In §5.2 we say:
+In §5.2 we say:
 
-        > An Application Service Provider may also specify prepending a random token to
-        the name, such as "<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge". This
-        can be done either as part of the challenge itself (Section 5.9, to support
-        multiple Intermediaries (Section 5.5), or to make it harder for a third party
-        to scan what Application Service Providers are being used by a given domain
-        name.
+    > An Application Service Provider may also specify prepending a random token to
+    the name, such as "<RANDOM_TOKEN>._<PROVIDER_RELEVANT_NAME>-challenge". This
+    can be done either as part of the challenge itself (Section 5.9, to support
+    multiple Intermediaries (Section 5.5), or to make it harder for a third party
+    to scan what Application Service Providers are being used by a given domain
+    name.
 
-    but I am not sure how difficult this actually makes the scanning process.
-    Per RFC 8020 shouldn't a query for _<PROVIDER_RELEVANT_NAME>-[challenge.name](http://challenge.name/)
-    give NODATA if there is a record for a child name with a random token, which
-    would be distinguishable from the NXDOMAIN that is expected if the provider is
-    not being used?  (Similarly for the last paragraph of §5.5.)
+but I am not sure how difficult this actually makes the scanning process.
+Per RFC 8020 shouldn't a query for _<PROVIDER_RELEVANT_NAME>-[challenge.name](http://challenge.name/)
+give NODATA if there is a record for a child name with a random token, which
+would be distinguishable from the NXDOMAIN that is expected if the provider is
+not being used?  (Similarly for the last paragraph of §5.5.)
 
 ### Challenge scoping status
 
@@ -218,7 +220,6 @@ Shivan covered this in https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-
 
     I think that [RFC1464] and [RFC3339] should move to the normative references
     section.
-
 
 So I normally look over the references as chair/shepherd, and I use the guidance oh how previous documents have treated references as some guidance.
 
