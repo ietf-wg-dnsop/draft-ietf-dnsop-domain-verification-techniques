@@ -200,7 +200,6 @@ Other techniques such as email or HTTP(S) based validation are out-of-scope.
 
 * `User`: the owner or operator of a domain in the DNS who needs to prove ownership of that domain to an Application Service Provider, working in coordination with their DNS Administrator.
 
-
 * `Random Token`: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
 
 # Common Pitfalls {#pitfalls}
