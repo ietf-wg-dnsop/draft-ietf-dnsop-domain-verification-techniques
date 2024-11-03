@@ -243,9 +243,9 @@ All Domain Control Validation mechanisms are implemented by a resource record wi
 
 Both of these are issued to the User by either an Application Service Provider or an Intermediary. An issued random token then needs to exist in at least one of the following to demonstrate the User has control over the domain name being validated:
 
-1) Validation Record's RDATA
-2) The target of a CNAME (or chain of CNAMEs)
-3) Label of the owner name
+1. Validation Record's RDATA
+2. The target of a CNAME (or chain of CNAMEs)
+3. Label of the owner name
 
 Variations on this approach exist to meet different uses.
 
