@@ -180,7 +180,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Generally only one time-bound DNS record is sufficient for proving domain ownership.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Publishing a single time-bound DNS record is generally sufficient to prove operational control of the domain.
 
 This document describes pitfalls associated with some common practices using DNS-based techniques deployed today, and recommends using TXT based domain control validation in a way that is time-bounded and targeted to the service. The {{appendix}} includes a more detailed survey of different methods used by a set of Application Service Providers.
 
@@ -201,6 +201,30 @@ Other techniques such as email or HTTP(S) based validation are out-of-scope.
 * `User`: the owner or operator of a domain in the DNS who needs to prove ownership of that domain to an Application Service Provider, working in coordination with their DNS Administrator.
 
 * `Random Token`: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
+
+# Purpose of Domain Control Validation {#purpose}
+
+Domain Control Validation (DCV) is a challenge-response protocol that allows one party (the User) to prove operational control of the contents of a domain to an Application Service Provider (ASP).  This proof applies at a single point in time; it does not provide evidence of continuing control prior to the challenge or after the record is published.
+
+DCV is appropriate when the ASP is about to take a brief, time-bounded action that is potentially dangerous but not more harmful than the damage that could be done by malicious modification to the DNS zone.
+
+Appropriate uses of DCV:
+
+* Issuing a time-bounded TLS certificate via an ACME "dns-01" challenge.
+  - Control of the DNS zone would be sufficient to acquire a certificate anyway via the ACME "http-01" challenge.
+* Allowing a user to claim ownership of a domain name in a third-party system for a limited period of time.
+  - This creates a risk of impersonation, but the User has already demonstrated their ability to impersonate this name.
+* Sending a large batch of TLS authenticated requests to a server using this name.
+  - This creates a risk of outage due to overload, but the User could create an outage anyway by deleting important records.
+
+Inappropriate uses of DCV:
+
+* Allowing the User to claim ownership of the domain name indefinitely in a third-party system.
+  - The User could be an attacker who has only transient control of the domain name, or the domain name could be transferred to a new owner.
+* Sending a large batch of unauthenticated requests to the IP addresses indicated for this domain name.
+  - The User could have placed the IP addresses of an unaffiliated victim server on the domain name.  Sending a large volume of requests without authenticating the server would produce an attack that the User would not otherwise have been able to accomplish.
+
+If the ASP requires ongoing proof of control, DCV can be used repeatedly.  However, for the sake of reliability and efficiency, it may be preferable to use a DNS record that persistently authorizes a specified external entity to act on its behalf.  This is consistent with the approach used by most ordinary DNS records, including AAAA and MX.
 
 # Common Pitfalls {#pitfalls}
 
