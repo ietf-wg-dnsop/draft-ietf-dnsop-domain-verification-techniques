@@ -238,8 +238,8 @@ Future specifications may provide better mechanisms or recommendations for defin
 
 All Domain Control Validation mechanisms are implemented by a resource record with:
 
-1) An owner name related to the domain name being validated, and
-2) One or more random tokens
+1. An owner name related to the domain name being validated, and
+2. One or more random tokens
 
 Both of these are issued to the User by either an Application Service Provider or an Intermediary. An issued random token then needs to exist in at least one of the following to demonstrate the User has control over the domain name being validated:
 
