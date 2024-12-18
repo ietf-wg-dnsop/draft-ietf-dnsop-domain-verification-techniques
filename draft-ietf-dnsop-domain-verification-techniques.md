@@ -295,6 +295,30 @@ Base32 encoding or hexadecimal base16 encoding are RECOMMENDED to be specified w
 
 This random token is placed in either the RDATA or an owner name, as described in the rest of this section.  Some methods of validation may involve multiple independent random tokens.
 
+## Time-bound checking
+
+After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
+
+Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
+
+One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed as long as the User is still relying on the Intermediary.
+
+## TTL Considerations
+
+The TTL {{RFC1034}} for Validation Records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so caching or resolver load will not be an issue.
+
+The Application Service Provider looking up a Validation Record may have to wait for up to the SOA minimum TTL (negative caching TTL) of the enclosing zone for the record to become visible, if it has been previously queried. If the application User wants to make the Validation Record visible more quickly they may need to work with the DNS administrator to see if they are willing to lower the SOA minimum TTL (which has implications across the entire zone).
+
+Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers configured with a low maximum negative caching TTL, flush Validation Records from resolver caches prior to issuing queries or just directly query authoritative name servers to avoid caching.
+
+## Specification of Validation Records
+
+Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and Intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the entire DNS resource record (RR) using the Fully Qualified Domain Name to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
+
+# Validation Record Types
+
+There are several different methods for creating domain validation records.
+
 ## TXT Record {#txt-record}
 
 The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If there are multiple RDATA strings for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
@@ -372,21 +396,6 @@ The Application Service Provider then validates that the target of the CNAME mat
 
 As mentioned in {{cname-considerations}}, the owner name of the Validation Record MUST be distinct from the domain name being validated.
 
-## Time-bound checking
-
-After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
-
-Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
-
-One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed as long as the User is still relying on the Intermediary.
-
-## TTL Considerations
-
-The TTL {{RFC1034}} for Validation Records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so caching or resolver load will not be an issue.
-
-The Application Service Provider looking up a Validation Record may have to wait for up to the SOA minimum TTL (negative caching TTL) of the enclosing zone for the record to become visible, if it has been previously queried. If the application User wants to make the Validation Record visible more quickly they may need to work with the DNS administrator to see if they are willing to lower the SOA minimum TTL (which has implications across the entire zone).
-
-Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers configured with a low maximum negative caching TTL, flush Validation Records from resolver caches prior to issuing queries or just directly query authoritative name servers to avoid caching.
 
 ## Delegated Domain Control Validation {#delegated}
 
@@ -426,15 +435,10 @@ When performing validation, the Application Service Provider would resolve the D
 
 Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname.
 
-
 ## Interactions with DNAME
 
 Domain control validation in the presence of a DNAME {{RFC6672}} is theoretically possible. Since a DNAME record redirects the entire subtree of names underneath the owner of the DNAME, it is not possible to place a Validation Record under the DNAME owner itself. It would have to be placed under the DNAME target name, since any lookups for a name under the DNAME owner will be redirected to the corresponding name under the DNAME target.
 
-
-# Specification of Validation Records
-
-Validation Records need to be securely relayed from an Application Service Provider to a DNS administrator. Application Service Providers and Intermediaries SHOULD offer detailed and easily-accessible help pages, keeping in mind that the DNS administrator might not have a login account on the website of the Application Service Provider or Intermediary. Similarly, for clarity, the entire DNS resource record (RR) using the Fully Qualified Domain Name to be added SHOULD be provided along with help instructions.  Where possible, APIs SHOULD be used to relay instructions.
 
 # Security Considerations
 
