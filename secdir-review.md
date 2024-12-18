@@ -91,7 +91,7 @@ the whole point of it is to be public!
 
 Already Merged with thanks
 
-### Use of "foo" as example content
+### DONE Use of "foo" as example content
 
     A bunch of examples use challenge names like _[foo-challenge.example.com](http://foo-challenge.example.com/), but
     of course neither _foo nore _foo-challenge is present in the Underscored and
@@ -241,7 +241,7 @@ Good catch
 
 one use of "temporary" ? yes it can be time-bound
 
-### DNS Administrator
+### DONE DNS Administrator
 
     We use the term "DNS Administrator" a few times, but it's not in the
     definitions section.  Should it be (or those usages changed to "User")?
