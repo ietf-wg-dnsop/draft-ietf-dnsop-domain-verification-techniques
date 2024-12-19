@@ -134,7 +134,7 @@ https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques
 s/This document proposes some best practices/This document provides some best practices/
 
 
-### fragmentation often does not work
+### DONE fragmentation often does not work
 
 In §3 we write:
 
@@ -181,7 +181,7 @@ In §5.2 we say:
     name.
 
 but I am not sure how difficult this actually makes the scanning process.
-Per RFC 8020 shouldn't a query for _<PROVIDER_RELEVANT_NAME>-[challenge.name](http://challenge.name/)
+Per RFC 8020 shouldn't a query for \_<PROVIDER_RELEVANT_NAME>-[challenge.name](http://challenge.name/)
 give NODATA if there is a record for a child name with a random token, which
 would be distinguishable from the NXDOMAIN that is expected if the provider is
 not being used?  (Similarly for the last paragraph of §5.5.)
@@ -251,13 +251,15 @@ The 'User' we view to be a service owner, someone who has to prove validation
 The attempt with DNS Administrator was to be the manages the data in a DNS Zone.
 We can go with "zone operator" but now I feel we do need to express that.
 
-### RR implementation list
+### DONE RR implementation list
 
-In §5 we list two things that the RR used to implement DCV includes.  In the
-HTML rendering, this is rendered as "1) stuff 2) more stuff" with no line
-break or conjunction.  Probably a line break would help, and I might also go
-with "with both:" to clarify that it is an "and" statement rather than an "or"
-one.
+    In §5 we list two things that the RR used to implement DCV includes.  In the
+    HTML rendering, this is rendered as "1) stuff 2) more stuff" with no line
+    break or conjunction.  Probably a line break would help, and I might also go
+    with "with both:" to clarify that it is an "and" statement rather than an "or"
+    one.
+
+I believe my re-wording of this and making them a list solves this.
 
 ### DONE Github code
 

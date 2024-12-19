@@ -238,7 +238,7 @@ Future specifications may provide better mechanisms or recommendations for defin
 
 # Recommendations {#recommendations}
 
-All Domain Control Validation mechanisms are implemented by a resource record with the following labels:
+All Domain Control Validation mechanisms are implemented by a resource record with both of the following labels:
 
 1. An owner name related to the domain name being validated, and
 
