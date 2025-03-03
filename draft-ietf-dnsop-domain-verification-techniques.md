@@ -75,16 +75,16 @@ informative:
           - ins: P. Vixie
         target: https://datatracker.ietf.org/doc/draft-ietf-dnsop-avoid-fragmentation/
 
-    ACME-SCOPED-CHALLENGE:
-        title: "ACME Scoped DNS Challenges"
+    ACME-DNS-ACCOUNT-ID:
+        title: "ACME DNS Labeled with Account ID Challenge"
         date: 2024
-        author:
-          - ins: A. A. Chariton
-          - ins: A. A. Omidi
-          - ins: J. Kasten
-          - ins: F. Loukos
-          - ins: S. A. Janikowski
-        target: https://datatracker.ietf.org/doc/draft-ietf-acme-scoped-dns-challenges/
+	author:
+	  - ins: A. A. Chariton
+	  - ins: A. A. Omidi
+	  - ins: J. Kasten
+	  - ins: F. Loukos
+	  - ins: S. A. Janikowski
+	target: https://datatracker.ietf.org/doc/draft-ietf-acme-dns-account-label/
 
     SUBDOMAIN-TAKEOVER:
         title: "Subdomain takeovers"
@@ -134,26 +134,18 @@ This document recommends using TXT based domain control validation in a way that
 
 For security reasons, it is crucial to understand the scope of the domain name being validated. Both Application Service Providers and the User need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
 
-In the case of X.509 certificate issuance, the certificate signing request and associated challenge are clear about whether they are for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}) does not differentiate these cases in the DNS Validation Record. In the absence of this distinction, the DNS administrator tasked with deploying the Validation Record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the User intended.  (The ACME protocol is addressing this in {{ACME-SCOPED-CHALLENGE}}.)
+In the case of X.509 certificate issuance, the certificate signing request and associated challenge are clear about whether they are for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}) does not differentiate these cases in the DNS Validation Record. In the absence of this distinction, the DNS administrator tasked with deploying the Validation Record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the User intended.
 
 In the more general case of an Internet application service granting authority to a domain owner, again no existing DNS challenge scheme makes this distinction today. New applications should consider having different application names for different scopes, as described. Regardless, services should very clearly indicate the scope of the validation in their public documentation so that the domain administrator can use this information to assess whether the Validation Record is granting the appropriately scoped authority.
 
 
 # Recommendations {#recommendations}
 
-All Domain Control Validation mechanisms are implemented by a resource record with both of the following labels:
+All Domain Control Validation mechanisms are implemented by a DNS resource record with at least the following information:
 
-1. An owner name related to the domain name being validated, and
+1. A record name related to the domain name being validated, usually constructed by prepending an application specific label.
 
 2. One or more random tokens.
-
-Both of these labels are issued to the User by either an Application Service Provider or an Intermediary. An issued random token then needs to exist in at least one of the following to demonstrate the User has control over the domain name being validated:
-
-1. Validation Record's RDATA.
-2. The target of a CNAME (or chain of CNAMEs).
-3. Label of the owner name.
-
-Variations on this approach exist to meet different uses.
 
 ## TXT Record based Validation {#txt-record}
 
@@ -202,7 +194,7 @@ If an Application Service Provider has an application-specific need to have mult
 
 Application owners SHOULD utilize the IANA "Underscored and Globally Scoped DNS Node Names" registry {{UNDERSCORE-REGISTRY}} and avoid using underscore labels that already exist in the registry.
 
-As a simplification, some applications may decide to omit the "-challenge" suffix and use just "_<PROVIDER_RELEVANT_NAME" as the label.
+As a simplification, some applications may decide to omit the "-challenge" suffix and use just "`_<PROVIDER_RELEVANT_NAME>`" as the label.
 
 ## Time-bound checking and Expiration
 
@@ -265,7 +257,7 @@ Importantly, the CNAME record target also contains a random token issued by the 
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
-## Supporting Multiple Intermediaries {#multiple}
+# Supporting Multiple Intermediaries {#multiple}
 
 There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
@@ -279,7 +271,10 @@ or
 
     _<identifier-token>._service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
 
+
 When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier token.
+
+The ACME protocol has incorporated this method to specify DNS account specific challenages in {{ACME-DNS-ACCOUNT-ID}}.
 
 Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname.
 
