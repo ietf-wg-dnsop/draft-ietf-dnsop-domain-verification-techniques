@@ -261,7 +261,7 @@ When a User stops using the Intermediary they should remove the domain control v
 
 There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
-To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-token>` and following the requirements of {{random-token}}, specified as either base32 or base16 encoded. This identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-token>`. The identifier token is encoded in base32 or base16, and if the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
 
 The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
 
