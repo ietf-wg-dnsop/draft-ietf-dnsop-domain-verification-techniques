@@ -115,7 +115,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Publishing a single time-bound DNS record is generally sufficient to prove operational control of the domain.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to publish a DNS record containing this random token at a specified name within the domain. The Application Service Provider can verify operational control of the domain by resolving this DNS record.
 
 This document recommends using TXT based domain control validation in a way that is time-bounded and targeted to the specific application service.
 
@@ -137,28 +137,9 @@ This document recommends using TXT based domain control validation in a way that
 
 # Purpose of Domain Control Validation {#purpose}
 
-Domain Control Validation (DCV) is a challenge-response protocol that allows one party (the User) to prove operational control of the contents of a domain to an Application Service Provider (ASP).  This proof applies at a single point in time; it does not provide evidence of continuing control prior to the challenge or after the record is published.
+Domain Control Validation is a challenge-response procedure that allows the User to prove operational control of the contents of a domain to an Application Service Provider. This proof applies only to some point in time after the challenge is issued and before the record is published. This procedure can be appropriate when the Application Service Provider is about to take a time-bounded action related to this domain name.
 
-DCV is appropriate when the ASP is about to take a brief, time-bounded action that is potentially dangerous but not more harmful than the damage that could be done by malicious modification to the DNS zone.
-
-Appropriate uses of DCV:
-
-* Issuing a time-bounded TLS certificate via an ACME "dns-01" challenge.
-  - Control of the DNS zone would be sufficient to acquire a certificate anyway via the ACME "http-01" challenge.
-* Allowing a user to claim ownership of a domain name in a third-party system for a limited period of time.
-  - This creates a risk of impersonation, but the User has already demonstrated their ability to impersonate this name.
-* Sending a large batch of TLS authenticated requests to a server using this name.
-  - This creates a risk of outage due to overload, but the User could create an outage anyway by deleting important records.
-
-Inappropriate uses of DCV:
-
-* Allowing the User to claim ownership of the domain name indefinitely in a third-party system.
-  - The User could be an attacker who has only transient control of the domain name, or the domain name could be transferred to a new owner.
-* Sending a large batch of unauthenticated requests to the IP addresses indicated for this domain name.
-  - The User could have placed the IP addresses of an unaffiliated victim server on the domain name.  Sending a large volume of requests without authenticating the server would produce an attack that the User would not otherwise have been able to accomplish.
-
-If the ASP requires ongoing proof of control, DCV can be used repeatedly.  However, for the sake of reliability and efficiency, it may be preferable to use a DNS record that persistently authorizes a specified external entity to act on its behalf.  This is consistent with the approach used by most ordinary DNS records, including AAAA and MX.
-
+Domain Control Validation is not suitable for ongoing authorization. Any ongoing authorization using DNS SHOULD be performed with a different DNS record. For example, in the ACME protocol, issuance of a time-limited certificate can use Domain Control Validation with an ephemeral TXT record via the DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}), but ongoing authorization of certificate authorities uses a persistent CAA record {{?RFC8569}}.
 
 # Scope of Validation {#scope}
 
@@ -230,7 +211,7 @@ As a simplification, some applications may decide to omit the "-challenge" suffi
 
 After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
 
-Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
+Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued (see {{purpose}}).
 
 One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed as long as the User is still relying on the Intermediary.
 
