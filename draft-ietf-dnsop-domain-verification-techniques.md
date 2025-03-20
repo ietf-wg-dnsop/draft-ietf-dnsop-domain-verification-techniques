@@ -254,21 +254,19 @@ Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers
 
 Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that inserts a CNAME record prior to the TXT record.
 
-The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed.  The Intermediary's domain MUST be unique to the User and Application Service Provider. For example:
+The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed.  The Intermediary's domain MUST be unique to the User, domain, and Application Service Provider. For example, if the User is Example Inc, then the CNAME record could be:
 
-    _service-challenge.example.com.  IN   CNAME  service-example-123.dcv.intermediary.example.
+    _service-challenge.example.com.  IN   CNAME  example.com.service.example-inc.dcv.intermediary.example.
 
 The Intermediary then adds the actual Validation Record in a domain they control:
 
-    service-example-123.dcv.intermediary.example.  IN   TXT  "<provider-random-token>"
+    example.com.service.example-inc.dcv.intermediary.example.  IN   TXT  "<provider-random-token>"
 
 Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-During provisioning and renewal, or whenever ownership of a domain changes, there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).  To prevent this attack during provisioning, the Intermediary SHOULD use a new domain name by embedding a counter (as shown above) or a random token (as in {{random-token}}).  To mitigate attacks at other times, the Intermediary MAY require periodic Domain Control Validation between the User and Intermediary.  For example:
+During provisioning and renewal, or whenever ownership of a domain changes, there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).  Using a subdomain tied to the User prevents these attacks.  This can be accomplished by choosing a name that includes the User's account name (as shown above), a counter, or a random token linked to the User (as in {{random-token}}).
 
-    _<intermediary>-challenge.example.com.  IN  TXT  "<intermediary-random-token>"
-
-When a User stops using the Intermediary they MUST remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
+When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
 # Supporting Multiple Intermediaries {#multiple}
 
