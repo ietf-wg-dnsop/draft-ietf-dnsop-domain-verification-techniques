@@ -139,7 +139,7 @@ This document recommends using TXT based domain control validation in a way that
 
 Domain Control Validation is a challenge-response procedure that allows the User to prove operational control of the contents of a domain to an Application Service Provider. This proof applies only to some point in time after the challenge is issued and before the record is published. This procedure can be appropriate when the Application Service Provider is about to take a time-bounded action related to this domain name.
 
-Domain Control Validation is not suitable for ongoing authorization. Any ongoing authorization using DNS SHOULD be performed with a different DNS record. For example, in the ACME protocol, issuance of a time-limited certificate can use Domain Control Validation with an ephemeral TXT record via the DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}), but ongoing authorization of certificate authorities uses a persistent CAA record {{?RFC8569}}.
+Domain Control Validation is not suitable for ongoing authorization. Any ongoing authorization using DNS SHOULD be performed with a separate DNS record. For example, in the ACME protocol, issuance of a time-limited certificate can use Domain Control Validation with an ephemeral TXT record via the DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}), but ongoing authorization of certificate authorities uses a persistent CAA record {{?RFC8569}}.
 
 # Scope of Validation {#scope}
 
@@ -252,21 +252,23 @@ Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers
 
 # Delegated Domain Control Validation {#delegated}
 
-Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
+Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that inserts a CNAME record prior to the TXT record.
 
-The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) random tokens are generated as in {{random-token}}. For example:
+The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed.  The Intermediary's domain MUST be unique to the User and Application Service Provider. For example:
 
-    _service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+    _service-challenge.example.com.  IN   CNAME  service-example-123.dcv.intermediary.example.
 
 The Intermediary then adds the actual Validation Record in a domain they control:
 
-    <intermediary-random-token>.dcv.intermediary.example.  IN   TXT "<provider-random-token>"
+    service-example-123.dcv.intermediary.example.  IN   TXT  "<provider-random-token>"
 
 Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-Importantly, the CNAME record target also contains a random token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User. The Intermediary must keep an association of Users and domain names to the associated Intermediary-random-tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
+During provisioning and renewal, or whenever ownership of a domain changes, there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).  To prevent this attack during provisioning, the Intermediary SHOULD use a new domain name by embedding a counter (as shown above) or a random token (as in {{random-token}}).  To mitigate attacks at other times, the Intermediary MAY require periodic Domain Control Validation between the User and Intermediary.  For example:
 
-When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
+    _<intermediary>-challenge.example.com.  IN  TXT  "<intermediary-random-token>"
+
+When a User stops using the Intermediary they MUST remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
 # Supporting Multiple Intermediaries {#multiple}
 
