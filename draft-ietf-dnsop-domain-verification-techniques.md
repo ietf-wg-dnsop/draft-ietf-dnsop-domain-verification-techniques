@@ -137,7 +137,7 @@ This document recommends using TXT based domain control validation in a way that
 
 # Purpose of Domain Control Validation {#purpose}
 
-Domain Control Validation is a challenge-response procedure that allows the User to prove operational control of the contents of a domain to an Application Service Provider. This proof applies only to some point in time after the challenge is issued and before the record is published. This procedure can be appropriate when the Application Service Provider is about to take a time-bounded action related to this domain name.
+Domain Control Validation is a challenge-response procedure that allows the User to prove operational control of the contents of a domain to an Application Service Provider. This proof applies only to the moment in time when the record is published. This procedure can be appropriate when the Application Service Provider is about to take a time-bounded action related to this domain name.
 
 Domain Control Validation is not suitable for ongoing authorization. Any ongoing authorization using DNS SHOULD be performed with a separate DNS record. For example, in the ACME protocol, issuance of a time-limited certificate can use Domain Control Validation with an ephemeral TXT record via the DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}), but ongoing authorization of certificate authorities uses a persistent CAA record {{?RFC8569}}.
 
