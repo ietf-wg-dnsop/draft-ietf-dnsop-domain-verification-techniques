@@ -264,7 +264,7 @@ The Intermediary then adds the actual Validation Record in a domain they control
 
 Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-During provisioning and renewal, or whenever ownership of a domain changes, there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).  Using a subdomain tied to the User prevents these attacks.  This can be accomplished by choosing a name that includes the User's account name (as shown above), a counter, or a random token linked to the User (as in {{random-token}}).
+During provisioning and renewal, or whenever ownership of a domain changes, there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).  Using a subdomain tied to the User prevents these attacks.  This can be accomplished by choosing a name that includes the User's account name (as shown above) or another unique token linked to the User (as in {{random-token}}).
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
