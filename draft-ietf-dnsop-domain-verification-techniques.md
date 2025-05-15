@@ -157,7 +157,7 @@ All Domain Control Validation mechanisms are implemented by a DNS resource recor
 
 The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If there are multiple RDATA strings for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
 
-    _examplename-challenge.example.com.  IN   TXT  "3419...3d206c4"
+    _example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 This again allows the Application Service Provider to query only for application-specific records it needs, while giving flexibility to the User adding the DNS record (i.e., they can be given permission to only add records under a specific prefix by the DNS administrator).
 
@@ -181,11 +181,11 @@ This random token is placed in either the RDATA or an owner name, as described i
 
 It may be desirable to associate metadata with the token in a Validation Record. When specified, metadata SHOULD be encoded in the RDATA via space-separated ASCII key-value pairs {{RFC1464}}, with the key "token" prefixing the random token. For example:
 
-    _examplename-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
+    _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
 
 If there are multiple tokens required, each one MUST be in a separate RR to allow them to match up with any additional attributes.  For example:
 
-    _examplename-challenge.example.com.  IN   TXT  "token=3419...3d206c4 attr=bar"
+    _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 attr=bar"
                                  IN   TXT  "token=5454...45dc45a attr=quux"
 
 The token MUST be the first element in the key-value list. If the TXT record RDATA is not prefixed with `token=` then {{RFC1464}} encoding MUST NOT be assumed (as this might split the trailing "==" or "=" at the end of base64 encoding).
@@ -194,7 +194,7 @@ If an alternate syntax is used by the Application Service Provider for token met
 
 ## Validation Record Owner Name {#name}
 
-The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_examplename-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname.
+The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_example_service-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname.
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
@@ -212,25 +212,25 @@ Application Service Providers MUST provide clear instructions on how long the ch
 
 These instructions MAY be encoded in the RDATA as token metadata ({{metadata}} using the key "expiry" to hold a time after which it is safe to remove the Validation Record. For example:
 
-    _examplename-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08T02:03:19+00:00"
+    _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08T02:03:19+00:00"
 
 When an expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
 
 A simpler variation of the expiry time is also ISO 8601 valid and can also be specified, using the "full-date" format. For example:
 
-    _examplename-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
+    _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
 
 Alternatively, if the record should never expire (for instance, if it may be checked periodically by the Application Service Provider) and should not be removed, the key "expiry" SHALL be set to have value "never".
 
-    _examplename-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=never"
+    _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=never"
 
 The "expiry" key MAY be omitted in cases where the Application Service Provider has clarified the record expiry policy out-of-band.
 
-    _examplename-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
+    _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
 
 Note that this is semantically the same as:
 
-    _examplename-challenge.example.com.  IN   TXT  "3419...3d206c4"
+    _example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 The User SHOULD de-provision the resource record provisioned for DNS-based domain control validation once it is no longer required.
 
