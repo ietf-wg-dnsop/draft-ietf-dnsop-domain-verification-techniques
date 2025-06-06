@@ -145,7 +145,7 @@ Domain Control Validation allows a User to demonstrate to an Application Service
 
 Persistent validation is only appropriate for applications where the validation is tightly coupled to the User at the Application Service Provider, as once a token is disclosed there is no guarantee that it hasn't been copied by the new owner of a domain.
 
-Delegated Domain Validation ({{#delegated}}) is typically used as a way to adapt between these modes, with a persistent validation to an Intermediary enabling the Intermediary to transitively perform recurring one-off validations.
+Delegated Domain Validation ({{delegated}}) is typically used as a way to adapt between these modes, with a persistent validation to an Intermediary enabling the Intermediary to transitively perform recurring one-off validations.
 
 
 # Scope of Validation {#scope}
@@ -300,7 +300,7 @@ If token values aren't long enough or lack adequate entropy there's a risk that 
 
 ## Identifier Token Confusion
 
-If identifier-token values ({{#multiple}}) aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label.
+If identifier-token values ({{multiple}}) aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label.
 
 ## Service Confusion {#service-confusion}
 
