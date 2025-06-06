@@ -218,7 +218,9 @@ As a simplification, some applications may decide to omit the "-challenge" suffi
 
 After domain control validation is completed for one-off validations, there is typically no need for the Validation Record to continue to exist after being confirmed by the Application Service Provider. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
 
-Application Service Providers MUST provide clear instructions on how long the challenge token is valid for, and thus when a Validation Record can be removed. For persistent validations, Application Service Providers MUST provide clear instructions for how to perform revocations through the removal of a Validation Record.
+Application Service Providers MUST provide clear instructions on how long the challenge token is valid for, and thus when a Validation Record can be removed.
+
+For persistent validations, Application Service Providers MUST provide clear instructions for how to perform revocations through the removal of a Validation Record, including details on the frequency at which re-validation is performed.
 
 The instructions for validity duration MAY be encoded in the RDATA as token metadata ({{metadata}} using the key "expiry" to hold a time after which it is safe to remove the Validation Record. For example:
 
