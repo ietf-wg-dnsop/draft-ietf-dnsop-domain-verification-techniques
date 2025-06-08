@@ -322,7 +322,11 @@ Application Service Providers and intermediaries should use authenticated channe
 
 ## DNS Spoofing
 
-A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Validation Records against DNS spoofing attacks.
+A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Validation Records against DNS spoofing attacks, including from on-path attackers.
+
+Validators can partially defend against these attacks through performing DNS resolutions from multiple vantage points.
+
+DNS Spoofing attacks are easier in the case of persistent validation as the expected result is publically known. For example, absent DNSSEC this could allow an on-path attacker to bypass a revocation by continuing to return a record that the DNS Operator had removed from the zone.
 
 ## DNSSEC Validation
 
