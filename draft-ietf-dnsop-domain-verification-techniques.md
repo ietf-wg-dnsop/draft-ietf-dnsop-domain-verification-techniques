@@ -115,7 +115,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for. Generally only one time-bound DNS record is sufficient for proving domain ownership.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to publish a DNS record containing this random token at a specified name within the domain. The Application Service Provider can verify operational control of the domain by resolving this DNS record.
 
 This document recommends using TXT based domain control validation in a way that is time-bounded and targeted to the specific application service.
 
@@ -135,6 +135,11 @@ This document recommends using TXT based domain control validation in a way that
 
 * `Random Token`: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
 
+# Purpose of Domain Control Validation {#purpose}
+
+Domain Control Validation is a challenge-response procedure that allows the User to prove operational control of the contents of a domain to an Application Service Provider. This proof applies only to the moment in time when the record is published. This procedure can be appropriate when the Application Service Provider is about to take a time-bounded action related to this domain name.
+
+Domain Control Validation is not suitable for ongoing authorization. Any ongoing authorization using DNS SHOULD be performed with a separate DNS record. For example, in the ACME protocol, issuance of a time-limited certificate can use Domain Control Validation with an ephemeral TXT record via the DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}), but ongoing authorization of certificate authorities uses a persistent CAA record {{?RFC8569}}.
 
 # Scope of Validation {#scope}
 
@@ -218,7 +223,7 @@ As a simplification, some applications may decide to omit the "-challenge" suffi
 
 After domain control validation is completed, there is typically no need for the TXT or CNAME record to continue to exist as the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
 
-Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
+Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued (see {{purpose}}).
 
 One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed as long as the User is still relying on the Intermediary.
 
@@ -259,19 +264,19 @@ Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers
 
 # Delegated Domain Control Validation {#delegated}
 
-Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
+Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that inserts a CNAME record prior to the TXT record.
 
-The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) random tokens are generated as in {{random-token}}. For example:
+The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed.  The Intermediary's domain MUST be unique to the User, domain, and Application Service Provider. For example, if the User is Example Inc, then the CNAME record could be:
 
-    _service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+    _service-challenge.example.com.  IN   CNAME  example.com.service.example-inc.dcv.intermediary.example.
 
 The Intermediary then adds the actual Validation Record in a domain they control:
 
-    <intermediary-random-token>.dcv.intermediary.example.  IN   TXT "<provider-random-token>"
+    example.com.service.example-inc.dcv.intermediary.example.  IN   TXT  "<provider-random-token>"
 
 Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-Importantly, the CNAME record target also contains a random token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User. The Intermediary must keep an association of Users and domain names to the associated Intermediary-random-tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
+During provisioning and renewal, or whenever ownership of a domain changes, there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).  Using a subdomain tied to the User prevents these attacks.  This can be accomplished by choosing a name that includes the User's account name (as shown above) or another unique token linked to the User (as in {{random-token}}).
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
