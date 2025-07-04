@@ -338,7 +338,7 @@ A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Va
 
 DNSSEC validation SHOULD be performed by Application Service Providers that verify Validation Records they have requested to be deployed.
 
-If no DNSSEC support is detected for the domain being validated, or if DNSSEC validation cannot be performed, Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
+If no DNSSEC support is detected for the domain being validated, or if DNSSEC validation cannot be performed, Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers as well as to reduce risks from short-lived route hijacks.
 
 DNS Spoofing attacks are easier in the case of persistent validation as the expected result is publically known. For example, absent DNSSEC this could allow an on-path attacker to bypass a revocation by continuing to return a record that the DNS Operator had removed from the zone.
 
