@@ -50,7 +50,7 @@ normative:
   RFC9364:
 
 informative:
-    RFC1464:
+    RFC5234:
     RFC4086:
     RFC4343:
     RFC8555:
@@ -191,7 +191,7 @@ This random token is placed in either the RDATA or an owner name, as described i
 
 ### Token Metadata {#metadata}
 
-It may be desirable to associate metadata with the token in a Validation Record. When specified, metadata SHOULD be encoded in the RDATA via space-separated ASCII key-value pairs {{RFC1464}}, with the key "token" prefixing the random token. For example:
+It may be desirable to associate metadata with the token in a Validation Record. When specified, metadata SHOULD be encoded in the RDATA via space-separated ASCII key-value pairs, with the key "token" prefixing the random token. For example:
 
     _service-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
 
@@ -200,7 +200,19 @@ If there are multiple tokens required, each one MUST be in a separate RR to allo
     _service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 attr=bar"
                                  IN   TXT  "token=5454...45dc45a attr=quux"
 
-The token MUST be the first element in the key-value list. If the TXT record RDATA is not prefixed with `token=` then {{RFC1464}} encoding MUST NOT be assumed (as this might split the trailing "==" or "=" at the end of base64 encoding).
+The token MUST be the first element in the key-value list. If the TXT record RDATA is not prefixed with `token=` then the entire RDATA should be assumed to be the token (as this might split the trailing "==" or "=" at the end of base64 encoding).
+
+Keys are considered to be case-insensitive. Each Validation Record consists of RDATA for val-record with the following grammar (with an ABNF per {{RFC5234}}):
+
+  val-record     = keyvalue-list
+  keyvalue-list  = keyvalue-pair *( SP keyvalue-pair )
+  keyvalue-pair  = key "=" value
+
+  key            = 1*key-char
+  key-char       = ALPHA / DIGIT / "-" / "_"
+
+  value          = *value-char
+  value-char    = ALPHA / DIGIT / "+" / "/" / "=" / ":" / "+" / "-" / "_"
 
 If an alternate syntax is used by the Application Service Provider for token metadata, they MUST specify a grammar for it.
 
