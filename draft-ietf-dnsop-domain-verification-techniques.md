@@ -206,6 +206,8 @@ As a simplification, some applications may decide to omit the "-challenge" suffi
 
 After domain control validation is completed, there is no need for the TXT or CNAME record to continue to exist because the presence of the domain validation DNS record for a service only implies that a User with access to the service also has DNS control of the domain at the time the code was generated. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
 
+Some Application Service Providers currently require the Validation Record to remain in the zone indefinitely for periodic revalidation purposes. This practice should be discouraged. Subsequent validation actions using an already disclosed token are no guarantee that the original owner is still in control of the domain, and a new challenge needs to be issued.
+
 One exception is if the record is being used as part of a delegated domain control validation setup ({{delegated}}); in that case, the CNAME record that points to the actual validation TXT record cannot be removed as long as the User is still relying on the Intermediary.
 
 Application Service Providers MUST provide clear instructions on how long the challenge token is valid for, and thus when a Validation Record can be removed.
