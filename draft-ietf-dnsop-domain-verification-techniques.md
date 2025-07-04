@@ -141,7 +141,7 @@ Domain Control Validation allows a User to demonstrate to an Application Service
 
 * As a one-off validation, the Validation Record is time-bound and it can be removed once its presence is confirmed by the Application Service Provider. These are appropriate when the validation is being performed as part of an action such as requesting certificate issuance.
 
-* As a persistent validation, the introduction of the Validation Record into the domain demonstrates to the Application Service Provider that the User had control over the domain at that time, and its continued presence demonstrates only that either the DNS Administrator of the domain has not chosen to remove the Validation Record or that a new owner of the domain has re-introduced the Validation Record. The validation can be revoked by removing the Validation Record although this revocation will not be noticed until the Application Service Provider next checks for the presence of the record.
+* As a persistent validation, the introduction of the Validation Record into the domain demonstrates to the Application Service Provider that the User had control over the domain at that time, and its continued presence demonstrates only that either the DNS Administrator of the domain has left the Validation Record in-place (perhaps unintentionally) or that a new owner of the domain has re-introduced the Validation Record. The validation can be revoked by removing the Validation Record although this revocation will not be noticed until the Application Service Provider next checks for the presence of the record.
 
 Persistent validation is only appropriate for applications where the validation is tightly coupled to the User at the Application Service Provider, as once a token is disclosed there is no guarantee that it hasn't been copied by the new owner of a domain.
 
@@ -228,11 +228,11 @@ As a simplification, some applications may decide to omit the "-challenge" suffi
 
 ## Time-bound checking and Expiration
 
-After domain control validation is completed for one-off validations, there is typically no need for the Validation Record to continue to exist after being confirmed by the Application Service Provider. It should be safe to remove the validation DNS record once the validation is done and the Application Service Provider doing the validation should specify how long the validation will take (i.e., after how much time can the validation DNS record be deleted).
+For persistent validations, Application Service Providers MUST provide clear instructions for how to perform revocations through the removal of a Validation Record, including details on the frequency at which re-validation is performed. Application Service Providers MAY monitor for changes in domain ownership and request re-confirmation via a new token.
 
-Application Service Providers MUST provide clear instructions on how long the challenge token is valid for, and thus when a Validation Record can be removed.
+For one-off validations, after domain control validation is completed there is typically no need for the Validation Record to continue to exist after being confirmed by the Application Service Provider. It should be safe to remove the validation DNS record once the validation is complete.
 
-For persistent validations, Application Service Providers MUST provide clear instructions for how to perform revocations through the removal of a Validation Record, including details on the frequency at which re-validation is performed.
+Application Service Providers MUST provide clear instructions on how long the challenge token is valid for, and thus when a Validation Record can be removed. These instructions should preferably be encoded within the RDATA.
 
 The instructions for validity duration MAY be encoded in the RDATA as token metadata ({{metadata}} using the key "expiry" to hold a time after which it is safe to remove the Validation Record. For example:
 
@@ -244,7 +244,7 @@ A simpler variation of the expiry time is also ISO 8601 valid and can also be sp
 
     _service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
 
-Alternatively, if the record should never expire (for instance, if it may be checked periodically by the Application Service Provider) and should not be removed, the key "expiry" SHALL be set to have value "never".
+Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the key "expiry" SHALL be set to have value "never".
 
     _service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=never"
 
@@ -332,17 +332,15 @@ Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing t
 
 Application Service Providers and intermediaries should use authenticated channels to convey instructions and random tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
 
-## DNS Spoofing
+## DNS Spoofing and DNSSEC Validation
 
 A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Validation Records against DNS spoofing attacks, including from on-path attackers.
 
-Validators can partially defend against these attacks through performing DNS resolutions from multiple vantage points.
+DNSSEC validation SHOULD be performed by Application Service Providers that verify Validation Records they have requested to be deployed.
+
+If no DNSSEC support is detected for the domain being validated, or if DNSSEC validation cannot be performed, Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 DNS Spoofing attacks are easier in the case of persistent validation as the expected result is publically known. For example, absent DNSSEC this could allow an on-path attacker to bypass a revocation by continuing to return a record that the DNS Operator had removed from the zone.
-
-## DNSSEC Validation
-
-DNSSEC validation SHOULD be performed by Application Service Providers that verify Validation Records they have requested to be deployed.  If no DNSSEC support is detected for the domain being validated, or if DNSSEC validation cannot be performed, Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses to reduce an attacker's ability to complete a challenge by spoofing DNS. Alternatively, Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 ## Application Usage Enumeration
 
@@ -361,13 +359,13 @@ Whether or not it is appropriate to allow domain verification on a public suffix
 
 ## Unintentional Persistence
 
-When persistent domain validation is used, a DNS Administrator failing to remove a no-longer desired Validation Record could enable a User to continue to have access to the domain.
+When persistent domain validation is used, a DNS Administrator failing to remove a no-longer desired Validation Record could enable a User to continue to have access to the domain within the Application Service Provider's service.
 
-When one-off domain validation is used, this is typically implemented through automation and a DNS Administrator failing to remove access to the User could enable the User to continue to perform new validations.
+When one-off domain validation is used, this is typically implemented through automation where a DNS Administrator grants the User access to make updates to the domain's zone configuration. If the DNS Administrator fails to revoke access to a User who should no longer have access, this would enable the User to continue to perform new validations.
 
 ## Reintroduction of Validation Records
 
-When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain. Applications implementing persistent domain validation need to include this risk within their threat model.
+When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model.
 
 # IANA Considerations
 
