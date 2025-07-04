@@ -302,7 +302,7 @@ or
 
 When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier token.
 
-The ACME protocol has incorporated this method to specify DNS account specific challenages in {{ACME-DNS-ACCOUNT-ID}}.
+The ACME protocol has incorporated this method to specify DNS account specific challenges in {{ACME-DNS-ACCOUNT-ID}}.
 
 Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname.
 
