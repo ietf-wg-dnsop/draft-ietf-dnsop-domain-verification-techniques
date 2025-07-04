@@ -173,7 +173,7 @@ The RECOMMENDED method of doing DNS-based domain control validation is to use DN
 
 This again allows the Application Service Provider to query only for application-specific records it needs, while giving flexibility to the User adding the DNS record (i.e., they can be given permission to only add records under a specific prefix by the DNS administrator).
 
-Application Service Providers MUST validate that a random token in the TXT record matches the one that they gave to the User for that specific domain name. Whether or not multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record match.
+Application Service Providers MUST validate that a random token in the TXT record matches the one that they gave to the User for that specific domain name. Whether or not multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record matches.
 
 ### Random Token {#random-token}
 
