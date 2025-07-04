@@ -403,4 +403,4 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is possible wit
 
 # Acknowledgments
 
-Thank you to Tim Wicinski, John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, and many others for their feedback and suggestions on this document.
+Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, and many others for their feedback and suggestions on this document.
