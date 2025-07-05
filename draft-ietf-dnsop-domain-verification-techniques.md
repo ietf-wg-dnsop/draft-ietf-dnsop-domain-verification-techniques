@@ -57,6 +57,7 @@ informative:
     RFC9210:
     RFC6672:
     RFC9499:
+    RFC9715:
     I-D.draft-tjw-dbound2-problem-statement:
 
     PSL:
@@ -72,14 +73,6 @@ informative:
         author:
           - ins: J. Frakes
         target: "https://github.com/publicsuffix/list/wiki/Format#divisions"
-
-    AVOID-FRAGMENTATION:
-        title: "Fragmentation Avoidance in DNS"
-        date: 2023
-        author:
-          - ins: K. Fujiwara
-          - ins: P. Vixie
-        target: https://datatracker.ietf.org/doc/draft-ietf-dnsop-avoid-fragmentation/
 
     ACME-DNS-ACCOUNT-ID:
         title: "ACME DNS Labeled with Account ID Challenge"
@@ -383,7 +376,7 @@ A very common but unfortunate technique in use today is to employ a DNS TXT reco
 
 Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
-Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([AVOID-FRAGMENTATION]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
