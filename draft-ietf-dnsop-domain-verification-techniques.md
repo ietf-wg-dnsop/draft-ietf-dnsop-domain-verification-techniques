@@ -81,17 +81,6 @@ informative:
           - ins: P. Vixie
         target: https://datatracker.ietf.org/doc/draft-ietf-dnsop-avoid-fragmentation/
 
-    ACME-DNS-ACCOUNT-ID:
-        title: "ACME DNS Labeled with Account ID Challenge"
-        date: 2024
-        author:
-          - ins: A. A. Chariton
-          - ins: A. A. Omidi
-          - ins: J. Kasten
-          - ins: F. Loukos
-          - ins: S. A. Janikowski
-        target: https://datatracker.ietf.org/doc/draft-ietf-acme-dns-account-label/
-
     SUBDOMAIN-TAKEOVER:
         title: "Subdomain takeovers"
         author:
