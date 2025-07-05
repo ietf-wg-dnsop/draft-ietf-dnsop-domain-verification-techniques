@@ -285,36 +285,12 @@ Importantly, the CNAME record target also contains a random token issued by the 
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
-# Supporting Multiple Intermediaries {#multiple}
-
-There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
-
-To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-token>`. The identifier token is encoded in base32 or base16, and if the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
-
-The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
-
-    _<identifier-token>._example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
-
-or
-
-    _<identifier-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
-
-
-When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier token.
-
-The ACME protocol has incorporated this method to specify DNS account specific challenages in {{ACME-DNS-ACCOUNT-ID}}.
-
-Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname.
 
 # Security Considerations
 
 ## Token Guessing
 
 If token values aren't long enough or lack adequate entropy there's a risk that a malicious actor could guess a token through repeated attempts.
-
-## Identifier Token Confusion
-
-If identifier-token values ({{multiple}}) aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label.
 
 ## Service Confusion {#service-confusion}
 
