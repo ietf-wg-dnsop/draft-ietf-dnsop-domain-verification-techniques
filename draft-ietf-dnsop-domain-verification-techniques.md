@@ -115,9 +115,9 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a random token and asking the requester to create a DNS record containing this random token and placing it at a location within the domain that the Application Service Provider can query for.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a Unique Token and asking the requester to create a DNS record containing this Unique Token and placing it at a location within the domain that the Application Service Provider can query for.
 
-This document recommends using TXT based domain control validation in a way that is targeted to the specific application service and uses random tokens.
+This document recommends using TXT based domain control validation in a way that is targeted to the specific application service and uses Unique Tokens.
 
 # Conventions and Definitions
 
@@ -133,7 +133,9 @@ This document recommends using TXT based domain control validation in a way that
 
 * `User`: the owner or operator of a domain in the DNS who needs to prove ownership of that domain to an Application Service Provider, often on behalf of an account at the Application Service Provider, working in coordination with their DNS Administrator.
 
-* `Random Token`: a random value that uniquely identifies the DNS domain control validation challenge, defined in {{random-token}}.
+* `Unique Token`: a value that uniquely identifies the DNS domain control validation challenge, defined in {{unique-token}}. Unique Tokens are constructed by the Application Service Provider in a way that guarantees uniqueness within the scope of the challenge, such as a random value.
+
+* `Identifier Token`: a form of Unique Token described in {{multiple]} which is prefixed to the Validation Record name to multiple Intermediaries or a distinct RRset per Application Service Provider. 
 
 # Purpose of Domain Control Validation {#purpose}
 
@@ -163,35 +165,46 @@ All Domain Control Validation mechanisms are implemented by a DNS resource recor
 
 1. A record name related to the domain name being validated, usually constructed by prepending an application specific label.
 
-2. One or more random tokens.
+2. One or more Unique Tokens.
 
 ## TXT Record based Validation {#txt-record}
 
-The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Random Token (constructed as in {{random-token}}). If there are multiple RDATA strings for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the unique token generated as-above can be placed as the only contents of the RDATA. For example:
+The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The name is constructed as described in {{name}}, and RDATA MUST contain at least a Unique Token provided by the Application Service Provider (constructed according to the properties described in {{unique-token}}). If there are multiple RDATA strings for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the Unique Token generated as-above can be placed as the only contents of the RDATA. For example:
 
     _example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
 This again allows the Application Service Provider to query only for application-specific records it needs, while giving flexibility to the User adding the DNS record (i.e., they can be given permission to only add records under a specific prefix by the DNS administrator).
 
-Application Service Providers MUST validate that a random token in the TXT record matches the one that they gave to the User for that specific domain name. Whether or not multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record matches.
+Application Service Providers MUST validate that a Unique Token in the TXT record matches the one that they gave to the User for that specific domain name. Whether or not multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record matches.
 
-### Random Token {#random-token}
+### Unique Token {#unique-token}
 
-A unique token should be used in the challenge. It should be a random value issued between parties (Application Service Provider to User, Application Service Provider to Intermediary, or Intermediary to User) with the following properties:
+A Unique Token is used in the challenge and is a value issued between parties (Application Service Provider to User, Application Service Provider to Intermediary, or Intermediary to User). The Unique Token MUST be constructed in a manner which has adequate uniqueness so as to guarantee a causal relationship between its issuance and its appearance in a DNS record. If multiple Application Service Providers are using the same Validation Record name then the Unique Token MUST be constructed in a way that prevents collisions.
+
+Examples of Unique Token construction include:
+
+* A random token, such as constructed according to {{random-token}}
+* A URI {{RFC3986}} namespaced to the Application Service Provider and uniquely identifying the challenge or User
+* A keyed cryptographic hash of information known to the Application Service Provider which uniquely identifies the challenge or User
+
+This Unique Token is placed in either the RDATA or an owner name, as described in the rest of this section.  Some methods of validation may involve multiple independent Unique Tokens.
+
+If sensitive information is used to dervive a Unique Token, that information should be fed through a potentially keyed cryptographic hash as part of constructing the token.
+
+Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
+
+#### Random Token Construction {#random-token}
+
+One way of constructing Unique Tokens is to use random values which:
 
 1. MUST have at least 128 bits of entropy.
-2. base64url ({{!RFC4648, Section 5}}) encoded, base32 ({{!RFC4648, Section 6}}) encoded, or base16 ({{!RFC4648, Section 8}}) encoded.
+2. are base64url ({{!RFC4648, Section 5}}) encoded, base32 encoded, or hexidecimal base16 encoded.
 
 See {{RFC4086}} for additional information on randomness requirements.
 
-Base32 encoding or hexadecimal base16 encoding are RECOMMENDED to be specified when the random token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
-
-This random token is placed in either the RDATA or an owner name, as described in the rest of this section.  Some methods of validation may involve multiple independent random tokens.
-
-
 ### Token Metadata {#metadata}
 
-It may be desirable to associate metadata with the token in a Validation Record. When specified, metadata SHOULD be encoded in the RDATA via space-separated ASCII key-value pairs, with the key "token" prefixing the random token. For example:
+It may be desirable to associate metadata with the Unique Token in a Validation Record. When specified, metadata SHOULD be encoded in the RDATA via space-separated ASCII key-value pairs, with the key "token" prefixing the Unique Token. For example:
 
     _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
 
@@ -271,17 +284,17 @@ Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers
 
 Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
 
-The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) random tokens are generated as in {{random-token}}. For example:
+The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) Intermediary Unique Tokens are generated as in {{unique-token}}. For example:
 
-    _example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+    _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>.dcv.intermediary.example.
 
 The Intermediary then adds the actual Validation Record in a domain they control:
 
-    <intermediary-random-token>.dcv.intermediary.example.  IN   TXT "<provider-random-token>"
+    <intermediary-unique-token>.dcv.intermediary.example.  IN   TXT "<provider-unique-token>"
 
-Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider random token. CNAMEs allow automating the renewal process by letting the Intermediary place the random token in their DNS zone instead of needing continuous write access to the User's DNS.
+Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider Unique Token. CNAMEs allow automating the renewal process by letting the Intermediary place the Unique Token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-Importantly, the CNAME record target also contains a random token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User. The Intermediary must keep an association of Users and domain names to the associated Intermediary-random-tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
+Importantly, the CNAME record target also contains a Unique Token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User. The Intermediary must keep an association of Users and domain names to the associated Intermediary-Unique-Tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
@@ -289,7 +302,7 @@ When a User stops using the Intermediary they should remove the domain control v
 
 There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
-To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-token>`. The identifier token is encoded in base32 or base16, and if the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+To support this, Application Service Providers may support prefixing the challenge with a label containing a unique per-account Identifier Token of the form `_<identifier-token>`. The Identifier Token follows the guidelines for {{unique-token}} construction. The Identifier Token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
 
 The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
 
@@ -297,10 +310,10 @@ The resulting record could either directly contain a TXT record or a CNAME (as i
 
 or
 
-    _<identifier-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+    _<identifier-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>.dcv.intermediary.example.
 
 
-When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier token.
+When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate Identifier Token.
 
 The ACME protocol has incorporated this method to specify DNS account specific challenages in {{ACME-DNS-ACCOUNT-ID}}.
 
@@ -308,9 +321,9 @@ Application Service Providers may wish to always prepend the `_<identifier-token
 
 # Security Considerations
 
-## Token Guessing
+## Token Collisions
 
-If token values aren't long enough or lack adequate entropy there's a risk that a malicious actor could guess a token through repeated attempts.
+If token values aren't long enough, lack adequate entropy, or are not unique there's a risk that a malicious actor could obtain a token that collides with one already present in a domain through repeated attempts.
 
 ## Identifier Token Confusion
 
@@ -330,7 +343,7 @@ Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing t
 
 ## Authenticated Channels
 
-Application Service Providers and intermediaries should use authenticated channels to convey instructions and random tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
+Application Service Providers and intermediaries should use authenticated channels to convey instructions and Unique Tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
 
 ## DNS Spoofing and DNSSEC Validation
 
@@ -366,6 +379,10 @@ When one-off domain validation is used, this is typically implemented through au
 ## Reintroduction of Validation Records
 
 When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model.
+
+# Privacy Considerations
+
+As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to Domain Operators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
 
 # IANA Considerations
 
