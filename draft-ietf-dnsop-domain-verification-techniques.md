@@ -50,6 +50,7 @@ normative:
   RFC9364:
 
 informative:
+    RFC3986:
     RFC5234:
     RFC4086:
     RFC4343:
@@ -135,7 +136,7 @@ This document recommends using TXT based domain control validation in a way that
 
 * `Unique Token`: a value that uniquely identifies the DNS domain control validation challenge, defined in {{unique-token}}. Unique Tokens are constructed by the Application Service Provider in a way that guarantees uniqueness within the scope of the challenge, such as a random value.
 
-* `Identifier Token`: a form of Unique Token described in {{multiple]} which is prefixed to the Validation Record name to multiple Intermediaries or a distinct RRset per Application Service Provider. 
+* `Identifier Token`: a form of Unique Token described in {{multiple}} which is prefixed to the Validation Record name to multiple Intermediaries or a distinct RRset per Application Service Provider.
 
 # Purpose of Domain Control Validation {#purpose}
 
