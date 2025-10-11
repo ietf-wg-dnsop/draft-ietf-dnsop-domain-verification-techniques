@@ -157,7 +157,7 @@ The RECOMMENDED method of doing DNS-based domain control validation is to use DN
 
 This again allows the Application Service Provider to query only for application-specific records it needs, while giving flexibility to the User adding the DNS record (i.e., they can be given permission to only add records under a specific prefix by the DNS administrator).
 
-Application Service Providers MUST validate that a Unique Token in the TXT record matches the one that they gave to the User for that specific domain name. Whether multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record matches.
+Application Service Providers MUST validate that a Unique Token in the TXT record matches the one that they gave to the User for that specific domain name. Whether multiple Validation Records can exist for the same domain is up to the Application Service Provider's application specification. In case there are multiple TXT records for the specific domain name, the Application Service Provider MUST confirm at least one record match.
 
 ### Unique Token {#unique-token}
 
@@ -171,7 +171,7 @@ Examples of Unique Token construction include:
 
 This Unique Token is placed in either the RDATA or an owner name, as described in the rest of this section.  Some methods of validation may involve multiple independent Unique Tokens.
 
-If sensitive information is used to dervive a Unique Token, that information should be fed through a potentially keyed cryptographic hash as part of constructing the token.
+If sensitive information is used to derive a Unique Token, that information should be fed through a potentially keyed cryptographic hash as part of constructing the token.
 
 Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
 
@@ -180,7 +180,7 @@ Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RF
 One way of constructing Unique Tokens is to use random values which:
 
 1. MUST have at least 128 bits of entropy.
-2. are base64url ({{!RFC4648, Section 5}}) encoded, base32 encoded, or hexidecimal base16 encoded.
+2. are base64url ({{!RFC4648, Section 5}}) encoded, base32 encoded, or hexadecimal base16 encoded.
 
 See {{RFC4086}} for additional information on randomness requirements.
 
@@ -308,10 +308,10 @@ A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Va
 
 Application Service Providers MUST use a trusted DNSSEC validating resolver to verify Validation Records they have requested to be deployed. When the AD bit ({{RFC4035}} Section 3.2.3) is not set in DNS responses for Validation Records, Application Service Providers SHOULD take additional steps to reduce an attacker's ability to complete a challenge by spoofing DNS:
 
-* Application Service Prociders SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses
+* Application Service Providers SHOULD attempt to query and confirm the Validation Record by matching responses from multiple DNS resolvers on unpredictable geographically diverse IP addresses
 * Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
-DNS Spoofing attacks are easier in the case of persistent validation as the expected result is publically known. For example, absent DNSSEC this could allow an on-path attacker to bypass a revocation by continuing to return a record that the DNS Operator had removed from the zone.
+DNS Spoofing attacks are easier in the case of persistent validation as the expected result is publicly known. For example, absent DNSSEC this could allow an on-path attacker to bypass a revocation by continuing to return a record that the DNS Operator had removed from the zone.
 
 ## Application Usage Enumeration
 
