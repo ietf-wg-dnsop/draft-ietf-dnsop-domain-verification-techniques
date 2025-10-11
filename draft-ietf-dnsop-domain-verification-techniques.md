@@ -208,7 +208,7 @@ key            = 1*key-char
 key-char       = ALPHA / DIGIT / "-" / "_"
 
 value          = *value-char
-value-char    = ALPHA / DIGIT / "+" / "/" / "=" / ":" / "+" / "-" / "_"
+value-char    = ALPHA / DIGIT / "+" / "/" / "=" / ":" / "-" / "_"
 ~~~
 
 If an alternate syntax is used by the Application Service Provider for token metadata, they MUST specify a grammar for it.
