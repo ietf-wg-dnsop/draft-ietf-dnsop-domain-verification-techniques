@@ -152,7 +152,7 @@ All Domain Control Validation mechanisms are implemented by a DNS resource recor
 
 ## TXT Record based Validation {#txt-record}
 
-The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The QNAME is constructed as described in {{name}}, and the RDATA MUST contain at least a Unique Token provided by the Application Service Provider (constructed according to the properties described in {{unique-token}}). If there are multiple character-strings within the RDATA for a record, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the Unique Token generated as-above can be placed as the only contents of the RDATA. For example:
+The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The QNAME is constructed as described in {{name}}, and the RDATA MUST contain at least a Unique Token provided by the Application Service Provider (constructed according to the properties described in {{unique-token}}). If there are multiple character-strings within the RDATA, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the Unique Token generated as-above can be placed as the only contents of the RDATA. For example:
 
     _example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
