@@ -208,7 +208,9 @@ Keys are considered to be case-insensitive. Each Validation Record consists of R
     key-char       = ALPHA / DIGIT / "-" / "_"
 
     value          = *value-char
-    value-char    = ALPHA / DIGIT / "+" / "/" / "=" / ":" / "+" / "-" / "_"
+    value-char    = value-char = %x21-21 / %x23-5B / %x5D-7E 
+                    ; All printable ASCII except space (0x20), 
+                    ; quotation mark (0x22), and backslash (0x5C)
 
 If an alternate syntax is used by the Application Service Provider for token metadata, they MUST specify a grammar for it.
 
