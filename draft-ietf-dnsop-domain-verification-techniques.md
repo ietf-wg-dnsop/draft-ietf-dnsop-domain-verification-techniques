@@ -200,17 +200,19 @@ The token MUST be the first element in the key-value list. If the TXT record RDA
 
 Keys are considered to be case-insensitive. Each Validation Record consists of RDATA for val-record with the following grammar (with an ABNF per {{RFC5234}}):
 
-    val-record     = keyvalue-list
-    keyvalue-list  = keyvalue-pair *( SP keyvalue-pair )
-    keyvalue-pair  = key "=" value
+~~~ abnf
+val-record     = keyvalue-list
+keyvalue-list  = keyvalue-pair *( SP keyvalue-pair )
+keyvalue-pair  = key "=" value
 
-    key            = 1*key-char
-    key-char       = ALPHA / DIGIT / "-" / "_"
+key            = 1*key-char
+key-char       = ALPHA / DIGIT / "-" / "_"
 
-    value          = *value-char
-    value-char    = value-char = %x21-21 / %x23-5B / %x5D-7E 
-                    ; All printable ASCII except space (0x20), 
-                    ; quotation mark (0x22), and backslash (0x5C)
+value          = *value-char
+value-char    = value-char = %x21-21 / %x23-5B / %x5D-7E
+                ; All printable ASCII except space (0x20),
+                ; quotation mark (0x22), and backslash (0x5C)
+~~~
 
 If an alternate syntax is used by the Application Service Provider for token metadata, they MUST specify a grammar for it.
 
