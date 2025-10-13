@@ -209,7 +209,7 @@ key            = 1*key-char
 key-char       = ALPHA / DIGIT / "-" / "_"
 
 value          = *value-char
-value-char    = value-char = %x21-21 / %x23-5B / %x5D-7E
+value-char     = value-char = %x21-21 / %x23-5B / %x5D-7E
                 ; All printable ASCII except space (0x20),
                 ; quotation mark (0x22), and backslash (0x5C)
 ~~~
