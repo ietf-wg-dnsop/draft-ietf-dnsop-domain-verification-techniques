@@ -84,6 +84,14 @@ Note that if there are more than 5 CNAMEs being chained, then this method does n
 
 https://techdocs.akamai.com/property-mgr/docs/add-hn-with-default-cert-la
 
+#### DigiCert
+
+DigiCert is switching to use static prefix `_dnsauth` CNAME record configuration:
+
+    _dnsauth.example.com IN CNAME [random_value].dcv.digicert.com
+
+https://docs.digicert.com/en/whats-new/change-log/certcentral-change-log.html#october-28--2025
+
 #### Fastly
 
     _acme-challenge.domain.com. IN CNAME token.fastly-validations.com.
