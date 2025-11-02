@@ -279,8 +279,7 @@ If token values aren't long enough, lack adequate entropy, or are not unique the
 
 Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements.
 
-When Random Tokens are used, they MUST be constructed in a way that does not have collisions and is not predictable (see {{RFC4086}}).
-
+When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks.
 
 ## Service Confusion {#service-confusion}
 
