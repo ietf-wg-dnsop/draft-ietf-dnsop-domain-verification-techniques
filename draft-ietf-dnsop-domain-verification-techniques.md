@@ -180,10 +180,8 @@ Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RF
 
 One way of constructing Unique Tokens is to use random values which:
 
-1. MUST have at least 128 bits of entropy.
+1. have adequate entropy to guarantee uniqueness and ensure that an attacker is unable to create a situation where a collision occurs.
 2. are base64url ({{!RFC4648, Section 5}}) encoded, base32 encoded, or hexadecimal base16 encoded.
-
-See {{RFC4086}} for additional information on randomness requirements.
 
 ### Token Metadata {#metadata}
 
@@ -278,6 +276,10 @@ When a User stops using the Intermediary they should remove the domain control v
 ## Token Collisions
 
 If token values aren't long enough, lack adequate entropy, or are not unique there's a risk that a malicious actor could obtain a token that collides with one already present in a domain through repeated attempts.
+
+Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements.
+
+When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks.
 
 ## Service Confusion {#service-confusion}
 
