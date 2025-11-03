@@ -101,7 +101,7 @@ Many application services on the Internet need to verify ownership or control of
 
 Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. In practice, DNS-based methods take the form of the Application Service Provider generating a Unique Token and asking the requester to create a DNS record containing this Unique Token and placing it at a location within the domain that the Application Service Provider can query for.
 
-This document recommends using a TXT based DNS Validation Record in a way that is targeted to the specific application service, and uses Unique Tokens to guarantee uniqueness. 
+This document recommends using a TXT based DNS Validation Record in a way that is targeted to the specific application service, and uses Unique Tokens to guarantee uniqueness.
 
 
 # Conventions and Definitions
@@ -201,12 +201,12 @@ Keys are considered to be case-insensitive. Each Validation Record consists of R
 ~~~ abnf
 val-record     = keyvalue-list
 keyvalue-list  = keyvalue-pair *( SP keyvalue-pair )
-keyvalue-pair  = key "=" value
+keyvalue-pair  = key [ "=" value ]
 
 key            = 1*key-char
 key-char       = ALPHA / DIGIT / "-" / "_"
 
-value          = *value-char
+value          = 1*value-char
 value-char     = value-char = %x21-21 / %x23-5B / %x5D-7E
                 ; All printable ASCII except space (0x20),
                 ; quotation mark (0x22), and backslash (0x5C)
@@ -238,7 +238,7 @@ The instructions for validity duration MAY be encoded in the RDATA as token meta
 
 When an expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
 
-Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the "expiry" key SHALL be set as "expiry=never". 
+Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the "expiry" key SHALL be set as "expiry=never".
 
 The "expiry" key MAY be omitted in cases where the Application Service Provider has clarified the record expiry policy out-of-band.  In this case, the RDATA is set to "token=3419...3d206c4". This is semantically identical to "3419...3d206c4".
 
@@ -257,7 +257,7 @@ Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers
 
 Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
 
-The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The record name and base16-encoded (or base32-encoded) Intermediary Unique Tokens are generated as in {{unique-token}}. For example:
+The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The canonical name in the CNAME record is constructed as a base16-encoded (or base32-encoded) Intermediary Unique Token (generated as in {{unique-token}}) prefixed onto a domain operated by the Intermediary. For example:
 
     _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>.dcv.intermediary.example.
 
@@ -291,7 +291,7 @@ As a corollary to {{service-confusion}}, if the Validation Record is not well-sc
 
 ## Scope Confusion
 
-Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope in as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores an attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator.
+Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores an attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator.
 
 ## Authenticated Channels
 
@@ -335,7 +335,7 @@ When a domain has a new owner, that new owner could add a Validation Record that
 
 # Privacy Considerations
 
-As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to Domain Operators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
+As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to DNS Administrators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
 
 # IANA Considerations
 
