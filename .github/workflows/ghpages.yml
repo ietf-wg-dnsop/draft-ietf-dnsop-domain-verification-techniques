@@ -51,9 +51,11 @@ jobs:
     - name: "Save HTML"
       uses: actions/upload-artifact@v4
       with:
+        name: "html"
         path: "*.html"
 
     - name: "Save Text"
       uses: actions/upload-artifact@v4
       with:
+        name: "txt"
         path: "*.txt"
