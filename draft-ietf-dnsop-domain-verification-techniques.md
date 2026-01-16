@@ -51,10 +51,12 @@ normative:
   RFC4035:
 
 informative:
+    RFC3833:
     RFC3986:
     RFC5234:
     RFC4086:
     RFC4343:
+    RFC7132:
     RFC8555:
     RFC9210:
     RFC6672:
@@ -132,10 +134,38 @@ Persistent validation is only appropriate for applications where the validation 
 
 Delegated Domain Validation ({{delegated}}) is a method typically used as a way to adapt between these modes, with a persistent validation to an Intermediary enabling the Intermediary to transitively perform recurring one-off validations.
 
+# Threat Model {#threat-model}
+
+As Domain Control Verification is a mechanism trying to provide security properties over sometimes-insecure underlying protocols, it is important to be clear about both its threat model.
+
+While the specific primary Unacceptable Losses will depend on the nature of the Application Service Provider, they generalize to:
+
+* UL1. Application Service Provider believes a User has privileges on a domain name without this being authorized by the DNS Administrator for the domain. The Threat Actor in this case is a malicious User leveraging these privileges in some way.
+* UL2. Application Service Provider, Intermediary, or other party gains unintended control over resources within a domain or on a domain name. The Threat Actor in this case is the Application Service Provider, Intermediary, or other party leveraging this unintended control in some way.
+
+## Hazards leading to Unauthorized Priviledges (UL1) {#threat-ul1}
+
+For UL1, the Application-specific nature of these priviledges (such as being able to obtain a signed certificate covering the domain name, being able to use a social media handle under that domain, or being able to provision configurations associated with that domain int the Application Service Provider system) will determine the specifics of the underlying Unacceptable Loss.
+
+Domain Control Validation attempts to address UL1 by having the User demonstrate relationship between the Application Service Provider issuing a Unique Token and that Unique Token appearing in domain. Classes of Hazards include:
+
+* H1. Unique Token collision leading to an unassociated but matching Validation Record already being present in the domain, thus violating the causality property.
+* H2. Cross-User vulnerabilities leading to a Unique Token issued to one User being leveraged by a different User, due to vulnerabilities in how an Application Service Provider or Intermediary implements Domain Control Validation.
+* H3. Network and DNS based attacks leading to a Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be due to on-path network attackers, network attackers inserting themselves on-path (e.g., {{RFC7132}}), or other DNS protocol attacks (see {{RFC3833}}.
+* H4. DNS Administrator errors, including human factor issues, leading to a Validation Record being unintentionally added or unintentionally persisting.
+* H5. Confusion over the scope of a Validation Record resulting in broader privileges being granted to the User than was intended by the DNS Administrator. This is discussed more below in {{scope}}.
+
+
+## Hazards leading to Unintended Access to Domain Resources (UL2) {#threat-ul2}
+
+For UL2, unintended control over a domain or domain name results as a side-effect of the Domain Control Validation process itself. Classes of Hazards include:
+
+* H6. The owner name of the Validation Record is meaningful in other contexts, enabling cross-protocol, privilege escalation, and/or confused deputy attacks. For example, if a Validation Record is a CNAME and has an owner name that is a valid hostname, the Application Service Provider could provide services on the Validation Record name within the domain.
+
 
 # Scope of Validation {#scope}
 
-For security reasons, it is crucial to understand the scope of the domain name being validated. Both Application Service Providers and the User need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
+For security reasons (see H5 in {{threat-ul1}}), it is crucial to understand the scope of the domain name being validated. Both Application Service Providers and the User need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
 
 In the case of X.509 certificate issuance, the certificate signing request and associated challenge are clear about whether they are for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}) does not differentiate these cases in the DNS Validation Record. In the absence of this distinction, the DNS administrator tasked with deploying the Validation Record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the User intended.
 
@@ -180,7 +210,7 @@ Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RF
 
 One way of constructing Unique Tokens is to use random values which:
 
-1. have adequate entropy to guarantee uniqueness and ensure that an attacker is unable to create a situation where a collision occurs.
+1. have adequate entropy to guarantee uniqueness and ensure that an attacker is unable to create a situation where a collision occurs (see H1 in {{threat-ul1}}).
 2. are base64url ({{!RFC4648, Section 5}}) encoded, base32 encoded, or hexadecimal base16 encoded.
 
 ### Token Metadata {#metadata}
@@ -216,7 +246,7 @@ If an alternate syntax is used by the Application Service Provider for token met
 
 ## Validation Record Owner Name {#name}
 
-The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_example\_service-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname.
+The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_example\_service-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname (see H6 in {{threat-ul2}}).
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
@@ -267,7 +297,7 @@ The Intermediary then adds the actual Validation Record in a domain they control
 
 Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider Unique Token. CNAMEs allow automating the renewal process by letting the Intermediary place the Unique Token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-Importantly, the CNAME record target also contains a Unique Token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User. The Intermediary must keep an association of Users and domain names to the associated Intermediary-Unique-Tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
+Importantly, the CNAME record target also contains a Unique Token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User (see H2 in {{threat-ul1}}). The Intermediary must keep an association of Users and domain names to the associated Intermediary-Unique-Tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
@@ -275,27 +305,28 @@ When a User stops using the Intermediary they should remove the domain control v
 
 ## Token Collisions
 
-If token values aren't long enough, lack adequate entropy, or are not unique there's a risk that a malicious actor could obtain a token that collides with one already present in a domain through repeated attempts.
+If token values aren't long enough, lack adequate entropy, or are not unique there's a risk that a malicious actor could obtain a token that collides with one already present in a domain through repeated attempts (H1 in {{threat-ul1}}).
 
-Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements.
+Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements (UL1 in {{threat-model}}).
 
 When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks.
 
 ## Service Confusion {#service-confusion}
 
-A malicious Application Service Provider that promises to deliver something after domain control validation could surreptitiously ask another Application Service Provider to start processing or sending mail for the target domain and then present the victim User with this DNS TXT record pretending to be for their service. Once the User has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer forward a challenge from a different service without the User noticing. Both the Application Service Provider and the service being authenticated and authorized should be unambiguous from the Validation Record to prevent malicious services from misleading the domain owner into certifying a different provider or service.
+A malicious Application Service Provider that promises to deliver something after domain control validation could surreptitiously ask another Application Service Provider to start processing or sending mail for the target domain and then present the victim User with this DNS TXT record pretending to be for their service. Once the User has added the DNS TXT record, instead of getting their service, their domain is now certifying another service of which they are not aware they are now a consumer. If services use a clear description and name attribution in the required DNS TXT record, this can be avoided. For example, by requiring a DNS TXT record at \_vendorname.example.com instead of at example.com, a malicious service could no longer forward a challenge from a different service without the User noticing. Both the Application Service Provider and the service being authenticated and authorized should be unambiguous from the Validation Record to prevent malicious services from misleading the domain owner into certifying a different provider or service. (H2, H4, H5, and H6 in {{threat-model}})
 
 ## Service Collision
 
 As a corollary to {{service-confusion}}, if the Validation Record is not well-scoped and unambiguous with respect to the Application Service Provider, it could be used to authorize use of another Application Service Provider or service in addition to the original Application Service Provider or service.
+(H2, H4, H5, and H6 in {{threat-model}})
 
 ## Scope Confusion
 
-Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores an attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator.
+Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores an attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS administrator. (H5 in {{threat-model}})
 
 ## Authenticated Channels
 
-Application Service Providers and intermediaries should use authenticated channels to convey instructions and Unique Tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User.
+Application Service Providers and intermediaries should use authenticated channels to convey instructions and Unique Tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User. (H3 in {{threat-ul1}})
 
 ## DNS Spoofing and DNSSEC Validation
 
@@ -307,6 +338,8 @@ Application Service Providers MUST use a trusted DNSSEC validating resolver to v
 * Application Service Providers MAY perform multiple queries spread out over a longer time period to reduce the chance of receiving spoofed DNS answers.
 
 DNS Spoofing attacks are easier in the case of persistent validation as the expected result is publicly known. For example, absent DNSSEC this could allow an on-path attacker to bypass a revocation by continuing to return a record that the DNS Operator had removed from the zone.
+
+The above are needed to address H3 in {{threat-ul1}}.
 
 ## Application Usage Enumeration
 
@@ -325,13 +358,13 @@ Whether it is appropriate to allow domain verification on a public suffix will d
 
 ## Unintentional Persistence
 
-When persistent domain validation is used, a DNS Administrator failing to remove a no-longer desired Validation Record could enable a User to continue to have access to the domain within the Application Service Provider's service.
+When persistent domain validation is used, a DNS Administrator failing to remove a no-longer desired Validation Record could enable a User to continue to have access to the domain within the Application Service Provider's service. (H4 in {{threat-ul1}})
 
 When one-off domain validation is used, this is typically implemented through automation where a DNS Administrator grants the User access to make updates to the domain's zone configuration. If the DNS Administrator fails to revoke access to a User who should no longer have access, this would enable the User to continue to perform new validations.
 
 ## Reintroduction of Validation Records
 
-When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model.
+When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model. (H1 and H4 in {{threat-ul1}})
 
 # Privacy Considerations
 
