@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-18T01:29:03.560283+00:00",
+  "timestamp": "2026-01-29T01:45:49.079639+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -3226,7 +3226,7 @@
       "id": "I_kwDOExoRlc7TJvjP",
       "title": "Threat model and random token lengths",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/199",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "enygren",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -3235,8 +3235,8 @@
       ],
       "body": "It has been called out on the list by that we lack a threat model and that the MUST for random token length may be unnecessary.\n\nGiven some of the text we've added on unique tokens and on what really mattering here being able to demonstrate causal relationship, there is a good point that 128 bits of entropy is extreme overkill.\n\nWriting down details of this threat model and attack scenarios is an important part.\n\nFrom that we should be able to provide better guidance for random token sizes (or at least how to think about them), and remove the MUST.\n",
       "createdAt": "2025-10-22T22:23:52Z",
-      "updatedAt": "2025-11-03T15:06:02Z",
-      "closedAt": null,
+      "updatedAt": "2026-01-28T03:09:57Z",
+      "closedAt": "2026-01-28T03:09:57Z",
       "comments": [
         {
           "author": "enygren",
@@ -3316,6 +3316,24 @@
       "body": "@oerdnj suggests on the list that:\n\n\n> &gt; The TTL [RFC1034] for Validation Records SHOULD be short to allow<br>\n> &gt; recovering from potential misconfigurations. These records will not<br>\n> &gt; be polled frequently so caching or resolver load will not be an<br>\n> &gt; issue.<br>\n> <br>\n> This assumes no wrong doings, but the internet traffic is driven by mistakes<br>\n> and miscreants, so the saying that \"caching or resolver load will not be an issue\"<br>\n> is actually not right.<br>\n> \n[...]\n\n> I actually like the fact that the DCV records are kept under individual labels<br>\n> and not stuffed into apex like the domain above, and I think this deserves<br>\n> text into Security Considerations:<br>\n> <br>\n> Amplification Attacks<br>\n> <br>\n> Segmenting the Domain Control Validation tokens into individual per-service<br>\n> Validation Record Owner Names has the advantage of making the individual<br>\n> DNS responses smaller and thus reducing the potential of said TXT RRs to be<br>\n> used in the DNS amplification attacks. It should be noted that expired and no longer<br>\n> usable tokens should be removed even from Validation Record Owner Name DNS<br>\n> tree nodes to keep the DNS responses sizes at minimal level.<br>\n",
       "createdAt": "2025-11-03T01:21:40Z",
       "updatedAt": "2025-11-03T01:21:40Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 209,
+      "id": "I_kwDOExoRlc7mZcGX",
+      "title": "Add security consideration for old domain owner retaining access",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/209",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "From: \u00c1ngel Gonz\u00e1lez angel@16bits.net to dnsop\n\n> Section 7.10 mentions a new domain owner reintroducing an old\n> validation record to make an old Application Service believe that an\n> old user is still active.\n> \n> I miss however the opposite case: the new domain owner signs up into\n> the Service, but the Application Service Provider actually treats it as\n> a reactivation of the Service that was available back with the previous\n> owner, allowing the old domain owner to access to the service of the\n> new owner.",
+      "createdAt": "2026-01-28T13:20:26Z",
+      "updatedAt": "2026-01-28T13:20:26Z",
       "closedAt": null,
       "comments": []
     }
@@ -10339,26 +10357,42 @@
       "id": "PR_kwDOExoRlc69qfLd",
       "title": "Threat model",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/206",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "enygren",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This proposes a threat model for Domain Control Validation.\r\nFixes #199 \r\n\r\nThere aren't many precedents for including a threat model in an IETF draft so it's possible that we will need to iterate on this some.  Most other threat models appear to be stand-alone RFCs.  I drew from STAMP terminology here, but rather than incorporating this as an analysis I list the Unacceptable Losses and Hazards up-front and then reference them throughout from the sections intended to mitigate them.\r\n\r\nPlacement and length of the threat model is also a trade-off here, but given that this draft's purpose is to mitigate the threats it seemed worth including it early on (but not so early as to lack context for the reader).\r\n",
       "createdAt": "2026-01-16T17:17:03Z",
-      "updatedAt": "2026-01-16T17:39:00Z",
+      "updatedAt": "2026-01-28T03:09:56Z",
       "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
       "baseRefName": "main",
       "baseRefOid": "4b6ae3dad522ec4825f5ecb904cf485124880870",
       "headRepository": "enygren/draft-ietf-dnsop-domain-verification-techniques",
       "headRefName": "enygren-threat-model",
       "headRefOid": "7db4744296d6a3fae17a18f846a15ba659e01b0e",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-01-28T03:09:56Z",
+      "mergedAt": "2026-01-28T03:09:56Z",
+      "mergedBy": "paulwouters",
+      "mergeCommit": {
+        "oid": "eaa3b1afe7ce869157a25517c4e355682b5087d6"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc7dZP5F",
+          "commit": {
+            "abbreviatedOid": "7db4744"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-01-28T03:09:26Z",
+          "updatedAt": "2026-01-28T03:09:26Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 207,
