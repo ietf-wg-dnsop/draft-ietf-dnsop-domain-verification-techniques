@@ -277,7 +277,7 @@ The User SHOULD de-provision the resource record provisioned for DNS-based domai
 
 ## TTL Considerations
 
-The TTL {{RFC1034}} for Validation Records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so caching or resolver load will not be an issue.
+The TTL {{RFC1034}} for Validation Records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so expected caching or resolver load will be limited during normal operations.
 
 The Application Service Provider looking up a Validation Record may have to wait for up to the SOA minimum TTL (negative caching TTL) of the enclosing zone for the record to become visible, if it has been previously queried. If the application User wants to make the Validation Record visible more quickly they may need to work with the DNS administrator to see if they are willing to lower the SOA minimum TTL (which has implications across the entire zone).
 
@@ -366,6 +366,10 @@ When one-off domain validation is used, this is typically implemented through au
 
 When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model. (H1 and H4 in {{threat-ul1}})
 
+## Amplification Attacks
+
+Segmenting the Domain Control Validation tokens into individual per-service Validation Record Owner Names has the advantage of making the individual DNS responses smaller and thus reducing the potential of said TXT RRs to be used in the DNS amplification attacks. It should be noted that expired and no longer usable tokens should be removed even from Validation Record Owner Name DNS tree nodes to keep the DNS responses sizes at minimal level.
+
 # Privacy Considerations
 
 As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to DNS Administrators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
@@ -406,4 +410,4 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is possible wit
 
 # Acknowledgments
 
-Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, and many others for their feedback and suggestions on this document.
+Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ondřej Surý, and many others for their feedback and suggestions on this document.
