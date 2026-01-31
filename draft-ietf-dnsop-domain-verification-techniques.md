@@ -366,6 +366,10 @@ When one-off domain validation is used, this is typically implemented through au
 
 When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model. (H1 and H4 in {{threat-ul1}})
 
+## Validations not Coupled to Users
+
+If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain.  (H2 in {{threat-ul1}})
+
 # Privacy Considerations
 
 As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to DNS Administrators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
@@ -386,7 +390,7 @@ A very common but unfortunate technique in use today is to employ a DNS TXT reco
 
 Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
-Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplication attacks.
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
@@ -406,4 +410,4 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is possible wit
 
 # Acknowledgments
 
-Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, and many others for their feedback and suggestions on this document.
+Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ángel González, and many others for their feedback and suggestions on this document.
