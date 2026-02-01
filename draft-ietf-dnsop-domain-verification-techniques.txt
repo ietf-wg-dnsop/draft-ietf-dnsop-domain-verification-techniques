@@ -101,7 +101,8 @@ Table of Contents
      9.9.  Public Suffixes
      9.10. Unintentional Persistence
      9.11. Reintroduction of Validation Records
-     9.12. Validations not Coupled to Users
+     9.12. Amplification Attacks
+     9.13. Validations not Coupled to Users
    10. Privacy Considerations
    11. IANA Considerations
    12. References
@@ -520,8 +521,8 @@ _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=
 
    The TTL [RFC1034] for Validation Records SHOULD be short to allow
    recovering from potential misconfigurations.  These records will not
-   be polled frequently so caching or resolver load will not be an
-   issue.
+   be polled frequently so expected caching or resolver load will be
+   limited during normal operations.
 
    The Application Service Provider looking up a Validation Record may
    have to wait for up to the SOA minimum TTL (negative caching TTL) of
@@ -796,7 +797,17 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
    persistent domain validation need to include this risk within their
    threat model.  (H1 and H4 in Section 4.1)
 
-9.12.  Validations not Coupled to Users
+9.12.  Amplification Attacks
+
+   Segmenting the Domain Control Validation tokens into individual per-
+   service Validation Record Owner Names has the advantage of making the
+   individual DNS responses smaller and thus reducing the potential of
+   said TXT RRs to be used in the DNS amplification attacks.  It should
+   be noted that expired and no longer usable tokens should be removed
+   even from Validation Record Owner Name DNS tree nodes to keep the DNS
+   responses sizes at minimal level.
+
+9.13.  Validations not Coupled to Users
 
    If an Application Service Provider does not properly associate Domain
    Validation with Users, the new owner of a domain could potentially
@@ -1020,8 +1031,8 @@ A.3.  Interactions with DNAME
 Appendix B.  Acknowledgments
 
    Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo
-   Soini, Ben Kaduk, Paul Hoffman, Ángel González, and many others for
-   their feedback and suggestions on this document.
+   Soini, Ben Kaduk, Paul Hoffman, Ángel González, Ondřej Surý, and many
+   others for their feedback and suggestions on this document.
 
 Authors' Addresses
 

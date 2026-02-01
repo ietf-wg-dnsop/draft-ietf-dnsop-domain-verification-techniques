@@ -1248,7 +1248,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.9.2.11.1"><a href="#section-9.11" class="auto internal xref">9.11</a>. <a href="#name-reintroduction-of-validatio" class="internal xref">Reintroduction of Validation Records</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.12">
-                <p id="section-toc.1-1.9.2.12.1"><a href="#section-9.12" class="auto internal xref">9.12</a>. <a href="#name-validations-not-coupled-to-" class="internal xref">Validations not Coupled to Users</a></p>
+                <p id="section-toc.1-1.9.2.12.1"><a href="#section-9.12" class="auto internal xref">9.12</a>. <a href="#name-amplification-attacks" class="internal xref">Amplification Attacks</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.13">
+                <p id="section-toc.1-1.9.2.13.1"><a href="#section-9.13" class="auto internal xref">9.13</a>. <a href="#name-validations-not-coupled-to-" class="internal xref">Validations not Coupled to Users</a></p>
 </li>
             </ul>
 </li>
@@ -1560,7 +1563,7 @@ _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=
         <h3 id="name-ttl-considerations">
 <a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-ttl-considerations" class="section-name selfRef">TTL Considerations</a>
         </h3>
-<p id="section-6.4-1">The TTL <span>[<a href="#RFC1034" class="cite xref">RFC1034</a>]</span> for Validation Records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so caching or resolver load will not be an issue.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4-1">The TTL <span>[<a href="#RFC1034" class="cite xref">RFC1034</a>]</span> for Validation Records SHOULD be short to allow recovering from potential misconfigurations. These records will not be polled frequently so expected caching or resolver load will be limited during normal operations.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
 <p id="section-6.4-2">The Application Service Provider looking up a Validation Record may have to wait for up to the SOA minimum TTL (negative caching TTL) of the enclosing zone for the record to become visible, if it has been previously queried. If the application User wants to make the Validation Record visible more quickly they may need to work with the DNS administrator to see if they are willing to lower the SOA minimum TTL (which has implications across the entire zone).<a href="#section-6.4-2" class="pilcrow">¶</a></p>
 <p id="section-6.4-3">Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers configured with a low maximum negative caching TTL, flush Validation Records from resolver caches prior to issuing queries or just directly query authoritative name servers to avoid caching.<a href="#section-6.4-3" class="pilcrow">¶</a></p>
 </section>
@@ -1732,12 +1735,20 @@ _&lt;identifier-unique-token&gt;._example_service-challenge.example.com.  IN   C
 <p id="section-9.11-1">When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model. (H1 and H4 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-9.11-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="validations-not-coupled-to-users">
+<div id="amplification-attacks">
 <section id="section-9.12">
-        <h3 id="name-validations-not-coupled-to-">
-<a href="#section-9.12" class="section-number selfRef">9.12. </a><a href="#name-validations-not-coupled-to-" class="section-name selfRef">Validations not Coupled to Users</a>
+        <h3 id="name-amplification-attacks">
+<a href="#section-9.12" class="section-number selfRef">9.12. </a><a href="#name-amplification-attacks" class="section-name selfRef">Amplification Attacks</a>
         </h3>
-<p id="section-9.12-1">If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain.  (H2 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-9.12-1" class="pilcrow">¶</a></p>
+<p id="section-9.12-1">Segmenting the Domain Control Validation tokens into individual per-service Validation Record Owner Names has the advantage of making the individual DNS responses smaller and thus reducing the potential of said TXT RRs to be used in the DNS amplification attacks. It should be noted that expired and no longer usable tokens should be removed even from Validation Record Owner Name DNS tree nodes to keep the DNS responses sizes at minimal level.<a href="#section-9.12-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="validations-not-coupled-to-users">
+<section id="section-9.13">
+        <h3 id="name-validations-not-coupled-to-">
+<a href="#section-9.13" class="section-number selfRef">9.13. </a><a href="#name-validations-not-coupled-to-" class="section-name selfRef">Validations not Coupled to Users</a>
+        </h3>
+<p id="section-9.13-1">If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain.  (H2 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-9.13-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1920,7 +1931,7 @@ _&lt;identifier-unique-token&gt;._example_service-challenge.example.com.  IN   C
       <h2 id="name-acknowledgments">
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-B-1">Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ángel González, and many others for their feedback and suggestions on this document.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ángel González, Ondřej Surý, and many others for their feedback and suggestions on this document.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
