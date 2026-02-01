@@ -88,23 +88,25 @@ Table of Contents
      6.3.  Time-bound checking and Expiration
      6.4.  TTL Considerations
    7.  Delegated Domain Control Validation
-   8.  Security Considerations
-     8.1.  Token Collisions
-     8.2.  Service Confusion
-     8.3.  Service Collision
-     8.4.  Scope Confusion
-     8.5.  Authenticated Channels
-     8.6.  DNS Spoofing and DNSSEC Validation
-     8.7.  Application Usage Enumeration
-     8.8.  Public Suffixes
-     8.9.  Unintentional Persistence
-     8.10. Reintroduction of Validation Records
-     8.11. Validations not Coupled to Users
-   9.  Privacy Considerations
-   10. IANA Considerations
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   8.  Supporting Multiple Accounts and Multiple Intermediaries
+   9.  Security Considerations
+     9.1.  Token Collisions
+     9.2.  Token Confusion
+     9.3.  Service Confusion
+     9.4.  Service Collision
+     9.5.  Scope Confusion
+     9.6.  Authenticated Channels
+     9.7.  DNS Spoofing and DNSSEC Validation
+     9.8.  Application Usage Enumeration
+     9.9.  Public Suffixes
+     9.10. Unintentional Persistence
+     9.11. Reintroduction of Validation Records
+     9.12. Validations not Coupled to Users
+   10. Privacy Considerations
+   11. IANA Considerations
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
    Appendix A.  Appendix
      A.1.  Common Pitfalls
      A.2.  Domain Boundaries
@@ -579,9 +581,49 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    domain control validation CNAME in addition to any other records they
    have associated with the Intermediary.
 
-8.  Security Considerations
+8.  Supporting Multiple Accounts and Multiple Intermediaries
 
-8.1.  Token Collisions
+   There are use-cases where a User may wish to simultaneously use
+   multiple intermediaries or multiple independent accounts with an
+   Application Service Provider.  For example, a hostname may be using a
+   "multi-CDN" where the hostname simultaneously uses multiple Content
+   Delivery Network (CDN) providers.
+
+   To support this, Application Service Providers may support prefixing
+   the challenge with a label containing an unique account identifier of
+   the form _<identifier-unique-token>.  The identifier-unique-token is
+   a base16-encoded (or base32-encoded) Unique Token (generated as in
+   Section 6.1.1.  If the identifier is sensitive in nature, it should
+   be run through a truncated hashing algorithm first.  The identifier
+   token should be stable over time and would be provided to the User by
+   the Application Service Provider, or by an Intermediary in the case
+   where domain validation is delegated (Section 7).
+
+   The resulting record could either directly contain a TXT record or a
+   CNAME (as in Section 7).  For example:
+
+_<identifier-unique-token>._example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
+
+   or
+
+_<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+
+   When performing validation, the Application Service Provider would
+   resolve the DNS name containing the appropriate identifier unique
+   token.
+
+   The ACME protocol has incorporated this method to specify DNS account
+   specific challenges in [ACME-DNS-ACCOUNT-LABEL].
+
+   Application Service Providers may wish to always prepend the
+   _<identifier-token> to make it harder for third parties to scan, even
+   absent supporting multiple intermediaries.  The _<identifier-token>
+   MUST start with an underscore so as to not be a valid hostname (see
+   H6 in Section 4.2).
+
+9.  Security Considerations
+
+9.1.  Token Collisions
 
    If token values aren't long enough, lack adequate entropy, or are not
    unique there's a risk that a malicious actor could obtain a token
@@ -597,7 +639,14 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    provides sufficient unpredictability to avoid collisions and brute
    force attacks.
 
-8.2.  Service Confusion
+9.2.  Token Confusion
+
+   If token values in challenge labels (Section 8) aren't long enough or
+   lack adequate entropy there's a risk that a malicious actor could
+   produce a token that could be confused with an application-specific
+   underscore prefix label (H6 in Section 4.2).
+
+9.3.  Service Confusion
 
    A malicious Application Service Provider that promises to deliver
    something after domain control validation could surreptitiously ask
@@ -617,15 +666,15 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    domain owner into certifying a different provider or service.  (H2,
    H4, H5, and H6 in Section 4)
 
-8.3.  Service Collision
+9.4.  Service Collision
 
-   As a corollary to Section 8.2, if the Validation Record is not well-
+   As a corollary to Section 9.3, if the Validation Record is not well-
    scoped and unambiguous with respect to the Application Service
    Provider, it could be used to authorize use of another Application
    Service Provider or service in addition to the original Application
    Service Provider or service.  (H2, H4, H5, and H6 in Section 4)
 
-8.4.  Scope Confusion
+9.5.  Scope Confusion
 
    Ambiguity of scope introduces risks, as described in Section 5.
    Distinguishing the scope in the application-specific label, along
@@ -641,7 +690,7 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    attacker includes the attribute to mislead the DNS administrator.
    (H5 in Section 4)
 
-8.5.  Authenticated Channels
+9.6.  Authenticated Channels
 
    Application Service Providers and intermediaries should use
    authenticated channels to convey instructions and Unique Tokens to
@@ -649,7 +698,7 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    instructions, potentially allowing the attacker to provision the
    service instead of the User.  (H3 in Section 4.1)
 
-8.6.  DNS Spoofing and DNSSEC Validation
+9.7.  DNS Spoofing and DNSSEC Validation
 
    A domain owner SHOULD sign their DNS zone using DNSSEC [RFC9364] to
    protect Validation Records against DNS spoofing attacks, including
@@ -678,14 +727,17 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
 
    The above are needed to address H3 in Section 4.1.
 
-8.7.  Application Usage Enumeration
+9.8.  Application Usage Enumeration
 
    The presence of a Validation Record with a predictable domain name
    (either as a TXT record for the exact domain name where control is
    being validated or with a well-known label) can allow attackers to
-   enumerate the utilized set of Application Service Providers.
+   enumerate the utilized set of Application Service Providers.  The use
+   of Section 8 can make it harder to scan if the identifier-unique-
+   token is long enough, but can also expose User account information
+   depending on how the identifier-unique-token is encoded.
 
-8.8.  Public Suffixes
+9.9.  Public Suffixes
 
    As discussed in Appendix A.2, there are risks in allowing control to
    be demonstrated over domains which are "public suffixes" (such as
@@ -720,7 +772,7 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
       although it would be preferable to apply additional safety checks
       in this case.
 
-8.9.  Unintentional Persistence
+9.10.  Unintentional Persistence
 
    When persistent domain validation is used, a DNS Administrator
    failing to remove a no-longer desired Validation Record could enable
@@ -734,7 +786,7 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    have access, this would enable the User to continue to perform new
    validations.
 
-8.10.  Reintroduction of Validation Records
+9.11.  Reintroduction of Validation Records
 
    When a domain has a new owner, that new owner could add a Validation
    Record that was present in the previous version of the domain.  In
@@ -744,7 +796,7 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    persistent domain validation need to include this risk within their
    threat model.  (H1 and H4 in Section 4.1)
 
-8.11.  Validations not Coupled to Users
+9.12.  Validations not Coupled to Users
 
    If an Application Service Provider does not properly associate Domain
    Validation with Users, the new owner of a domain could potentially
@@ -755,7 +807,7 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    to potentially sensitive resources stored and associated with a
    domain.  (H2 in Section 4.1)
 
-9.  Privacy Considerations
+10.  Privacy Considerations
 
    As records are visible in the DNS they should be considered to be
    public information.  While information in the Unique Token can be
@@ -764,13 +816,13 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    containing the User's identity or account identifier) or indirectly
    (e.g., an unkeyed hash of a username).
 
-10.  IANA Considerations
+11.  IANA Considerations
 
    This document has no IANA actions.
 
-11.  References
+12.  References
 
-11.1.  Normative References
+12.1.  Normative References
 
    [RFC1034]  Mockapetris, P., "Domain names - concepts and facilities",
               STD 13, RFC 1034, DOI 10.17487/RFC1034, November 1987,
@@ -802,7 +854,14 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
               RFC 9364, DOI 10.17487/RFC9364, February 2023,
               <https://www.rfc-editor.org/rfc/rfc9364>.
 
-11.2.  Informative References
+12.2.  Informative References
+
+   [ACME-DNS-ACCOUNT-LABEL]
+              Chariton, A., Omidi, A., Kasten, J., Loukos, F., and S. A.
+              Janikowski, "Automated Certificate Management Environment
+              (ACME) DNS Labeled With ACME Account ID Challenge", 2025,
+              <https://datatracker.ietf.org/doc/draft-ietf-acme-dns-
+              account-label/>.
 
    [I-D.draft-tjw-dbound2-problem-statement]
               Wicinski, T., "Domain Boundaries 2.0 Problem Statement",
