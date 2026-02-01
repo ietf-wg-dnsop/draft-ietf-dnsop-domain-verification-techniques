@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-29T01:45:49.079639+00:00",
+  "timestamp": "2026-02-01T02:00:52.504535+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -2957,7 +2957,7 @@
       ],
       "body": "What do we need to have in the document?\nCan we live with cutting out the CNAME and time discussion?\n\n> In specific (and not in totality), I'd like to see removed:\n> - anything about CNAME, other than an explanation about why it is dangerous to rely on\n> - anything about intermediaries because they grossly complicate the idea of someone controlling a domain\n> -  requirements on randomness length; for many scearios, 44 bits of entropy is just fine and can be easily typed\n> - requirements on time-bound checking, other than a description of why you might or might not want it\n\n\n\nDecision: We should keep delegated domain techniques. \n\nDecision: [5.2.1. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.2.1)[Scope Indication](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-scope-indication) just be a different draft, we take that to ACME. See: https://cabforum.org/2025/01/28/ballot-sc084-dns-labeled-with-acme-account-id-validation-method/#ballot-contents talking about our draft.\n\n\nIn [6.4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-6.4)[Domain Control Validation Supporting Multiple Intermediaries](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-domain-control-validation-s), we can say that you can hash the `identifier-token`, like what's done in https://datatracker.ietf.org/doc/html/draft-ietf-acme-dns-account-label-00#section-3.2.\n\nRemove: [A.1.2.4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#appendix-A.1.2.4)[Constraints on Domains and Subdomains](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-constraints-on-domains-and-)\n\nDelete Appendix? Just ask the WG.\n\nDelete [4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-4)[Scope of Validation](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-scope-of-validation). Move [4.1. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-4.1)[Domain Boundaries](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-domain-boundaries) to Appendix.\n\nRe-name [5.4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.4)[Time-bound checking](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-time-bound-checking), to Re-validating control over a domain, and then we should have a SHOULD, and in Recommendations. Just make this more concise.\n\nDelete [5.1.2. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.1.2)[Metadata For Expiry](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-metadata-for-expiry)? No one is using this today so not a BCP? Other ways of doing expiry. Maybe put in Appendix, as a thing that you could do.\n\nOrganization:\n1. Recommendations: DCV record (TODO: metadata?), random token, owner name, delegated, intermediaries, \n2. Operational: time-bound, TTL considerations, [5.6. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.6)[Specification of Validation Records](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-specification-of-validation)\n3. \n\nAdd Tim as co-author!",
       "createdAt": "2025-01-29T21:42:17Z",
-      "updatedAt": "2025-07-07T00:36:11Z",
+      "updatedAt": "2026-01-31T17:49:10Z",
       "closedAt": null,
       "comments": [
         {
@@ -2973,6 +2973,13 @@
           "body": "We've done everything here and while we deleted \"Delete 5.1.2. Metadata For Expiry? \" ther expiry contents are still here.\n\nIt's true nobody is doing this - while it should be a BCP it is more aspirational in nature.\n",
           "createdAt": "2025-07-07T00:33:37Z",
           "updatedAt": "2025-07-07T00:33:37Z"
+        },
+        {
+          "author": "enygren",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Is there anything remaining in this or can we close it out?",
+          "createdAt": "2026-01-31T17:49:10Z",
+          "updatedAt": "2026-01-31T17:49:10Z"
         }
       ]
     },
@@ -10449,6 +10456,139 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 210,
+      "id": "PR_kwDOExoRlc7AlLha",
+      "title": "Highlight the risk of \"reactivating\" a domain when ownership changes",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/210",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Highlight the risk of \"reactivating\" a domain when ownership changes called out by \u00c1ngel Gonz\u00e1lez.  Fixes #209\r\n\r\nAlso mention traffic amplication backscatter attack which Paul W points out we don't mention.",
+      "createdAt": "2026-01-31T15:42:58Z",
+      "updatedAt": "2026-01-31T20:54:44Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "eaa3b1afe7ce869157a25517c4e355682b5087d6",
+      "headRepository": "enygren/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "enygren-threat2",
+      "headRefOid": "c84cbcbd902e2b8c19877c00e46a3ce433e59509",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc7egcEJ",
+          "commit": {
+            "abbreviatedOid": "c84cbcb"
+          },
+          "author": "letoams",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-01-31T16:59:23Z",
+          "updatedAt": "2026-01-31T16:59:23Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOExoRlc7eiFr9",
+          "commit": {
+            "abbreviatedOid": "c84cbcb"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-01-31T20:54:44Z",
+          "updatedAt": "2026-01-31T20:54:44Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 211,
+      "id": "PR_kwDOExoRlc7Al1Je",
+      "title": "Re-introduce Multiple Account / Multiple Intermediary",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/211",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Undoes #180 to fix #200, pulling the text in and cleaning it up some.",
+      "createdAt": "2026-01-31T17:38:22Z",
+      "updatedAt": "2026-01-31T20:53:51Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "eaa3b1afe7ce869157a25517c4e355682b5087d6",
+      "headRepository": "enygren/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "enygren-readd-multiple",
+      "headRefOid": "4733519ce0c789722f4f431b7bffd4093bb85637",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc7eiFer",
+          "commit": {
+            "abbreviatedOid": "4733519"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-01-31T20:53:51Z",
+          "updatedAt": "2026-01-31T20:53:51Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 212,
+      "id": "PR_kwDOExoRlc7Al4xL",
+      "title": "Incorporate feedback from Ond\u0159ej Sur\u00fd on Amplification Attacks",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/212",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #204 to discuss amplification attack risks in Security Considerations. (Note that I'd added some text on this in a separate PR in-flight into Common Pitfalls, but they get at slightly different issues.)",
+      "createdAt": "2026-01-31T17:46:43Z",
+      "updatedAt": "2026-01-31T20:51:48Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "eaa3b1afe7ce869157a25517c4e355682b5087d6",
+      "headRepository": "enygren/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "enygren-feedback-204",
+      "headRefOid": "02d2fef21736da9e276deecd1ddc8cd3752f8992",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc7eiFDf",
+          "commit": {
+            "abbreviatedOid": "02d2fef"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-01-31T20:51:48Z",
+          "updatedAt": "2026-01-31T20:51:48Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
