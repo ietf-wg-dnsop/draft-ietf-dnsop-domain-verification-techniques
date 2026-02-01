@@ -90,6 +90,16 @@ informative:
           - ins: IANA
         target: https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#underscored-globally-scoped-dns-node-names
 
+    ACME-DNS-ACCOUNT-LABEL:
+        title: "Automated Certificate Management Environment (ACME) DNS Labeled With ACME Account ID Challenge"
+        date: 2025
+        author:
+          - ins: A. Chariton
+          - ins: A. Omidi
+          - ins: J. Kasten
+          - ins: F. Loukos
+          - ins: S. A. Janikowski
+        target: https://datatracker.ietf.org/doc/draft-ietf-acme-dns-account-label/
 
 --- abstract
 
@@ -301,6 +311,27 @@ Importantly, the CNAME record target also contains a Unique Token issued by the 
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
+
+# Supporting Multiple Accounts and Multiple Intermediaries {#multiple}
+
+There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
+
+To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}. If the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+
+The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
+
+    _<identifier-unique-token>._example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
+
+or
+
+    _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+
+When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier unique token.
+
+The ACME protocol has incorporated this method to specify DNS account specific challenges in {{ACME-DNS-ACCOUNT-LABEL}}.
+
+Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname (see H6 in {{threat-ul2}}).
+
 # Security Considerations
 
 ## Token Collisions
@@ -310,6 +341,10 @@ If token values aren't long enough, lack adequate entropy, or are not unique the
 Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements (UL1 in {{threat-model}}).
 
 When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks.
+
+## Token Confusion
+
+If token values in challenge labels ({{multiple}}) aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label (H6 in {{threat-ul2}}).
 
 ## Service Confusion {#service-confusion}
 
@@ -343,7 +378,7 @@ The above are needed to address H3 in {{threat-ul1}}.
 
 ## Application Usage Enumeration
 
-The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate the utilized set of Application Service Providers.
+The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate the utilized set of Application Service Providers. The use of {{multiple}} can make it harder to scan if the identifier-unique-token is long enough, but can also expose User account information depending on how the identifier-unique-token is encoded.
 
 ## Public Suffixes {#public-suffixes}
 
@@ -370,6 +405,10 @@ When a domain has a new owner, that new owner could add a Validation Record that
 
 Segmenting the Domain Control Validation tokens into individual per-service Validation Record Owner Names has the advantage of making the individual DNS responses smaller and thus reducing the potential of said TXT RRs to be used in the DNS amplification attacks. It should be noted that expired and no longer usable tokens should be removed even from Validation Record Owner Name DNS tree nodes to keep the DNS responses sizes at minimal level.
 
+## Validations not Coupled to Users
+
+If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain.  (H2 in {{threat-ul1}})
+
 # Privacy Considerations
 
 As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to DNS Administrators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
@@ -390,7 +429,7 @@ A very common but unfortunate technique in use today is to employ a DNS TXT reco
 
 Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
-Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]).
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplication attacks.
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
@@ -410,4 +449,4 @@ Domain control validation in the presence of a DNAME {{RFC6672}} is possible wit
 
 # Acknowledgments
 
-Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ondřej Surý, and many others for their feedback and suggestions on this document.
+Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ángel González, Ondřej Surý, and many others for their feedback and suggestions on this document.
