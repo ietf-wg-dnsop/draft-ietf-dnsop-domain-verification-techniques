@@ -90,6 +90,16 @@ informative:
           - ins: IANA
         target: https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#underscored-globally-scoped-dns-node-names
 
+    ACME-DNS-ACCOUNT-LABEL:
+        title: "Automated Certificate Management Environment (ACME) DNS Labeled With ACME Account ID Challenge"
+        date: 2025
+        author:
+          - ins: A. Chariton
+          - ins: A. Omidi
+          - ins: J. Kasten
+          - ins: F. Loukos
+          - ins: S. A. Janikowski
+        target: https://datatracker.ietf.org/doc/draft-ietf-acme-dns-account-label/
 
 --- abstract
 
@@ -301,6 +311,27 @@ Importantly, the CNAME record target also contains a Unique Token issued by the 
 
 When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
+
+# Supporting Multiple Accounts and Multiple Intermediaries {#multiple}
+
+There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
+
+To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}. If the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+
+The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
+
+    _<identifier-unique-token>._example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
+
+or
+
+    _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+
+When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier unique token.
+
+The ACME protocol has incorporated this method to specify DNS account specific challenges in {{ACME-DNS-ACCOUNT-LABEL}}.
+
+Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname (see H6 in {{threat-ul2}}).
+
 # Security Considerations
 
 ## Token Collisions
@@ -310,6 +341,10 @@ If token values aren't long enough, lack adequate entropy, or are not unique the
 Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements (UL1 in {{threat-model}}).
 
 When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks.
+
+## Token Confusion
+
+If token values in challenge labels ({{multiple}}) aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label (H6 in {{threat-ul2}}).
 
 ## Service Confusion {#service-confusion}
 
@@ -343,7 +378,7 @@ The above are needed to address H3 in {{threat-ul1}}.
 
 ## Application Usage Enumeration
 
-The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate the utilized set of Application Service Providers.
+The presence of a Validation Record with a predictable domain name (either as a TXT record for the exact domain name where control is being validated or with a well-known label) can allow attackers to enumerate the utilized set of Application Service Providers. The use of {{multiple}} can make it harder to scan if the identifier-unique-token is long enough, but can also expose User account information depending on how the identifier-unique-token is encoded.
 
 ## Public Suffixes {#public-suffixes}
 
