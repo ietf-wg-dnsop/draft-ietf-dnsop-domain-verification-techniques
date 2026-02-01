@@ -5,14 +5,14 @@
 Network Working Group                                           S. Sahib
 Internet-Draft                                            Brave Software
 Intended status: Best Current Practice                          S. Huque
-Expires: 1 August 2026                                        Salesforce
+Expires: 5 August 2026                                        Salesforce
                                                               P. Wouters
                                                                    Aiven
                                                                E. Nygren
                                                      Akamai Technologies
                                                              T. Wicinski
                                                       Cox Communications
-                                                         28 January 2026
+                                                         1 February 2026
 
 
                   Domain Control Validation using DNS
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 August 2026.
+   This Internet-Draft will expire on 5 August 2026.
 
 Copyright Notice
 
@@ -99,6 +99,7 @@ Table of Contents
      8.8.  Public Suffixes
      8.9.  Unintentional Persistence
      8.10. Reintroduction of Validation Records
+     8.11. Validations not Coupled to Users
    9.  Privacy Considerations
    10. IANA Considerations
    11. References
@@ -743,6 +744,17 @@ _example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>
    persistent domain validation need to include this risk within their
    threat model.  (H1 and H4 in Section 4.1)
 
+8.11.  Validations not Coupled to Users
+
+   If an Application Service Provider does not properly associate Domain
+   Validation with Users, the new owner of a domain could potentially
+   gain access to Application Service Provider resources associated with
+   the previous owner of a domain.  Application Service Providers need
+   to take care that re-validation of a domain by a different User is
+   not necessarily treated as "reactivation" in a way that grants access
+   to potentially sensitive resources stored and associated with a
+   domain.  (H2 in Section 4.1)
+
 9.  Privacy Considerations
 
    As records are visible in the DNS they should be considered to be
@@ -898,7 +910,9 @@ A.1.  Common Pitfalls
    the UDP response and force the DNS client to re-try the query over
    TCP in order to get the full response.  Not all networks properly
    transport DNS over TCP and some DNS software mistakenly believe TCP
-   support is optional ([RFC9210]).
+   support is optional ([RFC9210]).  Huge TXT RRsets (due to many TXT
+   records at the same name) can also be leveraged by attackers for
+   traffic amplication attacks.
 
    Other possible issues may occur.  If a TXT record (or any other
    record type) is designed to be placed at the same domain name that is
@@ -947,8 +961,8 @@ A.3.  Interactions with DNAME
 Appendix B.  Acknowledgments
 
    Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo
-   Soini, Ben Kaduk, Paul Hoffman, and many others for their feedback
-   and suggestions on this document.
+   Soini, Ben Kaduk, Paul Hoffman, Ángel González, and many others for
+   their feedback and suggestions on this document.
 
 Authors' Addresses
 

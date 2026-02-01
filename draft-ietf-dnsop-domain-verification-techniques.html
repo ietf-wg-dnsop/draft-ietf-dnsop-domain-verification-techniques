@@ -1048,11 +1048,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Domain Control Validation using DNS</td>
-<td class="right">January 2026</td>
+<td class="right">February 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Sahib, et al.</td>
-<td class="center">Expires 1 August 2026</td>
+<td class="center">Expires 5 August 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-dnsop-domain-verification-techniques-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-01-28" class="published">28 January 2026</time>
+<time datetime="2026-02-01" class="published">1 February 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Best Current Practice</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-08-01">1 August 2026</time></dd>
+<dd class="expires"><time datetime="2026-08-05">5 August 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1128,7 +1128,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1240,6 +1240,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.10">
                 <p id="section-toc.1-1.8.2.10.1"><a href="#section-8.10" class="auto internal xref">8.10</a>. <a href="#name-reintroduction-of-validatio" class="internal xref">Reintroduction of Validation Records</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.11">
+                <p id="section-toc.1-1.8.2.11.1"><a href="#section-8.11" class="auto internal xref">8.11</a>. <a href="#name-validations-not-coupled-to-" class="internal xref">Validations not Coupled to Users</a></p>
 </li>
             </ul>
 </li>
@@ -1691,6 +1694,14 @@ _example_service-challenge.example.com.  IN   CNAME  &lt;intermediary-unique-tok
 <p id="section-8.10-1">When a domain has a new owner, that new owner could add a Validation Record that was present in the previous version of the domain. In the case of persistent validation this could be used to claim that the original User still has access to the domain within the Application Service Provider's service. Applications implementing persistent domain validation need to include this risk within their threat model. (H1 and H4 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-8.10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="validations-not-coupled-to-users">
+<section id="section-8.11">
+        <h3 id="name-validations-not-coupled-to-">
+<a href="#section-8.11" class="section-number selfRef">8.11. </a><a href="#name-validations-not-coupled-to-" class="section-name selfRef">Validations not Coupled to Users</a>
+        </h3>
+<p id="section-8.11-1">If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain.  (H2 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-8.11-1" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="privacy-considerations">
@@ -1838,7 +1849,7 @@ _example_service-challenge.example.com.  IN   CNAME  &lt;intermediary-unique-tok
         </h3>
 <p id="appendix-A.1-1">A very common but unfortunate technique in use today is to employ a DNS TXT record and placing it at the exact domain name whose control is being validated (e.g., often the zone apex). This has a number of known operational issues. If the User has multiple application services employing this technique, it will end up with multiple DNS TXT records having the same owner name; one record for each of the services.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-2">Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-3">Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks (<span>[<a href="#RFC9715" class="cite xref">RFC9715</a>]</span>). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional (<span>[<a href="#RFC9210" class="cite xref">RFC9210</a>]</span>).<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-3">Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks (<span>[<a href="#RFC9715" class="cite xref">RFC9715</a>]</span>). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional (<span>[<a href="#RFC9210" class="cite xref">RFC9210</a>]</span>). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplication attacks.<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-4">Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.<a href="#appendix-A.1-4" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-5">When multiple distinct services specify placing Validation Records at the same owner name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications expect to find validation records at the same name.<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
 </section>
@@ -1867,7 +1878,7 @@ _example_service-challenge.example.com.  IN   CNAME  &lt;intermediary-unique-tok
       <h2 id="name-acknowledgments">
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-B-1">Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, and many others for their feedback and suggestions on this document.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">Thank you to John Levine, Daniel Kahn Gillmor, Amir Omidi, Tuomo Soini, Ben Kaduk, Paul Hoffman, Ángel González, and many others for their feedback and suggestions on this document.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
