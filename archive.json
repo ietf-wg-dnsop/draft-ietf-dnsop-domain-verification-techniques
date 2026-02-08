@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-03T01:51:55.157066+00:00",
+  "timestamp": "2026-02-08T02:11:13.247340+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -3343,6 +3343,32 @@
       "updatedAt": "2026-02-01T16:15:22Z",
       "closedAt": "2026-02-01T16:15:22Z",
       "comments": []
+    },
+    {
+      "number": 213,
+      "id": "I_kwDOExoRlc7pG571",
+      "title": "Issues from John Levine",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/213",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "From John Levine:\n\n> 6.1.1 says \"If multiple Application Service Providers are using the same\n> Validation Record name then the Unique Token MUST be constructed in a way\n> that prevents collisions.\"  Why would they need to do that? If they\n> register different _prefix names, which is basically free, the risk of\n> collision goes away, so say that.\n>\n> Section 9.3 seems to say that there is something wrong with subcontracting\n> a service.  I see no reason to assume that.  So long as the customer gets\n> the service, who cares what the provider's internal business model is?\n> I'd delete the entire section.\n\n",
+      "createdAt": "2026-02-07T18:26:13Z",
+      "updatedAt": "2026-02-07T18:26:19Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "enygren",
+          "authorAssociation": "COLLABORATOR",
+          "body": "My thoughts:\n\nFor 6.1.1, we could list \"multiple\" or different names as options.\n\nI don't think 9.3 is trying to say there's anything wrong with subcontracting a service.\nWe should figure out how to clarify the risk so as to not imply this. \n",
+          "createdAt": "2026-02-07T18:26:19Z",
+          "updatedAt": "2026-02-07T18:26:19Z"
+        }
+      ]
     }
   ],
   "pulls": [
