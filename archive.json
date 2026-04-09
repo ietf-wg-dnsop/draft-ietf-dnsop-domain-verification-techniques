@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-12T01:46:39.688120+00:00",
+  "timestamp": "2026-04-09T01:56:01.821734+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -2948,7 +2948,7 @@
       "id": "I_kwDOExoRlc6oDH30",
       "title": "Re-org discussion (Jan 29)",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ShivanKaul",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -2957,8 +2957,8 @@
       ],
       "body": "What do we need to have in the document?\nCan we live with cutting out the CNAME and time discussion?\n\n> In specific (and not in totality), I'd like to see removed:\n> - anything about CNAME, other than an explanation about why it is dangerous to rely on\n> - anything about intermediaries because they grossly complicate the idea of someone controlling a domain\n> -  requirements on randomness length; for many scearios, 44 bits of entropy is just fine and can be easily typed\n> - requirements on time-bound checking, other than a description of why you might or might not want it\n\n\n\nDecision: We should keep delegated domain techniques. \n\nDecision: [5.2.1. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.2.1)[Scope Indication](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-scope-indication) just be a different draft, we take that to ACME. See: https://cabforum.org/2025/01/28/ballot-sc084-dns-labeled-with-acme-account-id-validation-method/#ballot-contents talking about our draft.\n\n\nIn [6.4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-6.4)[Domain Control Validation Supporting Multiple Intermediaries](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-domain-control-validation-s), we can say that you can hash the `identifier-token`, like what's done in https://datatracker.ietf.org/doc/html/draft-ietf-acme-dns-account-label-00#section-3.2.\n\nRemove: [A.1.2.4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#appendix-A.1.2.4)[Constraints on Domains and Subdomains](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-constraints-on-domains-and-)\n\nDelete Appendix? Just ask the WG.\n\nDelete [4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-4)[Scope of Validation](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-scope-of-validation). Move [4.1. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-4.1)[Domain Boundaries](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-domain-boundaries) to Appendix.\n\nRe-name [5.4. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.4)[Time-bound checking](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-time-bound-checking), to Re-validating control over a domain, and then we should have a SHOULD, and in Recommendations. Just make this more concise.\n\nDelete [5.1.2. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.1.2)[Metadata For Expiry](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-metadata-for-expiry)? No one is using this today so not a BCP? Other ways of doing expiry. Maybe put in Appendix, as a thing that you could do.\n\nOrganization:\n1. Recommendations: DCV record (TODO: metadata?), random token, owner name, delegated, intermediaries, \n2. Operational: time-bound, TTL considerations, [5.6. ](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#section-5.6)[Specification of Validation Records](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/167#name-specification-of-validation)\n3. \n\nAdd Tim as co-author!",
       "createdAt": "2025-01-29T21:42:17Z",
-      "updatedAt": "2026-03-11T20:07:59Z",
-      "closedAt": null,
+      "updatedAt": "2026-04-07T20:33:57Z",
+      "closedAt": "2026-04-07T20:33:57Z",
       "comments": [
         {
           "author": "moonshiner",
@@ -3376,6 +3376,24 @@
           "updatedAt": "2026-02-07T18:26:19Z"
         }
       ]
+    },
+    {
+      "number": 214,
+      "id": "I_kwDOExoRlc77jqwY",
+      "title": "Feedback from Ben Schwartz",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/214",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "From Ben Schwartz to dnsop on Mar 16, 2026\n\n===============================\n\n Review:\n\nSection 1:\n\n> In practice, DNS-based methods take the form of the Application Service Provider generating a Unique Token and asking the requester to create a DNS record containing this Unique Token and placing it at a location within the domain that the Application Service Provider can query for.\n\nThis sentence now seems to be in tension with the existence of draft-ietf-acme-dns-persist.  Perhaps it could be fixed by adding the word \"often\" or replacing the word \"token\".\n\n(Also, run-on sentence.)\n\nI continue to see major issues with this draft, somewhat related to that sentence:\n\n1. While this is certainly a current practice, I don't believe that it is a very good one.\n- A point-in-time validation that someone controls the content of a TXT record is not a logical basis on which to take any persistent action, and most actions of interest are persistent.\n- Opaque tokens make the function of each record difficult to determine.  In practice, this contributes to zone cruft, in which unneeded records are not removed because their purpose is unknown.\n\n2. The draft makes numerous, sometimes conflicting assumptions without clearly stating them.\n- It seems to assume that each domain-associated permission has some kind of revalidation timescale that is known to all participants.  (Otherwise, how would I know how long I have to wait after acquiring a new domain name before I can be sure that it is safe to use?)\n- It seems to assume that anyone with the ability to populate a TXT record on _$SPECIAL.$FOO can also modify any records on $FOO.  Sometimes, it also assumes that this power extends to all other names below $FOO (for wildcards), perhaps because of the assumed ability to populate NS records?\n- It assumes that this party is the \"owner\", and is authorized to make use of this domain name outside of the DNS in unspecified other ways.  (But it also assumes that there is a distinction between this \"owner\" and the \"owner\" of the zone.  In general, individual DNS names are not described as having \"owners\", and the draft does not define \"owner\".)\n- It assumes that anyone who allows a third party to choose names within their zone either (a) has registered in the PSL or (b) prohibits the third party from choosing underscore-prefixed names.  (Zone owners are not currently subject to any normative obligation to comply with either assumption, and the draft does not add one.)\n- It assumes that the zone administrator intrinsically knows why the record is in place, but doesn't intrinsically know how long it is needed.\n\nThese assumptions may be reasonable, but that doesn't mean they go without saying.\n\n3. It imagines that the acquirer of a domain might leave records from the previous owner in place, even when the purpose of those records is not known to the new owner (\"accidental persistence\").  This would be wildly insecure for most DNS record types, including ACME dns-persist-01.  In my view, including unauthorized records from someone else amounts to giving them control of the domain.  This problem is exacerbated by the use of opaque tokens.\n\nI see real value from this draft for \"harm reduction\".  Right now, many domains are building up absurdly huge TXT RRSets at the zone apex, full of records that probably could be deleted but no one knows for sure.  Moving these to unique underscore domains and adding \"expiry\" tags is a clear improvement.  Including plenty of entropy is probably good too.  But in my view, this whole practice is built on very fuzzy security aims and unstated assumptions about conventional zone management practices and service account situations.\n\nThe actual \"best practice\", in my view, looks like dns-persist-01, CAA, SPF, or TLSA: a persistent record that clearly authorizes designated parties to take particular actions in the name of this domain.  DCV is only the \"best practice\" when the confidentiality loss of exposing these authorization details outweighs the benefits of clarity and auditability.  \"Ephemeral\" DCV is perhaps justifiable as a form of \"proof of work\", but it is hard to imagine a use case where the \"point in time\" validation semantic is desired.\n\nThis draft's version of DCV is certainly a \"better practice\" than many current deployments of DCV, and I support publication on that basis.  For this draft, I would like to see:\n1. A disclaimer limiting the scope of applicability, distinguishing \"anti-abuse\" measures from formal \"security\" elements.  (In ACME, it is the CAA record, not the DNS challenge, that establishes formal security!)\n2. A collection of all the draft's assumptions about zone management and ownership in one section.  (Note that the draft expects that all zones comply with these assumptions, even zones that are not making use of this specification!)\n3. Exclusion of \"accidental persistence\" from the threat model, since any such zone is hopelessly compromised anyway.",
+      "createdAt": "2026-04-07T20:31:20Z",
+      "updatedAt": "2026-04-07T20:31:20Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
