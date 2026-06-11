@@ -1452,7 +1452,7 @@ _example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
           <h4 id="name-unique-token">
 <a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-unique-token" class="section-name selfRef">Unique Token</a>
           </h4>
-<p id="section-6.1.1-1">A Unique Token is used in the challenge and is a value issued between parties (Application Service Provider to User, Application Service Provider to Intermediary, or Intermediary to User). The Unique Token MUST be constructed in a manner which has adequate uniqueness so as to guarantee a causal relationship between its issuance and its appearance in a DNS record. If multiple Application Service Providers are using the same Validation Record name then the Unique Token MUST be constructed in a way that prevents collisions.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-1">A Unique Token is used in the challenge and is a value issued between parties (Application Service Provider to User, Application Service Provider to Intermediary, or Intermediary to User). The Unique Token MUST be constructed in a manner which has adequate uniqueness so as to guarantee a causal relationship between its issuance and its appearance in a DNS record. To additionally safeguard against multiple Application Service Providers using the same Validation Record name, for example if a non-unique prefix is used, the Unique Token MUST be constructed in a way that prevents collisions.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1.1-2">Examples of Unique Token construction include:<a href="#section-6.1.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6.1.1-3.1">
