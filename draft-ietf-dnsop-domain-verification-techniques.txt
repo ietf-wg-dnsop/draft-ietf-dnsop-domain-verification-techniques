@@ -5,14 +5,14 @@
 Network Working Group                                           S. Sahib
 Internet-Draft                                            Brave Software
 Intended status: Best Current Practice                          S. Huque
-Expires: 5 August 2026                                        Salesforce
+Expires: 13 December 2026                                     Salesforce
                                                               P. Wouters
                                                                    Aiven
                                                                E. Nygren
                                                      Akamai Technologies
                                                              T. Wicinski
                                                       Cox Communications
-                                                         1 February 2026
+                                                            11 June 2026
 
 
                   Domain Control Validation using DNS
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 August 2026.
+   This Internet-Draft will expire on 13 December 2026.
 
 Copyright Notice
 
@@ -124,10 +124,10 @@ Table of Contents
    (CAs) ask requesters of TLS certificates to prove that they operate
    the domain they are requesting the certificate for.  Application
    Service Providers generally allow for several different ways of
-   proving control of a domain.  In practice, DNS-based methods take the
-   form of the Application Service Provider generating a Unique Token
-   and asking the requester to create a DNS record containing this
-   Unique Token and placing it at a location within the domain that the
+   proving control of a domain.  Often, DNS-based methods take the form
+   of the Application Service Provider generating a Unique Token and
+   asking the requester to create a DNS record containing this Unique
+   Token and placing it at a location within the domain that the
    Application Service Provider can query for.
 
    This document recommends using a TXT based DNS Validation Record in a
