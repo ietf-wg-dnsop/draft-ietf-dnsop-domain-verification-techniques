@@ -216,7 +216,7 @@ Examples of Unique Token construction include:
 
 This Unique Token is placed in either the RDATA or an owner name, as described in the rest of this section.  Some methods of validation may involve multiple independent Unique Tokens.
 
-If sensitive information is used to derive a Unique Token, that information should be fed through a potentially keyed cryptographic hash as part of constructing the token.
+If sensitive information is used to derive a Unique Token, that information SHOULD be fed through a potentially keyed cryptographic hash as part of constructing the token.
 
 Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in a way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
 
@@ -295,7 +295,7 @@ The TTL {{RFC1034}} for Validation Records SHOULD be short to allow recovering f
 
 The Application Service Provider looking up a Validation Record may have to wait for up to the SOA minimum TTL (negative caching TTL) of the enclosing zone for the record to become visible, if it has been previously queried. If the application User wants to make the Validation Record visible more quickly they may need to work with the DNS Administrator to see if they are willing to lower the SOA minimum TTL (which has implications across the entire zone).
 
-Application Service Providers' verifiers MAY wish to use dedicated DNS resolvers configured with a low maximum negative caching TTL, flush Validation Records from resolver caches prior to issuing queries or just directly query authoritative name servers to avoid caching.
+Application Service Providers' verifiers MAY use dedicated DNS resolvers configured with a low maximum negative caching TTL, flush Validation Records from resolver caches prior to issuing queries or just directly query authoritative name servers to avoid caching.
 
 # Delegated Domain Control Validation {#delegated}
 
@@ -311,16 +311,16 @@ The Intermediary then adds the actual Validation Record in a domain they control
 
 Such a setup is especially useful when the Application Service Provider wants to periodically re-issue the challenge with a new provider Unique Token. CNAMEs allow automating the renewal process by letting the Intermediary place the Unique Token in their DNS zone instead of needing continuous write access to the User's DNS.
 
-Importantly, the CNAME record target also contains a Unique Token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User (see H2 in {{threat-ul1}}). The Intermediary must keep an association of Users and domain names to the associated Intermediary-Unique-Tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
+Importantly, the CNAME record target also contains a Unique Token issued by the Intermediary to the User (preferably over a secure channel) which proves to the Intermediary that example.com is controlled by the User (see H2 in {{threat-ul1}}). The Intermediary MUST keep an association of Users and domain names to the associated Intermediary-Unique-Tokens. Without a linkage validated by the Intermediary during provisioning and renewal there is the risk that an attacker could leverage a "dangling CNAME" to perform a "subdomain takeover" attack ({{SUBDOMAIN-TAKEOVER}}).
 
-When a User stops using the Intermediary they should remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
+When a User stops using the Intermediary they SHOULD remove the domain control validation CNAME in addition to any other records they have associated with the Intermediary.
 
 
 # Supporting Multiple Accounts and Multiple Intermediaries {#multiple}
 
 There are use-cases where a User may wish to simultaneously use multiple Intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
-To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}). If the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}). If the identifier is sensitive in nature, it SHOULD be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
 
 The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
 
@@ -365,7 +365,7 @@ Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing t
 
 ## Authenticated Channels
 
-Application Service Providers and Intermediaries should use authenticated channels to convey instructions and Unique Tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User. (H3 in {{threat-ul1}})
+Application Service Providers and Intermediaries SHOULD use authenticated channels to convey instructions and Unique Tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User. (H3 in {{threat-ul1}})
 
 ## DNS Spoofing and DNSSEC Validation {#dnssec-validation}
 
