@@ -103,7 +103,7 @@ informative:
 
 --- abstract
 
-Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document provides some best practices to avoid known problems.
+Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and it can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document provides some best practices to avoid known problems.
 
 --- middle
 
@@ -111,7 +111,7 @@ Many application services on the Internet need to verify ownership or control of
 
 # Introduction
 
-Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. Often, DNS-based methods take the form of the Application Service Provider generating a Unique Token and asking the requester to create a DNS record containing this Unique Token and placing it at a location within the domain that the Application Service Provider can query for.
+Many Application Service Providers of internet services need domain owners to prove that they control a particular DNS domain before the Application Service Provider can operate services for or grant some privilege to that domain. For instance, Certification Authorities (CAs) ask requesters of TLS certificates to prove that they operate the domain they are requesting the certificate for. Application Service Providers generally allow for several different ways of proving control of a domain. Often, DNS-based methods take the form of the Application Service Provider generating a Unique Token and asking the requester to create a DNS record containing this Unique Token and place it at a location within the domain that the Application Service Provider can query for.
 
 This document recommends using a TXT based DNS Validation Record in a way that is targeted to the specific application service, and uses Unique Tokens to guarantee uniqueness.
 
@@ -120,11 +120,11 @@ This document recommends using a TXT based DNS Validation Record in a way that i
 
 {::boilerplate bcp14}
 
-* `Application Service Provider`: an internet-based provider of a service, for e.g., a Certification Authority or a service that allows for user-controlled websites. These services often require a User to verify that they control a domain. The Application Service Provider may be implementing a standard protocol for domain validation (such as {{RFC8555}}) or they may have their own specification.
+* `Application Service Provider`: an internet-based provider of a service, e.g., a Certification Authority or a service that allows for user-controlled websites. These services often require a User to verify that they control a domain. The Application Service Provider may be implementing a standard protocol for domain validation (such as {{RFC8555}}) or they may have their own specification.
 
 * `DNS Administrator`: the owner or responsible party for the contents of a domain in the DNS.
 
-* `Intermediary`: an internet-based service that leverages the services of other providers on behalf of a User. For example, an Intermediary might be a service that allows for User-controlled websites and in-turn needs to use a Certification Authority provider to get TLS certificates for the User on behalf of the website.
+* `Intermediary`: an internet-based service that leverages the services of other providers on behalf of a User. For example, an Intermediary might be a service that allows for User-controlled websites and in turn needs to use a Certification Authority provider to get TLS certificates for the User on behalf of the website.
 
 * `User`: the owner or operator of a domain in the DNS who needs to prove ownership of that domain to an Application Service Provider, often on behalf of an account at the Application Service Provider, working in coordination with their DNS Administrator.
 
@@ -165,7 +165,7 @@ Domain Control Validation attempts to address UL1 by having the User demonstrate
 
 * H1. Unique Token collision leading to an unassociated but matching Validation Record already being present in the domain, thus breaking the required causal relationship between token issuance and its appearance in the DNS.
 * H2. Cross-User vulnerabilities leading to a Unique Token issued to one User being leveraged by a different User, due to vulnerabilities in how an Application Service Provider or Intermediary implements Domain Control Validation.
-* H3. Network and DNS based attacks leading to an Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be carried out by attackers already on the network path, by attackers that insert themselves on-path (e.g., through routing attacks {{RFC7132}}), or through other DNS protocol attacks (see {{RFC3833}}). For example, an attacker could request a challenge for a domain they do not control and, rather than publishing the Validation Record, inject forged responses to the Application Service Provider's validation queries (for instance by poisoning the resolver's cache or from an on-path position). Because the Application Service Provider supplied the Unique Token to the attacker when issuing the challenge, the attacker can place that token in the forged response; absent DNSSEC, the Application Service Provider cannot distinguish the forged answer from a record genuinely published in the zone, and so concludes that a valid Validation Record is present when it is not. These attacks are addressed by the DNSSEC-related mitigations in {{dnssec-validation}}.
+* H3. Network and DNS-based attacks leading to an Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be carried out by attackers already on the network path, by attackers that insert themselves on-path (e.g., through routing attacks {{RFC7132}}), or through other DNS protocol attacks (see {{RFC3833}}). For example, an attacker could request a challenge for a domain they do not control and, rather than publishing the Validation Record, inject forged responses to the Application Service Provider's validation queries (for instance by poisoning the resolver's cache or from an on-path position). Because the Application Service Provider supplied the Unique Token to the attacker when issuing the challenge, the attacker can place that token in the forged response; absent DNSSEC, the Application Service Provider cannot distinguish the forged answer from a record genuinely published in the zone, and so concludes that a valid Validation Record is present when it is not. These attacks are addressed by the DNSSEC-related mitigations in {{dnssec-validation}}.
 * H4. DNS Administrator errors, including human factor issues, leading to a Validation Record being unintentionally added or unintentionally persisting.
 * H5. Confusion over the scope of a Validation Record resulting in broader privileges being granted to the User than was intended by the DNS Administrator. This is discussed more below in {{scope}}.
 
@@ -179,7 +179,7 @@ For UL2, unintended control over a domain or domain name results as a side-effec
 
 # Scope of Validation {#scope}
 
-For security reasons (see H5 in {{threat-ul1}}), it is crucial to understand the scope of the domain name being validated. Both Application Service Providers and the User need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority of an entire domain.
+For security reasons (see H5 in {{threat-ul1}}), it is crucial to understand the scope of the domain name being validated. Both Application Service Providers and the User need to clearly specify and understand whether the validation request is for a single hostname, a wildcard (all hostnames immediately under that domain), or for the entire domain and subdomains rooted at that name. This is particularly important in large multi-tenant enterprises, where an individual deployer of a service may not necessarily have operational authority over an entire domain.
 
 In the case of X.509 certificate issuance, the certificate signing request and associated challenge are clear about whether they are for a single host or a wildcard domain. Unfortunately, the ACME protocol's DNS-01 challenge mechanism ({{RFC8555, Section 8.4}}) does not differentiate these cases in the DNS Validation Record. In the absence of this distinction, the DNS Administrator tasked with deploying the Validation Record may need to explicitly confirm the details of the certificate issuance request to make sure the certificate is not given broader authority than the User intended.
 
@@ -196,7 +196,7 @@ All Domain Control Validation mechanisms are implemented by a DNS resource recor
 
 ## TXT Record based Validation {#txt-record}
 
-The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The QNAME is constructed as described in {{name}}, and the RDATA MUST contain at least a Unique Token provided by the Application Service Provider (constructed according to the properties described in {{unique-token}}). If there are multiple character-strings within the RDATA, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the Unique Token generated as-above can be placed as the only contents of the RDATA. For example:
+The RECOMMENDED method of doing DNS-based domain control validation is to use DNS TXT records as the Validation Record. The QNAME is constructed as described in {{name}}, and the RDATA MUST contain at least a Unique Token provided by the Application Service Provider (constructed according to the properties described in {{unique-token}}). If there are multiple character-strings within the RDATA, the Application Service Provider MUST treat them as a concatenated string. If metadata (see {{metadata}}) is not used, then the Unique Token generated as above can be placed as the only contents of the RDATA. For example:
 
     _example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
@@ -214,11 +214,11 @@ Examples of Unique Token construction include:
 * A URI {{RFC3986}} namespaced to the Application Service Provider and uniquely identifying the challenge or User
 * A keyed cryptographic hash of information known to the Application Service Provider which uniquely identifies the challenge or User
 
-This Unique Token is placed in either the RDATA or an owner name, as described in the rest of this section.  Some methods of validation may involve multiple independent Unique Tokens.
+This Unique Token is placed in either the RDATA or an owner name, as described in the rest of this section. Some methods of validation may involve multiple independent Unique Tokens.
 
 If sensitive information is used to derive a Unique Token, that information SHOULD be fed through a potentially keyed cryptographic hash as part of constructing the token.
 
-Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in a way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
+Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target. This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames. If base32 is used, it SHOULD be specified in a way that safely omits the trailing padding ("="). Note that DNS labels are limited to 63 octets which limits how large such a token may be.
 
 #### Random Token Construction {#random-token}
 
@@ -233,7 +233,7 @@ It may be desirable to associate metadata with the Unique Token in a Validation 
 
     _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4"
 
-If there are multiple tokens required, each one MUST be in a separate RR to allow them to match up with any additional attributes.  For example:
+If there are multiple tokens required, each one MUST be in a separate RR to allow them to match up with any additional attributes. For example:
 
     _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 attr=bar"
                                  IN   TXT  "token=5454...45dc45a attr=quux"
@@ -260,7 +260,7 @@ If an alternate syntax is used by the Application Service Provider for token met
 
 ## Validation Record Owner Name {#name}
 
-The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g. "\_example\_service-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname (see H6 in {{threat-ul2}}).
+The RECOMMENDED format for a Validation Record's owner name is application-specific underscore prefix labels. Domain Control Validation Records are constructed by the Application Service Provider by prepending the label "`_<PROVIDER_RELEVANT_NAME>-challenge`" to the domain name being validated (e.g., "\_example\_service-challenge.example.com"). The prefix "_" is used to avoid collisions with existing hostnames and to prevent the owner name from being a valid hostname (see H6 in {{threat-ul2}}).
 
 If an Application Service Provider has an application-specific need to have multiple validations for the same label, multiple prefixes can be used, such as "`_<FEATURE>._<PROVIDER_RELEVANT_NAME>-challenge`".
 
@@ -276,7 +276,7 @@ For one-off validations, after domain control validation is completed there is t
 
 Application Service Providers MUST provide clear instructions on how long the challenge token is valid for, and thus when a Validation Record can be removed. These instructions should preferably be encoded within the RDATA.
 
-The instructions for validity duration MAY be encoded in the RDATA as token metadata ({{metadata}} using the key "expiry" to hold a time after which it is safe to remove the Validation Record. For example:
+The instructions for validity duration MAY be encoded in the RDATA as token metadata ({{metadata}}) using the key "expiry" to hold a time after which it is safe to remove the Validation Record. For example:
 
     _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
 
@@ -284,7 +284,7 @@ When an expiry time is specified, the value of "expiry" SHOULD be in ISO 8601 fo
 
 Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the "expiry" key SHOULD be set as "expiry=never".
 
-The "expiry" key MAY be omitted in cases where the Application Service Provider has clarified the record expiry policy out-of-band.  In this case, the RDATA is set to "token=3419...3d206c4". This is semantically identical to "3419...3d206c4".
+The "expiry" key MAY be omitted in cases where the Application Service Provider has clarified the record expiry policy out-of-band. In this case, the RDATA is set to "token=3419...3d206c4". This is semantically identical to "3419...3d206c4".
 
 The User SHOULD de-provision the resource record provisioned for DNS-based domain control validation once it is no longer required.
 
@@ -299,7 +299,7 @@ Application Service Providers' verifiers MAY use dedicated DNS resolvers configu
 
 # Delegated Domain Control Validation {#delegated}
 
-Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration.  It is a variation of TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
+Delegated domain control validation lets a User delegate the domain control validation process for their domain to an Intermediary without granting the Intermediary the ability to make changes to their domain or zone configuration. It is a variation of TXT record validation ({{txt-record}}) that indirectly inserts a CNAME record prior to the TXT record.
 
 The Intermediary gives the User a CNAME record to add for the domain and Application Service Provider being validated that points to the Intermediary's domain, where the actual validation TXT record is placed. The canonical name in the CNAME record is constructed as a base16-encoded (or base32-encoded) Intermediary Unique Token (generated as in {{unique-token}}) prefixed onto a domain operated by the Intermediary. For example:
 
@@ -320,9 +320,9 @@ When a User stops using the Intermediary they SHOULD remove the domain control v
 
 There are use-cases where a User may wish to simultaneously use multiple Intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
-To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}). If the identifier is sensitive in nature, it SHOULD be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+To support this, Application Service Providers may support prefixing the challenge with a label containing a unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}). If the identifier is sensitive in nature, it SHOULD be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
 
-The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
+The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}). For example:
 
     _<identifier-unique-token>._example_service-challenge.example.com.  IN   TXT  "3419...3d206c4"
 
@@ -334,7 +334,7 @@ When performing validation, the Application Service Provider would resolve the D
 
 The ACME protocol has incorporated this method to specify DNS account specific challenges in {{ACME-DNS-ACCOUNT-LABEL}}.
 
-Application Service Providers may wish to always prepend the `_<identifier-unique-token>` to make it harder for third parties to scan, even absent supporting multiple Intermediaries.  The `_<identifier-unique-token>` MUST start with an underscore so as to not be a valid hostname (see H6 in {{threat-ul2}}).
+Application Service Providers may wish to always prepend the `_<identifier-unique-token>` to make it harder for third parties to scan, even absent supporting multiple Intermediaries. The `_<identifier-unique-token>` MUST start with an underscore so as to not be a valid hostname (see H6 in {{threat-ul2}}).
 
 # Security Considerations
 
@@ -390,7 +390,7 @@ As discussed in {{domain-boundaries}}, there are risks in allowing control to be
 
 Operators of domains which are in the "PRIVATE" public suffix division often provide multi-tenant services such as dynamic DNS, web hosting, and CDN services. As such, they sometimes allow their sub-tenants to provision names as subdomains of their public suffix. There are use-cases that require operators of domains in the public suffix list to demonstrate control over their domain, such as to be added to the Public Suffix List, or to provision a wildcard certificate. At the same time, if an operator of such a domain allows its customers or tenants to create names starting with an underscore ("_") then it opens up substantial risk to the domain operator for attackers to provision services on their domain.
 
-Whether it is appropriate to allow domain verification on a public suffix will depend on the application.  In the general case:
+Whether it is appropriate to allow domain verification on a public suffix will depend on the application. In the general case:
 
 * Application Service Providers SHOULD NOT allow verification of ownership for domains which are public suffixes in the "ICANN" division. For example, "\_example\_service-challenge.co.uk" would not be allowed.
 * Application Service Providers MAY allow verification of ownership for domains which are public suffixes in the "PRIVATE" division, although it would be preferable to apply additional safety checks in this case.
@@ -407,15 +407,15 @@ When a domain has a new owner, that new owner could add a Validation Record that
 
 ## Amplification Attacks
 
-Segmenting the Domain Control Validation tokens into individual per-service Validation Record Owner Names has the advantage of making the individual DNS responses smaller and thus reducing the potential of said TXT RRs to be used in the DNS amplification attacks. It should be noted that expired and no longer usable tokens should be removed even from Validation Record Owner Name DNS tree nodes to keep the DNS responses sizes at minimal level.
+Segmenting the Domain Control Validation tokens into individual per-service Validation Record Owner Names has the advantage of making the individual DNS responses smaller and thus reducing the potential of said TXT RRs to be used in the DNS amplification attacks. It should be noted that expired and no longer usable tokens should be removed even from Validation Record Owner Name DNS tree nodes to keep the DNS response sizes at a minimal level.
 
 ## Validations not Coupled to Users
 
-If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain.  (H2 in {{threat-ul1}})
+If an Application Service Provider does not properly associate Domain Validation with Users, the new owner of a domain could potentially gain access to Application Service Provider resources associated with the previous owner of a domain. Application Service Providers need to take care that re-validation of a domain by a different User is not necessarily treated as "reactivation" in a way that grants access to potentially sensitive resources stored and associated with a domain. (H2 in {{threat-ul1}})
 
 # Privacy Considerations
 
-As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to DNS Administrators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g. containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
+As records are visible in the DNS they should be considered to be public information. While information in the Unique Token can be helpful to DNS Administrators, some constructions of Unique Tokens can leak information identifying a User either directly (e.g., containing the User's identity or account identifier) or indirectly (e.g., an unkeyed hash of a username).
 
 # IANA Considerations
 
@@ -429,11 +429,11 @@ This document has no IANA actions.
 
 ## Common Pitfalls {#pitfalls}
 
-A very common but unfortunate technique in use today is to employ a DNS TXT record and placing it at the exact domain name whose control is being validated (e.g., often the zone apex). This has a number of known operational issues. If the User has multiple application services employing this technique, it will end up with multiple DNS TXT records having the same owner name; one record for each of the services.
+A very common but unfortunate technique in use today is to employ a DNS TXT record and place it at the exact domain name whose control is being validated (e.g., often the zone apex). This has a number of known operational issues. If the User has multiple application services employing this technique, it will end up with multiple DNS TXT records having the same owner name; one record for each of the services.
 
 Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
-Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes, and is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplification attacks.
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes, and is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believes TCP support is optional ([RFC9210]). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplification attacks.
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
@@ -442,7 +442,7 @@ When multiple distinct services specify placing Validation Records at the same o
 
 ## Domain Boundaries {#domain-boundaries}
 
-The hierarchical structure of domain names do not necessarily define boundaries of ownership and administrative control (e.g., as discussed in {{I-D.draft-tjw-dbound2-problem-statement}}). Some domain names are "public suffixes" ({{RFC9499}}) where care may need to be taken when validating control. For example, there are security risks if an Application Service Provider can be tricked into believing that an attacker has control over ".co.uk" or ".com". The volunteer-managed Public Suffix List {{PSL}} is one mechanism available today that can be useful for identifying public suffixes.
+The hierarchical structure of domain names does not necessarily define boundaries of ownership and administrative control (e.g., as discussed in {{I-D.draft-tjw-dbound2-problem-statement}}). Some domain names are "public suffixes" ({{RFC9499}}) where care may need to be taken when validating control. For example, there are security risks if an Application Service Provider can be tricked into believing that an attacker has control over ".co.uk" or ".com". The volunteer-managed Public Suffix List {{PSL}} is one mechanism available today that can be useful for identifying public suffixes.
 
 Future specifications may provide better mechanisms or recommendations for defining domain boundaries or for enabling organizational administrators to place constraints on domains and subdomains.
 
