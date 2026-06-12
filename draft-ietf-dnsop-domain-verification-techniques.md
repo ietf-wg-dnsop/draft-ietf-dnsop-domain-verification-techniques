@@ -134,7 +134,7 @@ This document recommends using a TXT based DNS Validation Record in a way that i
 
 # Purpose of Domain Control Validation {#purpose}
 
-Domain Control Validation allows a User to demonstrate to an Application Service Provider that they have enough control over a domain to place a DNS challenge provided by Application Service Provider into the domain. Because this challenge becomes publically visible as soon as it is published into the DNS, the security properties rely on the causal relationship between the Application Service Provider generating a specific challenge and the challenge appearing in the DNS at a specified location. Domain Control Validation can be used either as a one-off or for a persistent validation depending on the application scenario:
+Domain Control Validation allows a User to demonstrate to an Application Service Provider that they have enough control over a domain to place a DNS challenge provided by Application Service Provider into the domain. Because this challenge becomes publicly visible as soon as it is published into the DNS, the security properties rely on the causal relationship between the Application Service Provider generating a specific challenge and the challenge appearing in the DNS at a specified location. Domain Control Validation can be used either as a one-off or for a persistent validation depending on the application scenario:
 
 * As a one-off validation, the Validation Record is time-bound, and it can be removed once its presence is confirmed by the Application Service Provider. These are appropriate when the validation is being performed as part of an action such as requesting certificate issuance.
 
@@ -146,22 +146,22 @@ Delegated Domain Validation ({{delegated}}) is a method typically used as a way 
 
 # Threat Model {#threat-model}
 
-As Domain Control Verification is a mechanism trying to provide security properties over sometimes-insecure underlying protocols, it is important to be clear about both its threat model.
+As Domain Control Validation is a mechanism trying to provide security properties over sometimes-insecure underlying protocols, it is important to be clear about its threat model.
 
 While the specific primary Unacceptable Losses will depend on the nature of the Application Service Provider, they generalize to:
 
 * UL1. Application Service Provider believes a User has privileges on a domain name without this being authorized by the DNS Administrator for the domain. The Threat Actor in this case is a malicious User leveraging these privileges in some way.
 * UL2. Application Service Provider, Intermediary, or other party gains unintended control over resources within a domain or on a domain name. The Threat Actor in this case is the Application Service Provider, Intermediary, or other party leveraging this unintended control in some way.
 
-## Hazards leading to Unauthorized Priviledges (UL1) {#threat-ul1}
+## Hazards leading to Unauthorized Privileges (UL1) {#threat-ul1}
 
-For UL1, the Application-specific nature of these priviledges (such as being able to obtain a signed certificate covering the domain name, being able to use a social media handle under that domain, or being able to provision configurations associated with that domain int the Application Service Provider system) will determine the specifics of the underlying Unacceptable Loss.
+For UL1, the Application-specific nature of these privileges (such as being able to obtain a signed certificate covering the domain name, being able to use a social media handle under that domain, or being able to provision configurations associated with that domain in the Application Service Provider system) will determine the specifics of the underlying Unacceptable Loss.
 
-Domain Control Validation attempts to address UL1 by having the User demonstrate relationship between the Application Service Provider issuing a Unique Token and that Unique Token appearing in domain. Classes of Hazards include:
+Domain Control Validation attempts to address UL1 by having the User demonstrate a relationship between the Application Service Provider issuing a Unique Token and that Unique Token appearing in the domain. Classes of Hazards include:
 
 * H1. Unique Token collision leading to an unassociated but matching Validation Record already being present in the domain, thus violating the causality property.
 * H2. Cross-User vulnerabilities leading to a Unique Token issued to one User being leveraged by a different User, due to vulnerabilities in how an Application Service Provider or Intermediary implements Domain Control Validation.
-* H3. Network and DNS based attacks leading to a Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be due to on-path network attackers, network attackers inserting themselves on-path (e.g., {{RFC7132}}), or other DNS protocol attacks (see {{RFC3833}}.
+* H3. Network and DNS based attacks leading to an Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be due to on-path network attackers, network attackers inserting themselves on-path (e.g., {{RFC7132}}), or other DNS protocol attacks (see {{RFC3833}}).
 * H4. DNS Administrator errors, including human factor issues, leading to a Validation Record being unintentionally added or unintentionally persisting.
 * H5. Confusion over the scope of a Validation Record resulting in broader privileges being granted to the User than was intended by the DNS Administrator. This is discussed more below in {{scope}}.
 
@@ -214,13 +214,13 @@ This Unique Token is placed in either the RDATA or an owner name, as described i
 
 If sensitive information is used to derive a Unique Token, that information should be fed through a potentially keyed cryptographic hash as part of constructing the token.
 
-Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
+Base32 encoding ({{!RFC4648, Section 6}}) or hexadecimal base16 encoding  ({{!RFC4648, Section 8}}) are RECOMMENDED to be specified when the Unique Token would exist in a DNS label such as in a CNAME target.  This is because base64 relies on mixed case (and DNS is case-insensitive as clarified in {{RFC4343}}) and because some base64 characters ("/", "+", and "=") may not be permitted by implementations that limit allowed characters to those allowed in hostnames.  If base32 is used, it SHOULD be specified in a way that safely omits the trailing padding ("=").  Note that DNS labels are limited to 63 octets which limits how large such a token may be.
 
 #### Random Token Construction {#random-token}
 
 One way of constructing Unique Tokens is to use random values which:
 
-1. have adequate entropy to guarantee uniqueness and ensure that an attacker is unable to create a situation where a collision occurs (see H1 in {{threat-ul1}}).
+1. have adequate entropy (see {{RFC4086}}) to guarantee uniqueness and ensure that an attacker is unable to create a situation where a collision occurs (see H1 in {{threat-ul1}}).
 2. are base64url ({{!RFC4648, Section 5}}) encoded, base32 encoded, or hexadecimal base16 encoded.
 
 ### Token Metadata {#metadata}
@@ -247,7 +247,7 @@ key            = 1*key-char
 key-char       = ALPHA / DIGIT / "-" / "_"
 
 value          = 1*value-char
-value-char     = value-char = %x21-21 / %x23-5B / %x5D-7E
+value-char     = %x21-21 / %x23-5B / %x5D-7E
                 ; All printable ASCII except space (0x20),
                 ; quotation mark (0x22), and backslash (0x5C)
 ~~~
@@ -316,7 +316,7 @@ When a User stops using the Intermediary they should remove the domain control v
 
 There are use-cases where a User may wish to simultaneously use multiple intermediaries or multiple independent accounts with an Application Service Provider. For example, a hostname may be using a "multi-CDN" where the hostname simultaneously uses multiple Content Delivery Network (CDN) providers.
 
-To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}. If the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
+To support this, Application Service Providers may support prefixing the challenge with a label containing an unique account identifier of the form `_<identifier-unique-token>`. The identifier-unique-token is a base16-encoded (or base32-encoded) Unique Token (generated as in {{unique-token}}). If the identifier is sensitive in nature, it should be run through a truncated hashing algorithm first. The identifier token should be stable over time and would be provided to the User by the Application Service Provider, or by an Intermediary in the case where domain validation is delegated ({{delegated}}).
 
 The resulting record could either directly contain a TXT record or a CNAME (as in {{delegated}}).  For example:
 
@@ -324,13 +324,13 @@ The resulting record could either directly contain a TXT record or a CNAME (as i
 
 or
 
-    _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-random-token>.dcv.intermediary.example.
+    _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  <intermediary-unique-token>.dcv.intermediary.example.
 
 When performing validation, the Application Service Provider would resolve the DNS name containing the appropriate identifier unique token.
 
 The ACME protocol has incorporated this method to specify DNS account specific challenges in {{ACME-DNS-ACCOUNT-LABEL}}.
 
-Application Service Providers may wish to always prepend the `_<identifier-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-token>` MUST start with an underscore so as to not be a valid hostname (see H6 in {{threat-ul2}}).
+Application Service Providers may wish to always prepend the `_<identifier-unique-token>` to make it harder for third parties to scan, even absent supporting multiple intermediaries.  The `_<identifier-unique-token>` MUST start with an underscore so as to not be a valid hostname (see H6 in {{threat-ul2}}).
 
 # Security Considerations
 
@@ -429,7 +429,7 @@ A very common but unfortunate technique in use today is to employ a DNS TXT reco
 
 Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.
 
-Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplication attacks.
+Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes, and is vulnerable to various attacks ([RFC9715]). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believe TCP support is optional ([RFC9210]). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplification attacks.
 
 Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.
 
