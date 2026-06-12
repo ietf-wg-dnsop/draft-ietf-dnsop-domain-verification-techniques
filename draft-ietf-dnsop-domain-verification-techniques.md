@@ -138,15 +138,19 @@ Domain Control Validation allows a User to demonstrate to an Application Service
 
 * As a one-off validation, the Validation Record is time-bound, and it can be removed once its presence is confirmed by the Application Service Provider. These are appropriate when the validation is being performed as part of an action such as requesting certificate issuance.
 
-* As a persistent validation, the introduction of the Validation Record into the domain demonstrates to the Application Service Provider that the User had control over the domain at that time, and its continued presence demonstrates only that either the DNS Administrator of the domain has left the Validation Record in-place (perhaps unintentionally) or that a new owner of the domain has re-introduced the Validation Record. The validation can be revoked by removing the Validation Record although this revocation will not be noticed until the Application Service Provider next checks for the presence of the record.
+* As a persistent validation, the introduction of the Validation Record into the domain demonstrates to the Application Service Provider that the User had control over the domain at that time, and its continued presence demonstrates only that either the DNS Administrator of the domain has left the Validation Record in-place (perhaps unintentionally) or that a new owner of the domain has re-introduced the Validation Record (for example, by copying the previously published, and therefore publicly disclosed, Unique Token value into the new version of the zone). The validation can be revoked by removing the Validation Record, although this revocation will not be noticed until the Application Service Provider next checks for the presence of the record.
 
-Persistent validation is only appropriate for applications where the validation is tightly coupled to the User at the Application Service Provider, as once a token is disclosed there is no guarantee that it hasn't been copied by the new owner of a domain.
+Persistent validation is only appropriate for applications where the Application Service Provider keeps the validation bound to a specific User account, rather than treating the mere continued presence of the token in the DNS as proof of control. This is because once a token has been published it is publicly disclosed, and there is no guarantee that it has not been copied by a subsequent owner of the domain.
 
 Delegated Domain Validation ({{delegated}}) is a method typically used as a way to adapt between these modes, with a persistent validation to an Intermediary enabling the Intermediary to transitively perform recurring one-off validations.
 
 # Threat Model {#threat-model}
 
-As Domain Control Validation is a mechanism trying to provide security properties over sometimes-insecure underlying protocols, it is important to be clear about its threat model.
+As Domain Control Validation is a mechanism trying to provide security properties over sometimes-insecure underlying protocols, it is important to be clear about its threat model. This section uses the following terms:
+
+* `Unacceptable Loss`: an outcome that Domain Control Validation is intended to prevent.
+* `Hazard`: a system state or set of conditions that can lead to an Unacceptable Loss.
+* `Threat Actor`: the party that seeks to exploit a Hazard in order to cause an Unacceptable Loss.
 
 While the specific primary Unacceptable Losses will depend on the nature of the Application Service Provider, they generalize to:
 
@@ -159,9 +163,9 @@ For UL1, the Application-specific nature of these privileges (such as being able
 
 Domain Control Validation attempts to address UL1 by having the User demonstrate a relationship between the Application Service Provider issuing a Unique Token and that Unique Token appearing in the domain. Classes of Hazards include:
 
-* H1. Unique Token collision leading to an unassociated but matching Validation Record already being present in the domain, thus violating the causality property.
+* H1. Unique Token collision leading to an unassociated but matching Validation Record already being present in the domain, thus breaking the required causal relationship between token issuance and its appearance in the DNS.
 * H2. Cross-User vulnerabilities leading to a Unique Token issued to one User being leveraged by a different User, due to vulnerabilities in how an Application Service Provider or Intermediary implements Domain Control Validation.
-* H3. Network and DNS based attacks leading to an Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be due to on-path network attackers, network attackers inserting themselves on-path (e.g., {{RFC7132}}), or other DNS protocol attacks (see {{RFC3833}}).
+* H3. Network and DNS based attacks leading to an Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be carried out by attackers already on the network path, by attackers that insert themselves on-path (e.g., through routing attacks {{RFC7132}}), or through other DNS protocol attacks (see {{RFC3833}}). For example, an attacker could request a challenge for a domain they do not control and, rather than publishing the Validation Record, inject forged responses to the Application Service Provider's validation queries (for instance by poisoning the resolver's cache or from an on-path position). Because the Application Service Provider supplied the Unique Token to the attacker when issuing the challenge, the attacker can place that token in the forged response; absent DNSSEC, the Application Service Provider cannot distinguish the forged answer from a record genuinely published in the zone, and so concludes that a valid Validation Record is present when it is not. These attacks are addressed by the DNSSEC-related mitigations in {{dnssec-validation}}.
 * H4. DNS Administrator errors, including human factor issues, leading to a Validation Record being unintentionally added or unintentionally persisting.
 * H5. Confusion over the scope of a Validation Record resulting in broader privileges being granted to the User than was intended by the DNS Administrator. This is discussed more below in {{scope}}.
 
@@ -363,7 +367,7 @@ Ambiguity of scope introduces risks, as described in {{scope}}. Distinguishing t
 
 Application Service Providers and intermediaries should use authenticated channels to convey instructions and Unique Tokens to Users. Otherwise, an attacker in the middle could alter the instructions, potentially allowing the attacker to provision the service instead of the User. (H3 in {{threat-ul1}})
 
-## DNS Spoofing and DNSSEC Validation
+## DNS Spoofing and DNSSEC Validation {#dnssec-validation}
 
 A domain owner SHOULD sign their DNS zone using DNSSEC {{RFC9364}} to protect Validation Records against DNS spoofing attacks, including from on-path attackers.
 
