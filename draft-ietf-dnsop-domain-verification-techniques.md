@@ -280,9 +280,9 @@ The instructions for validity duration MAY be encoded in the RDATA as token meta
 
     _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
 
-When an expiry time is specified, the value of "expiry" SHOULD be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
+When an expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in {{!RFC3339, Section 5.6}}.
 
-Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the "expiry" key SHOULD be set as "expiry=never".
+Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the "expiry" key SHALL be set as "expiry=never".
 
 The "expiry" key MAY be omitted in cases where the Application Service Provider has clarified the record expiry policy out-of-band. In this case, the RDATA is set to "token=3419...3d206c4". This is semantically identical to "3419...3d206c4".
 
