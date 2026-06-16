@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-09T01:56:01.821734+00:00",
+  "timestamp": "2026-06-16T02:39:49.977220+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -67,6 +67,11 @@
       "name": "draft-06",
       "description": "",
       "color": "0e8a16"
+    },
+    {
+      "name": "different draft",
+      "description": "",
+      "color": "098b98"
     }
   ],
   "issues": [
@@ -293,11 +298,12 @@
       "assignees": [],
       "labels": [
         "future work",
-        "admin"
+        "admin",
+        "different draft"
       ],
       "body": "- we could have a simple doc maintained in the repo\r\n- a growing list",
       "createdAt": "2021-04-07T20:22:49Z",
-      "updatedAt": "2023-01-29T21:07:17Z",
+      "updatedAt": "2026-06-12T19:42:22Z",
       "closedAt": null,
       "comments": []
     },
@@ -2719,11 +2725,12 @@
       "assignees": [],
       "labels": [
         "future work",
-        "security"
+        "security",
+        "different draft"
       ],
       "body": "(This may want to be its own separate draft?)\r\n\r\nOne challenge not covered in the current draft is how authoritative DNS server operators can validate new domains that have been recently registered.  In the case where a domain has been created in a registrar and delegated to a DNS server operator, there's a window where the delegation is \"lame\" and not yet configured on the DNS server operator.  In this window, an attacker could register this domain on the DNS server operator.  This is more common in the case where a domain is registered and delegated but not provisioned (or provisioned and later deleted), allowing attackers to register the domain on the DNS server operator.  \r\n\r\nAs called out in this article by Brian Krebs, this is being actively exploited:  https://krebsonsecurity.com/2024/07/dont-let-your-domain-name-become-a-sitting-duck/  There are even teams of security researchers that look for domains that have been in this state for awhile and register them at various DNS server operators (eg, http://domainoverwatch.com/).\r\n\r\nWhile TXT record validation works for existing zones that are on another operator already and want to be transferred or added, this doesn't work for new domains.  (Requiring new domains be registered through DNS operators is another option, but not necessarily desirable.)\r\n\r\nOne option we might specify would be to encode this in an an additional delegation record on a specific name at the registrar.  For example, customers of the DNS operator might normally delegate to authorities ns1.example.com through ns4.example.com.  For the validation case, there would be an additional authority that is out-of-bailiwick in which we\u2019d encode the token.  For example, registrants would be requested to add NS records in the registrar for:\r\n\r\n\t$domain\tIN NS\tns1.example.com.\r\n\t\u2026\r\n\t$domain\tIN NS\tns2.example.com.\r\n\t$domain\tIN NS\tns-<base32token>.authdnsdv.example.net.\r\n\r\nThis would allow validation of the domain.\r\nFor .net domains an operator might instead use ns-<base32token>.authdnsdv.example.com.\r\n\r\nThe DNS operator would need entries for the A and AAAA records for *.authdnsdv.example.{com,net} of the DNS authorities.  Given the out-of-bailiwick nature this would be less likely to be used.  Registrants could remove this if they want once the domain is created.\r\n\r\nPart of the need for out-of-bailiwick would be to make sure no glue was present or needed in the parent zone.  The child zone would not have/need this authority record.\r\n\r\n",
       "createdAt": "2024-07-31T13:25:08Z",
-      "updatedAt": "2024-10-09T21:56:01Z",
+      "updatedAt": "2026-06-12T19:42:32Z",
       "closedAt": null,
       "comments": []
     },
@@ -3115,7 +3122,7 @@
       "id": "I_kwDOExoRlc7Bn0Wq",
       "title": "Feedback from Murray S. Kucherawy",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/187",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "enygren",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -3124,8 +3131,8 @@
       ],
       "body": "\n\n> Thanks for putting this together.  A few points to raise as you head toward WGLC:\n> \n> (1)  Section 5.1 says multiple RDATAs are to be treated as concatenated.  I assume that means this sort of setup, for example:\n> \n> _[example_service-challenge.example.com](http://example_service-challenge.example.com/).  IN   TXT  \"3419...3d206c4\"\n>     IN TXT \"rbviluteebttjhihtvfbtrbjcdiihibu\"\n> \n> Maybe I'm not remembering correctly, but could these not be returned in arbitrary order, making the result non-deterministic?\n> \n> If you actually mean multiple \"character-string\"s are to be concatenated, isn't that what RFC 1035 says anyway?\n> \n> (2) The ABNF in Section 5.1.2 needs to be broken apart (i.e., it's formatted funny in this version, or at least it renders funny in HTML).\n> \n> (3) The SHOULD in Section 5.2 is curiously constructed.  I would suggest something like \"names SHOULD be registered\".\n> \n> Also, I wonder if some sort of hierarchical naming might be helpful here.  It might be tedious for IANA (or whoever) to register everything one might want to verify, versus registering provider names only and letting them use any sub-name they choose without registration.\n> \n> (4) In Section 5.1.2, the ABNF for \"value-char\" lists \"+\" twice.  Also I suggest considering importing a key-value ABNF pair that's already used someplace else that's more general, maybe DKIM or MIME.  If you decide you want to include a comma someday, for instance, this will all have to be revised, but why not anticipate it and make this more general?\n> \n> (5) Nearly all of the SHOULDs in here had me asking \"Why isn't this a MUST?\"  For instance, why would you not do the base32 encoding thing that's currently a SHOULD?  Or what's the impact if you don't?\n> \n> (6) For Section 5.1.2, is there any benefit to registering known metadata keys to avoid collisions in meaning?\n\n\nDavid Lawrence followed up on the first with:\n> > (1) Section 5.1 says multiple RDATAs are to be treated as concatenated.\n> \n> I'm a little confused by this wording too.  I take it not to mean\n> actual multiple RDATA from a TXT RRset, but rather multiple (RFC1035)\n> <character-strings>s.\n> \n> Multiple RDATA for a single TXT RR is not possible.\n> \n\n",
       "createdAt": "2025-07-21T12:21:35Z",
-      "updatedAt": "2025-10-31T18:58:09Z",
-      "closedAt": null,
+      "updatedAt": "2026-06-11T19:49:48Z",
+      "closedAt": "2026-06-11T19:49:48Z",
       "comments": [
         {
           "author": "moonshiner",
@@ -3161,6 +3168,13 @@
           "body": "I merged Erik's proposed updates and added a PR to fix formatting\nhttps://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/197",
           "createdAt": "2025-10-13T18:58:11Z",
           "updatedAt": "2025-10-13T18:58:40Z"
+        },
+        {
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "body": "completed.",
+          "createdAt": "2026-06-11T19:49:48Z",
+          "updatedAt": "2026-06-11T19:49:48Z"
         }
       ]
     },
@@ -3356,7 +3370,7 @@
       "id": "I_kwDOExoRlc7pG571",
       "title": "Issues from John Levine",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/213",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "enygren",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -3365,8 +3379,8 @@
       ],
       "body": "From John Levine:\n\n> 6.1.1 says \"If multiple Application Service Providers are using the same\n> Validation Record name then the Unique Token MUST be constructed in a way\n> that prevents collisions.\"  Why would they need to do that? If they\n> register different _prefix names, which is basically free, the risk of\n> collision goes away, so say that.\n>\n> Section 9.3 seems to say that there is something wrong with subcontracting\n> a service.  I see no reason to assume that.  So long as the customer gets\n> the service, who cares what the provider's internal business model is?\n> I'd delete the entire section.\n\n",
       "createdAt": "2026-02-07T18:26:13Z",
-      "updatedAt": "2026-02-07T18:26:19Z",
-      "closedAt": null,
+      "updatedAt": "2026-06-11T19:46:27Z",
+      "closedAt": "2026-06-11T19:46:27Z",
       "comments": [
         {
           "author": "enygren",
@@ -3382,7 +3396,7 @@
       "id": "I_kwDOExoRlc77jqwY",
       "title": "Feedback from Ben Schwartz",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/214",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "enygren",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -3391,8 +3405,192 @@
       ],
       "body": "From Ben Schwartz to dnsop on Mar 16, 2026\n\n===============================\n\n Review:\n\nSection 1:\n\n> In practice, DNS-based methods take the form of the Application Service Provider generating a Unique Token and asking the requester to create a DNS record containing this Unique Token and placing it at a location within the domain that the Application Service Provider can query for.\n\nThis sentence now seems to be in tension with the existence of draft-ietf-acme-dns-persist.  Perhaps it could be fixed by adding the word \"often\" or replacing the word \"token\".\n\n(Also, run-on sentence.)\n\nI continue to see major issues with this draft, somewhat related to that sentence:\n\n1. While this is certainly a current practice, I don't believe that it is a very good one.\n- A point-in-time validation that someone controls the content of a TXT record is not a logical basis on which to take any persistent action, and most actions of interest are persistent.\n- Opaque tokens make the function of each record difficult to determine.  In practice, this contributes to zone cruft, in which unneeded records are not removed because their purpose is unknown.\n\n2. The draft makes numerous, sometimes conflicting assumptions without clearly stating them.\n- It seems to assume that each domain-associated permission has some kind of revalidation timescale that is known to all participants.  (Otherwise, how would I know how long I have to wait after acquiring a new domain name before I can be sure that it is safe to use?)\n- It seems to assume that anyone with the ability to populate a TXT record on _$SPECIAL.$FOO can also modify any records on $FOO.  Sometimes, it also assumes that this power extends to all other names below $FOO (for wildcards), perhaps because of the assumed ability to populate NS records?\n- It assumes that this party is the \"owner\", and is authorized to make use of this domain name outside of the DNS in unspecified other ways.  (But it also assumes that there is a distinction between this \"owner\" and the \"owner\" of the zone.  In general, individual DNS names are not described as having \"owners\", and the draft does not define \"owner\".)\n- It assumes that anyone who allows a third party to choose names within their zone either (a) has registered in the PSL or (b) prohibits the third party from choosing underscore-prefixed names.  (Zone owners are not currently subject to any normative obligation to comply with either assumption, and the draft does not add one.)\n- It assumes that the zone administrator intrinsically knows why the record is in place, but doesn't intrinsically know how long it is needed.\n\nThese assumptions may be reasonable, but that doesn't mean they go without saying.\n\n3. It imagines that the acquirer of a domain might leave records from the previous owner in place, even when the purpose of those records is not known to the new owner (\"accidental persistence\").  This would be wildly insecure for most DNS record types, including ACME dns-persist-01.  In my view, including unauthorized records from someone else amounts to giving them control of the domain.  This problem is exacerbated by the use of opaque tokens.\n\nI see real value from this draft for \"harm reduction\".  Right now, many domains are building up absurdly huge TXT RRSets at the zone apex, full of records that probably could be deleted but no one knows for sure.  Moving these to unique underscore domains and adding \"expiry\" tags is a clear improvement.  Including plenty of entropy is probably good too.  But in my view, this whole practice is built on very fuzzy security aims and unstated assumptions about conventional zone management practices and service account situations.\n\nThe actual \"best practice\", in my view, looks like dns-persist-01, CAA, SPF, or TLSA: a persistent record that clearly authorizes designated parties to take particular actions in the name of this domain.  DCV is only the \"best practice\" when the confidentiality loss of exposing these authorization details outweighs the benefits of clarity and auditability.  \"Ephemeral\" DCV is perhaps justifiable as a form of \"proof of work\", but it is hard to imagine a use case where the \"point in time\" validation semantic is desired.\n\nThis draft's version of DCV is certainly a \"better practice\" than many current deployments of DCV, and I support publication on that basis.  For this draft, I would like to see:\n1. A disclaimer limiting the scope of applicability, distinguishing \"anti-abuse\" measures from formal \"security\" elements.  (In ACME, it is the CAA record, not the DNS challenge, that establishes formal security!)\n2. A collection of all the draft's assumptions about zone management and ownership in one section.  (Note that the draft expects that all zones comply with these assumptions, even zones that are not making use of this specification!)\n3. Exclusion of \"accidental persistence\" from the threat model, since any such zone is hopelessly compromised anyway.",
       "createdAt": "2026-04-07T20:31:20Z",
-      "updatedAt": "2026-04-07T20:31:20Z",
+      "updatedAt": "2026-06-11T19:37:15Z",
+      "closedAt": "2026-06-11T19:37:14Z",
+      "comments": []
+    },
+    {
+      "number": 215,
+      "id": "I_kwDOExoRlc8AAAABFUp2Og",
+      "title": "Clarify language around re-introducing a Validation Record",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/215",
+      "state": "CLOSED",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "in Section 3, we say:\n\n> As a persistent validation, the introduction of the Validation Record into the domain demonstrates to the Application Service Provider that the User had control over the domain at that time, and its continued presence demonstrates only that either the DNS Administrator of the domain has left the Validation Record in-place (perhaps unintentionally) or that a new owner of the domain has re-introduced the Validation Record. \n\nIt isn't clear what \"re-introduced\" means. We should clarify that it means that the new domain owner copied the publicly-disclosed token value into the new version of the zone.",
+      "createdAt": "2026-06-12T19:51:52Z",
+      "updatedAt": "2026-06-15T04:58:39Z",
+      "closedAt": "2026-06-15T04:58:39Z",
+      "comments": [
+        {
+          "author": "ShivanKaul",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It's also not clear what `Persistent validation is only appropriate for applications where the validation is tightly coupled to the User at the Application Service Provider` means.",
+          "createdAt": "2026-06-12T19:53:01Z",
+          "updatedAt": "2026-06-12T19:53:01Z"
+        }
+      ]
+    },
+    {
+      "number": 216,
+      "id": "I_kwDOExoRlc8AAAABFUqnug",
+      "title": "Threat model fixes",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/216",
+      "state": "CLOSED",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "> As Domain Control Verification is a mechanism trying to provide security properties over sometimes-insecure underlying protocols, it is important to be clear about both its threat model.\n\nredundant \"both\".",
+      "createdAt": "2026-06-12T19:53:58Z",
+      "updatedAt": "2026-06-15T04:58:39Z",
+      "closedAt": "2026-06-15T04:58:39Z",
+      "comments": [
+        {
+          "author": "ShivanKaul",
+          "authorAssociation": "COLLABORATOR",
+          "body": "we also need to define \"Unacceptable Losses\" and \"Threat Actor\" and \"Hazard\". Also should we define \"causality property\"? ",
+          "createdAt": "2026-06-12T19:56:10Z",
+          "updatedAt": "2026-06-12T20:03:24Z"
+        }
+      ]
+    },
+    {
+      "number": 217,
+      "id": "I_kwDOExoRlc8AAAABFUuPOA",
+      "title": "H3 hazard seems under-specified",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/217",
+      "state": "CLOSED",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "> H3. Network and DNS based attacks leading to a Application Service Provider's validation system being tricked into believing that a valid Validation Record containing the Unique Token is present. When DNS resolutions are not authenticated, this may be due to on-path network attackers, network attackers inserting themselves on-path (e.g., [[RFC7132](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/new#RFC7132)]), or other DNS protocol attacks (see [[RFC3833](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/new#RFC3833)].\n\nIn what way can an on-path attacker trick the ASP into thinking that there is a valid Validation Record present?",
+      "createdAt": "2026-06-12T20:04:11Z",
+      "updatedAt": "2026-06-15T04:58:39Z",
+      "closedAt": "2026-06-15T04:58:39Z",
+      "comments": []
+    },
+    {
+      "number": 218,
+      "id": "I_kwDOExoRlc8AAAABFUxFrw",
+      "title": "Describe how to technically specify scope of validation",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/218",
+      "state": "OPEN",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "future work",
+        "different draft"
+      ],
+      "body": "Previous versions of this doc had a solution for this, but were taken out to avoid complicating the draft. Currently section 5 just describes the problem without specifying a technical solution.\n\nThis can be future work, perhaps a different draft.",
+      "createdAt": "2026-06-12T20:12:12Z",
+      "updatedAt": "2026-06-12T20:12:12Z",
       "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 219,
+      "id": "I_kwDOExoRlc8AAAABFU3fgw",
+      "title": "Agenda time at IETF 126?",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/219",
+      "state": "OPEN",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "admin"
+      ],
+      "body": "Should we ask for agenda time at IETF 126 DNSOP meeting? Saying that we've fixed everything we know (and summarize the fixes) and want to do a WGLC basically.",
+      "createdAt": "2026-06-12T20:28:24Z",
+      "updatedAt": "2026-06-14T18:06:29Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "moonshiner",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Only if we run into WGLC issues ",
+          "createdAt": "2026-06-14T18:06:29Z",
+          "updatedAt": "2026-06-14T18:06:29Z"
+        }
+      ]
+    },
+    {
+      "number": 220,
+      "id": "I_kwDOExoRlc8AAAABFVXb8w",
+      "title": "SHALL vs SHOULD vs MUST for expiry time metadata",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/220",
+      "state": "OPEN",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "question"
+      ],
+      "body": "We say, in Section 6.3:\n\n> When an expiry time is specified, the value of \"expiry\" SHALL be in ISO 8601 format as specified in [[RFC3339](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/new#RFC3339)], [Section 5.6](https://rfc-editor.org/rfc/rfc3339#section-5.6).\n\n> Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the \"expiry\" key SHALL be set as \"expiry=never\".\n\nSHALL is a synonym for MUST. Do we really mean MUST here, or do we mean SHOULD? I think we should go with SHOULD since this is all advisory and subject to the application's documentation which is the real source of truth (a fact we acknowledge in this section).",
+      "createdAt": "2026-06-12T22:06:19Z",
+      "updatedAt": "2026-06-14T18:03:45Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "body": "While the entire document can be advisory, we do define an expiry= format, so I think it is fine to say when using expiry= you MUST use this format.",
+          "createdAt": "2026-06-14T01:40:32Z",
+          "updatedAt": "2026-06-14T01:40:32Z"
+        },
+        {
+          "author": "ShivanKaul",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We can discuss this later. If other authors don't have strong opinions, we can see if anyone disagrees during WGLC; doesn't need to block it.",
+          "createdAt": "2026-06-14T18:03:24Z",
+          "updatedAt": "2026-06-14T18:03:24Z"
+        }
+      ]
+    },
+    {
+      "number": 221,
+      "id": "I_kwDOExoRlc8AAAABFVYqLw",
+      "title": "Inconsistent capitalization of defined terms",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/221",
+      "state": "CLOSED",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "We have a few terms we define upfront such as Intermediary, DNS Administrator, User etc. However, we often say `the DNS administrator tasked with deploying`, `use multiple intermediaries`, etc. ",
+      "createdAt": "2026-06-12T22:10:34Z",
+      "updatedAt": "2026-06-15T04:58:39Z",
+      "closedAt": "2026-06-15T04:58:39Z",
+      "comments": []
+    },
+    {
+      "number": 222,
+      "id": "I_kwDOExoRlc8AAAABFVZ5XA",
+      "title": "Inconsistent normative language",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/222",
+      "state": "CLOSED",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "WGLC"
+      ],
+      "body": "There's a few lower-case \"should\"s that should really be RFC 2119 \"SHOULDs\". Same for MUST.",
+      "createdAt": "2026-06-12T22:14:46Z",
+      "updatedAt": "2026-06-15T04:58:40Z",
+      "closedAt": "2026-06-15T04:58:40Z",
       "comments": []
     }
   ],
@@ -10643,6 +10841,89 @@
           "body": "",
           "createdAt": "2026-01-31T20:51:48Z",
           "updatedAt": "2026-01-31T20:51:48Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 223,
+      "id": "PR_kwDOExoRlc7l86lz",
+      "title": "Fix issues for WGLC cleanup",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/223",
+      "state": "MERGED",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Get draft ready for WGLC. None of these should be controversial.\r\n\r\nFix #215\r\nFix #216\r\nFix #217\r\nFix #221\r\nFix #222",
+      "createdAt": "2026-06-12T22:41:56Z",
+      "updatedAt": "2026-06-15T04:58:38Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "e80e5d62172b2a2d6090071d37b7da0950b573c5",
+      "headRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "fixes",
+      "headRefOid": "f8e86e833b413dc7cc70e9ea87fe2cebcaa7a99c",
+      "closedAt": "2026-06-15T04:58:38Z",
+      "mergedAt": "2026-06-15T04:58:38Z",
+      "mergedBy": "ShivanKaul",
+      "mergeCommit": {
+        "oid": "ea06152ac972a4c398e3ed6aa9a9d58d8f6ee8ed"
+      },
+      "comments": [
+        {
+          "author": "ShivanKaul",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Given that there's disagreement, we can punt the SHALL vs SHOULD discussion for later. I'll remove the WGLC label from the issue and remove those changes from the PR. ",
+          "createdAt": "2026-06-14T16:18:46Z",
+          "updatedAt": "2026-06-14T16:18:46Z"
+        },
+        {
+          "author": "moonshiner",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "These Look good.  I am curious where the SHOULD -> SHALL came up but more a question to pose during WGLC ?\r\n",
+          "createdAt": "2026-06-14T18:16:32Z",
+          "updatedAt": "2026-06-14T18:16:32Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc8AAAABC8Kucw",
+          "commit": {
+            "abbreviatedOid": "041e0e5"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Looks good, other than the two SHALL -> SHOULD changes I do not understand",
+          "createdAt": "2026-06-14T01:35:31Z",
+          "updatedAt": "2026-06-14T01:37:17Z",
+          "comments": [
+            {
+              "originalPosition": 168,
+              "body": "SHALL is the equivalent of MUST, but this change downgrades it to SHOULD. Why?",
+              "createdAt": "2026-06-14T01:35:31Z",
+              "updatedAt": "2026-06-14T01:37:17Z"
+            },
+            {
+              "originalPosition": 171,
+              "body": "same here. Why?",
+              "createdAt": "2026-06-14T01:35:54Z",
+              "updatedAt": "2026-06-14T01:37:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOExoRlc8AAAABC9M8CQ",
+          "commit": {
+            "abbreviatedOid": "f8e86e8"
+          },
+          "author": "moonshiner",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "\nThese Look good. I am curious where the SHOULD -> SHALL came up but more a question to pose during WGLC ?\n\n",
+          "createdAt": "2026-06-14T18:16:51Z",
+          "updatedAt": "2026-06-14T18:16:51Z",
           "comments": []
         }
       ]
