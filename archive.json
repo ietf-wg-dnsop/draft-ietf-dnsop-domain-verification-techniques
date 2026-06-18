@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-16T02:39:49.977220+00:00",
+  "timestamp": "2026-06-18T02:35:08.314968+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -265,7 +265,7 @@
       "id": "MDU6SXNzdWU4NTI3Nzk5NTc=",
       "title": "Privacy considerations",
       "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/12",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ShivanKaul",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -275,8 +275,8 @@
       ],
       "body": "- what services a domain is using?\r\n- unavoidable because we're using DNS\r\n- RRR? registries (maybe)\r\n- maybe we could use cryptographic techniques to not leak this? at odds with a well known registry (for next document)",
       "createdAt": "2021-04-07T20:20:50Z",
-      "updatedAt": "2024-07-04T16:35:04Z",
-      "closedAt": null,
+      "updatedAt": "2026-06-16T21:20:52Z",
+      "closedAt": "2026-06-16T21:20:52Z",
       "comments": [
         {
           "author": "moonshiner",
@@ -284,6 +284,13 @@
           "body": "I'm almost wondering if we should write some text under Security Considerations \r\n\r\nI seem to remember that their is guidance that there should be a privacy considerations section\r\n\r\n",
           "createdAt": "2024-07-04T16:34:54Z",
           "updatedAt": "2024-07-04T16:34:54Z"
+        },
+        {
+          "author": "ShivanKaul",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We\u00a0do actually have a privacy considerations section, closing this as stale.",
+          "createdAt": "2026-06-16T21:20:52Z",
+          "updatedAt": "2026-06-16T21:20:52Z"
         }
       ]
     },
@@ -3538,7 +3545,7 @@
       ],
       "body": "We say, in Section 6.3:\n\n> When an expiry time is specified, the value of \"expiry\" SHALL be in ISO 8601 format as specified in [[RFC3339](https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/new#RFC3339)], [Section 5.6](https://rfc-editor.org/rfc/rfc3339#section-5.6).\n\n> Alternatively, if the record should never expire (for instance, persistent validations that are checked periodically by the Application Service Provider) and should not be removed, the \"expiry\" key SHALL be set as \"expiry=never\".\n\nSHALL is a synonym for MUST. Do we really mean MUST here, or do we mean SHOULD? I think we should go with SHOULD since this is all advisory and subject to the application's documentation which is the real source of truth (a fact we acknowledge in this section).",
       "createdAt": "2026-06-12T22:06:19Z",
-      "updatedAt": "2026-06-14T18:03:45Z",
+      "updatedAt": "2026-06-16T15:38:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -3554,6 +3561,13 @@
           "body": "We can discuss this later. If other authors don't have strong opinions, we can see if anyone disagrees during WGLC; doesn't need to block it.",
           "createdAt": "2026-06-14T18:03:24Z",
           "updatedAt": "2026-06-14T18:03:24Z"
+        },
+        {
+          "author": "enygren",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I agree -- if they put in expiry then the format MUST be ISO 8601 or \"never\".  (Using expiry or following any of this spec is of course optional.)",
+          "createdAt": "2026-06-16T15:38:57Z",
+          "updatedAt": "2026-06-16T15:38:57Z"
         }
       ]
     },
@@ -10857,7 +10871,7 @@
       "labels": [],
       "body": "Get draft ready for WGLC. None of these should be controversial.\r\n\r\nFix #215\r\nFix #216\r\nFix #217\r\nFix #221\r\nFix #222",
       "createdAt": "2026-06-12T22:41:56Z",
-      "updatedAt": "2026-06-15T04:58:38Z",
+      "updatedAt": "2026-06-16T15:37:23Z",
       "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
       "baseRefName": "main",
       "baseRefOid": "e80e5d62172b2a2d6090071d37b7da0950b573c5",
@@ -10924,6 +10938,19 @@
           "body": "\nThese Look good. I am curious where the SHOULD -> SHALL came up but more a question to pose during WGLC ?\n\n",
           "createdAt": "2026-06-14T18:16:51Z",
           "updatedAt": "2026-06-14T18:16:51Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOExoRlc8AAAABDLJCJg",
+          "commit": {
+            "abbreviatedOid": "f8e86e8"
+          },
+          "author": "enygren",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "All look great to me!  Thank you!  (And I can't spell \"privilege\" to save my life and should have done some of this spell checking before you had to...)",
+          "createdAt": "2026-06-16T15:37:23Z",
+          "updatedAt": "2026-06-16T15:37:23Z",
           "comments": []
         }
       ]
