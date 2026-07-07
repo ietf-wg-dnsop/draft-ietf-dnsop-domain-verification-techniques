@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-18T02:35:08.314968+00:00",
+  "timestamp": "2026-07-07T01:58:20.811631+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -2737,9 +2737,17 @@
       ],
       "body": "(This may want to be its own separate draft?)\r\n\r\nOne challenge not covered in the current draft is how authoritative DNS server operators can validate new domains that have been recently registered.  In the case where a domain has been created in a registrar and delegated to a DNS server operator, there's a window where the delegation is \"lame\" and not yet configured on the DNS server operator.  In this window, an attacker could register this domain on the DNS server operator.  This is more common in the case where a domain is registered and delegated but not provisioned (or provisioned and later deleted), allowing attackers to register the domain on the DNS server operator.  \r\n\r\nAs called out in this article by Brian Krebs, this is being actively exploited:  https://krebsonsecurity.com/2024/07/dont-let-your-domain-name-become-a-sitting-duck/  There are even teams of security researchers that look for domains that have been in this state for awhile and register them at various DNS server operators (eg, http://domainoverwatch.com/).\r\n\r\nWhile TXT record validation works for existing zones that are on another operator already and want to be transferred or added, this doesn't work for new domains.  (Requiring new domains be registered through DNS operators is another option, but not necessarily desirable.)\r\n\r\nOne option we might specify would be to encode this in an an additional delegation record on a specific name at the registrar.  For example, customers of the DNS operator might normally delegate to authorities ns1.example.com through ns4.example.com.  For the validation case, there would be an additional authority that is out-of-bailiwick in which we\u2019d encode the token.  For example, registrants would be requested to add NS records in the registrar for:\r\n\r\n\t$domain\tIN NS\tns1.example.com.\r\n\t\u2026\r\n\t$domain\tIN NS\tns2.example.com.\r\n\t$domain\tIN NS\tns-<base32token>.authdnsdv.example.net.\r\n\r\nThis would allow validation of the domain.\r\nFor .net domains an operator might instead use ns-<base32token>.authdnsdv.example.com.\r\n\r\nThe DNS operator would need entries for the A and AAAA records for *.authdnsdv.example.{com,net} of the DNS authorities.  Given the out-of-bailiwick nature this would be less likely to be used.  Registrants could remove this if they want once the domain is created.\r\n\r\nPart of the need for out-of-bailiwick would be to make sure no glue was present or needed in the parent zone.  The child zone would not have/need this authority record.\r\n\r\n",
       "createdAt": "2024-07-31T13:25:08Z",
-      "updatedAt": "2026-06-12T19:42:32Z",
+      "updatedAt": "2026-07-05T17:36:14Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "enygren",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Initial pre-00 draft text is proposed here:  https://github.com/enygren/draft-nygren-dnsop-domain-verification-for-delegation/blob/main/draft-nygren-dnsop-domain-verification-for-delegation.md\n",
+          "createdAt": "2026-07-05T17:36:14Z",
+          "updatedAt": "2026-07-05T17:36:14Z"
+        }
+      ]
     },
     {
       "number": 150,
