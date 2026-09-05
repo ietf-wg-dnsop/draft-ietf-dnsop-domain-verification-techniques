@@ -90,8 +90,8 @@ Table of Contents
    7.  Delegated Domain Control Validation
    8.  Supporting Multiple Accounts and Multiple Intermediaries
    9.  Security Considerations
-     9.1.  Token Collisions
-     9.2.  Token Confusion
+     9.1.  Token Confusion
+     9.2.  Token Collision
      9.3.  Service Confusion
      9.4.  Service Collision
      9.5.  Scope Confusion
@@ -528,7 +528,7 @@ _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 attr=ba
    token metadata (Section 6.1.2) using the key "expiry" to hold a time
    after which it is safe to remove the Validation Record.  For example:
 
-_example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
+_example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2026-02-08"
 
    When an expiry time is specified, the value of "expiry" SHALL be in
    ISO 8601 format as specified in [RFC3339], Section 5.6.
@@ -652,12 +652,19 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
 
 9.  Security Considerations
 
-9.1.  Token Collisions
+9.1.  Token Confusion
 
-   If token values aren't long enough, lack adequate entropy, or are not
-   unique there's a risk that a malicious actor could obtain a token
-   that collides with one already present in a domain through repeated
-   attempts (H1 in Section 4.1).
+   If token values in challenge labels (Section 8) are not long enough
+   or lack adequate entropy there is a risk that a malicious actor could
+   produce a token that could be confused with an application-specific
+   underscore prefix label (H6 in Section 4.2)
+
+9.2.  Token Collision
+
+   If token values are not long enough, lack adequate entropy, or are
+   not unique there is a risk that a malicious actor could obtain a
+   token that collides with one already present in a domain through
+   repeated attempts (H1 in Section 4.1).
 
    Application Service Providers MUST evaluate the threat model for
    their particular application to determine a token construction
@@ -666,14 +673,7 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
 
    When Random Tokens are used, they MUST be constructed in a way that
    provides sufficient unpredictability to avoid collisions and brute
-   force attacks.
-
-9.2.  Token Confusion
-
-   If token values in challenge labels (Section 8) aren't long enough or
-   lack adequate entropy there's a risk that a malicious actor could
-   produce a token that could be confused with an application-specific
-   underscore prefix label (H6 in Section 4.2).
+   force attacks
 
 9.3.  Service Confusion
 
@@ -715,7 +715,7 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
    different scopes in the past.  While it would also have been possible
    to include the scope as an attribute in the TXT record, that has more
    potential for ambiguity and misleading an operator, such as if an
-   implementation ignores an attribute it doesn't recognize but an
+   implementation ignores an attribute it does not recognize but an
    attacker includes the attribute to mislead the DNS Administrator.
    (H5 in Section 4)
 
@@ -804,7 +804,7 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
 9.10.  Unintentional Persistence
 
    When persistent domain validation is used, a DNS Administrator
-   failing to remove a no-longer desired Validation Record could enable
+   failing to remove a no longer desired Validation Record could enable
    a User to continue to have access to the domain within the
    Application Service Provider's service.  (H4 in Section 4.1)
 
@@ -1030,7 +1030,7 @@ A.1.  Common Pitfalls
    even without delegation, an organization may have a shared DNS zone
    where they need to provide record level permissions to the specific
    division within the organization that is responsible for the
-   application in question.  This can't be done if all applications
+   application in question.  This can not be done if all applications
    expect to find Validation Records at the same name.
 
 A.2.  Domain Boundaries

@@ -1212,10 +1212,10 @@ svg {
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-token-collisions" class="internal xref">Token Collisions</a></p>
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-token-confusion" class="internal xref">Token Confusion</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-token-confusion" class="internal xref">Token Confusion</a></p>
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-token-collision" class="internal xref">Token Collision</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
                 <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-service-confusion" class="internal xref">Service Confusion</a></p>
@@ -1557,7 +1557,7 @@ value-char     = %x21-21 / %x23-5B / %x5D-7E
 <p id="section-6.3-4">The instructions for validity duration MAY be encoded in the RDATA as token metadata (<a href="#metadata" class="auto internal xref">Section 6.1.2</a>) using the key "expiry" to hold a time after which it is safe to remove the Validation Record. For example:<a href="#section-6.3-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.3-5">
 <pre>
-_example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2023-02-08"
+_example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=2026-02-08"
 </pre><a href="#section-6.3-5" class="pilcrow">¶</a>
 </div>
 <p id="section-6.3-6">When an expiry time is specified, the value of "expiry" SHALL be in ISO 8601 format as specified in <span>[<a href="#RFC3339" class="cite xref">RFC3339</a>], <a href="https://rfc-editor.org/rfc/rfc3339#section-5.6" class="relref">Section 5.6</a></span>.<a href="#section-6.3-6" class="pilcrow">¶</a></p>
@@ -1630,22 +1630,22 @@ _&lt;identifier-unique-token&gt;._example_service-challenge.example.com.  IN   C
       <h2 id="name-security-considerations">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<div id="token-collisions">
+<div id="token-confusion">
 <section id="section-9.1">
-        <h3 id="name-token-collisions">
-<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-token-collisions" class="section-name selfRef">Token Collisions</a>
+        <h3 id="name-token-confusion">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-token-confusion" class="section-name selfRef">Token Confusion</a>
         </h3>
-<p id="section-9.1-1">If token values aren't long enough, lack adequate entropy, or are not unique there's a risk that a malicious actor could obtain a token that collides with one already present in a domain through repeated attempts (H1 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>).<a href="#section-9.1-1" class="pilcrow">¶</a></p>
-<p id="section-9.1-2">Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements (UL1 in <a href="#threat-model" class="auto internal xref">Section 4</a>).<a href="#section-9.1-2" class="pilcrow">¶</a></p>
-<p id="section-9.1-3">When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks.<a href="#section-9.1-3" class="pilcrow">¶</a></p>
+<p id="section-9.1-1">If token values in challenge labels (<a href="#multiple" class="auto internal xref">Section 8</a>) are not long enough or lack adequate entropy there is a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label (H6 in <a href="#threat-ul2" class="auto internal xref">Section 4.2</a>)<a href="#section-9.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="token-confusion">
+<div id="token-collision">
 <section id="section-9.2">
-        <h3 id="name-token-confusion">
-<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-token-confusion" class="section-name selfRef">Token Confusion</a>
+        <h3 id="name-token-collision">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-token-collision" class="section-name selfRef">Token Collision</a>
         </h3>
-<p id="section-9.2-1">If token values in challenge labels (<a href="#multiple" class="auto internal xref">Section 8</a>) aren't long enough or lack adequate entropy there's a risk that a malicious actor could produce a token that could be confused with an application-specific underscore prefix label (H6 in <a href="#threat-ul2" class="auto internal xref">Section 4.2</a>).<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2-1">If token values are not long enough, lack adequate entropy, or are not unique there is a risk that a malicious actor could obtain a token that collides with one already present in a domain through repeated attempts (H1 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>).<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2-2">Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements (UL1 in <a href="#threat-model" class="auto internal xref">Section 4</a>).<a href="#section-9.2-2" class="pilcrow">¶</a></p>
+<p id="section-9.2-3">When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="service-confusion">
@@ -1670,7 +1670,7 @@ _&lt;identifier-unique-token&gt;._example_service-challenge.example.com.  IN   C
         <h3 id="name-scope-confusion">
 <a href="#section-9.5" class="section-number selfRef">9.5. </a><a href="#name-scope-confusion" class="section-name selfRef">Scope Confusion</a>
         </h3>
-<p id="section-9.5-1">Ambiguity of scope introduces risks, as described in <a href="#scope" class="auto internal xref">Section 5</a>. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS Administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores an attribute it doesn't recognize but an attacker includes the attribute to mislead the DNS Administrator. (H5 in <a href="#threat-model" class="auto internal xref">Section 4</a>)<a href="#section-9.5-1" class="pilcrow">¶</a></p>
+<p id="section-9.5-1">Ambiguity of scope introduces risks, as described in <a href="#scope" class="auto internal xref">Section 5</a>. Distinguishing the scope in the application-specific label, along with good documentation, should help make it clear to DNS Administrators whether the record applies to a single hostname, a wildcard, or an entire domain. Always using this indication rather than having a default scope reduces ambiguity, especially for protocols that may have used a shared application-specific label for different scopes in the past. While it would also have been possible to include the scope as an attribute in the TXT record, that has more potential for ambiguity and misleading an operator, such as if an implementation ignores an attribute it does not recognize but an attacker includes the attribute to mislead the DNS Administrator. (H5 in <a href="#threat-model" class="auto internal xref">Section 4</a>)<a href="#section-9.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authenticated-channels">
@@ -1731,7 +1731,7 @@ _&lt;identifier-unique-token&gt;._example_service-challenge.example.com.  IN   C
         <h3 id="name-unintentional-persistence">
 <a href="#section-9.10" class="section-number selfRef">9.10. </a><a href="#name-unintentional-persistence" class="section-name selfRef">Unintentional Persistence</a>
         </h3>
-<p id="section-9.10-1">When persistent domain validation is used, a DNS Administrator failing to remove a no-longer desired Validation Record could enable a User to continue to have access to the domain within the Application Service Provider's service. (H4 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-9.10-1" class="pilcrow">¶</a></p>
+<p id="section-9.10-1">When persistent domain validation is used, a DNS Administrator failing to remove a no longer desired Validation Record could enable a User to continue to have access to the domain within the Application Service Provider's service. (H4 in <a href="#threat-ul1" class="auto internal xref">Section 4.1</a>)<a href="#section-9.10-1" class="pilcrow">¶</a></p>
 <p id="section-9.10-2">When one-off domain validation is used, this is typically implemented through automation where a DNS Administrator grants the User access to make updates to the domain's zone configuration. If the DNS Administrator fails to revoke access to a User who should no longer have access, this would enable the User to continue to perform new validations.<a href="#section-9.10-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1916,7 +1916,7 @@ _&lt;identifier-unique-token&gt;._example_service-challenge.example.com.  IN   C
 <p id="appendix-A.1-2">Since DNS resource record sets are treated atomically, a query for the Validation Record will return all TXT records in the response. There is no way for the verifier to specifically query only the TXT record that is pertinent to their application service. The verifier must obtain the aggregate response and search through it to find the specific record it is interested in.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-3">Additionally, placing many such TXT records at the same name increases the size of the DNS response. If the size of the UDP response (UDP being the most common DNS transport today) is large enough that it does not fit into the Path MTU of the network path, this may result in IP fragmentation, which can be unreliable due to firewalls and middleboxes, and is vulnerable to various attacks (<span>[<a href="#RFC9715" class="cite xref">RFC9715</a>]</span>). Depending on message size limits configured or being negotiated, it may alternatively cause the DNS server to "truncate" the UDP response and force the DNS client to re-try the query over TCP in order to get the full response. Not all networks properly transport DNS over TCP and some DNS software mistakenly believes TCP support is optional (<span>[<a href="#RFC9210" class="cite xref">RFC9210</a>]</span>). Huge TXT RRsets (due to many TXT records at the same name) can also be leveraged by attackers for traffic amplification attacks.<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-4">Other possible issues may occur. If a TXT record (or any other record type) is designed to be placed at the same domain name that is being validated, it may not be possible to do so if that name already has a CNAME record. This is because CNAME records cannot co-exist with other (non-DNSSEC) records at the same name. This situation cannot occur at the apex of a DNS zone, but can at a name deeper within the zone.<a href="#appendix-A.1-4" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-5">When multiple distinct services specify placing Validation Records at the same owner name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can't be done if all applications expect to find Validation Records at the same name.<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-5">When multiple distinct services specify placing Validation Records at the same owner name, there is no way to delegate an application specific domain Validation Record to a third party. Furthermore, even without delegation, an organization may have a shared DNS zone where they need to provide record level permissions to the specific division within the organization that is responsible for the application in question. This can not be done if all applications expect to find Validation Records at the same name.<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="domain-boundaries">
