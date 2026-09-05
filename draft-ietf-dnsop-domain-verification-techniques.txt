@@ -5,14 +5,14 @@
 Network Working Group                                           S. Sahib
 Internet-Draft                                            Brave Software
 Intended status: Best Current Practice                          S. Huque
-Expires: 17 December 2026                                     Salesforce
+Expires: 9 March 2027                                         Salesforce
                                                               P. Wouters
                                                                    Aiven
                                                                E. Nygren
                                                      Akamai Technologies
                                                              T. Wicinski
                                                       Cox Communications
-                                                            15 June 2026
+                                                        5 September 2026
 
 
                   Domain Control Validation using DNS
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 December 2026.
+   This Internet-Draft will expire on 9 March 2027.
 
 Copyright Notice
 
@@ -554,12 +554,12 @@ _example_service-challenge.example.com.  IN   TXT  "token=3419...3d206c4 expiry=
    limited during normal operations.
 
    The Application Service Provider looking up a Validation Record may
-   have to wait for up to the SOA minimum TTL (negative caching TTL) of
-   the enclosing zone for the record to become visible, if it has been
-   previously queried.  If the application User wants to make the
-   Validation Record visible more quickly they may need to work with the
-   DNS Administrator to see if they are willing to lower the SOA minimum
-   TTL (which has implications across the entire zone).
+   have to wait for up to the SOA minimum TTL (negative caching TTL)
+   [RFC2308] of the enclosing zone for the record to become visible, if
+   it has been previously queried.  If the application User wants to
+   make the Validation Record visible more quickly they may need to work
+   with the DNS Administrator to see if they are willing to lower the
+   SOA minimum TTL (which has implications across the entire zone).
 
    Application Service Providers' verifiers MAY use dedicated DNS
    resolvers configured with a low maximum negative caching TTL, flush
@@ -872,6 +872,10 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC2308]  Andrews, M., "Negative Caching of DNS Queries (DNS
+              NCACHE)", RFC 2308, DOI 10.17487/RFC2308, March 1998,
+              <https://www.rfc-editor.org/rfc/rfc2308>.
+
    [RFC3339]  Klyne, G. and C. Newman, "Date and Time on the Internet:
               Timestamps", RFC 3339, DOI 10.17487/RFC3339, July 2002,
               <https://www.rfc-editor.org/rfc/rfc3339>.
@@ -884,6 +888,11 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
    [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
               Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
               <https://www.rfc-editor.org/rfc/rfc4648>.
+
+   [RFC5234]  Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
+              Specifications: ABNF", STD 68, RFC 5234,
+              DOI 10.17487/RFC5234, January 2008,
+              <https://www.rfc-editor.org/rfc/rfc5234>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -935,11 +944,6 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
               Insensitivity Clarification", RFC 4343,
               DOI 10.17487/RFC4343, January 2006,
               <https://www.rfc-editor.org/rfc/rfc4343>.
-
-   [RFC5234]  Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
-              Specifications: ABNF", STD 68, RFC 5234,
-              DOI 10.17487/RFC5234, January 2008,
-              <https://www.rfc-editor.org/rfc/rfc5234>.
 
    [RFC6672]  Rose, S. and W. Wijngaards, "DNAME Redirection in the
               DNS", RFC 6672, DOI 10.17487/RFC6672, June 2012,
