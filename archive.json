@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-07T01:58:20.811631+00:00",
+  "timestamp": "2026-09-06T01:44:57.448612+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -3613,6 +3613,22 @@
       "createdAt": "2026-06-12T22:14:46Z",
       "updatedAt": "2026-06-15T04:58:40Z",
       "closedAt": "2026-06-15T04:58:40Z",
+      "comments": []
+    },
+    {
+      "number": 226,
+      "id": "I_kwDOExoRlc8AAAABPn_y-Q",
+      "title": "Not all Security Considerations map back to the threat model",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/226",
+      "state": "OPEN",
+      "author": "moonshiner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In walking through the security considerations and how they map to thje threat model, I found three sections which don't reference the threat model.  I think that is OK as long as we say so, but I also put some suggestions together. \n\n9.8 Application Usage Enumeration   - H3 \n\n9.9 Public Suffixes - H5\n\n9.12 Amplification Attacks - H3\n\nthoughts?  I am okay with no specific refernces but I think we should also mention that. \n",
+      "createdAt": "2026-09-04T02:35:40Z",
+      "updatedAt": "2026-09-04T02:35:40Z",
+      "closedAt": null,
       "comments": []
     }
   ],
@@ -10959,6 +10975,90 @@
           "body": "All look great to me!  Thank you!  (And I can't spell \"privilege\" to save my life and should have done some of this spell checking before you had to...)",
           "createdAt": "2026-06-16T15:37:23Z",
           "updatedAt": "2026-06-16T15:37:23Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 224,
+      "id": "PR_kwDOExoRlc8AAAABCI1tJg",
+      "title": "added ref to 2308, made 5234 normative",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/224",
+      "state": "MERGED",
+      "author": "moonshiner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In digging through the document, I felt there should be the reference to 2308 on negative caching ttl\r\n\r\nalso - 5234 (ABNF) appears to be normative for documents that reference it. \r\n",
+      "createdAt": "2026-09-04T01:52:23Z",
+      "updatedAt": "2026-09-05T20:07:11Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "c78cf99ced2929edeb0e7ac7cd44e2e171f7d20c",
+      "headRepository": "moonshiner/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "tjw-nits",
+      "headRefOid": "242b21efe354774b086aa77d27e6ce585cf79fb1",
+      "closedAt": "2026-09-05T20:07:11Z",
+      "mergedAt": "2026-09-05T20:07:11Z",
+      "mergedBy": "moonshiner",
+      "mergeCommit": {
+        "oid": "00c33f4fe0baee7a0d49d328f01e522490b72009"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc8AAAABMM4VuA",
+          "commit": {
+            "abbreviatedOid": "242b21e"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-04T13:51:09Z",
+          "updatedAt": "2026-09-04T13:51:09Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 225,
+      "id": "PR_kwDOExoRlc8AAAABCJBa_Q",
+      "title": "Rearranged Collison/Confusion subsections; expanded some contractions\u2026",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/225",
+      "state": "MERGED",
+      "author": "moonshiner",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In reading through the Securiy considerations sections. I noticed a few things, but the first one is me wanting \r\nToken Confusion/Token Collision to be the same as Service Confusion/Service Collision.  You can say no. \r\n\r\nAlso expanded some contractions per some newer rfc style thingie. ",
+      "createdAt": "2026-09-04T02:33:20Z",
+      "updatedAt": "2026-09-05T20:07:29Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "c78cf99ced2929edeb0e7ac7cd44e2e171f7d20c",
+      "headRepository": "moonshiner/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "tjw-collision-confusion",
+      "headRefOid": "834ccd5abb613ba94fe92490d2de9c6b531de8ac",
+      "closedAt": "2026-09-05T20:07:29Z",
+      "mergedAt": "2026-09-05T20:07:29Z",
+      "mergedBy": "moonshiner",
+      "mergeCommit": {
+        "oid": "6e7a851ec91b8829fa20e4b400ff836ce1ed8dd1"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOExoRlc8AAAABMM33vA",
+          "commit": {
+            "abbreviatedOid": "834ccd5"
+          },
+          "author": "paulwouters",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-09-04T13:50:31Z",
+          "updatedAt": "2026-09-04T13:50:31Z",
           "comments": []
         }
       ]
