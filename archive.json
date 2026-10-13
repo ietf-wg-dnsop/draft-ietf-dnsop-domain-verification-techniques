@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-06T01:44:57.448612+00:00",
+  "timestamp": "2026-10-13T04:22:06.228037+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -3628,6 +3628,22 @@
       "body": "In walking through the security considerations and how they map to thje threat model, I found three sections which don't reference the threat model.  I think that is OK as long as we say so, but I also put some suggestions together. \n\n9.8 Application Usage Enumeration   - H3 \n\n9.9 Public Suffixes - H5\n\n9.12 Amplification Attacks - H3\n\nthoughts?  I am okay with no specific refernces but I think we should also mention that. \n",
       "createdAt": "2026-09-04T02:35:40Z",
       "updatedAt": "2026-09-04T02:35:40Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 227,
+      "id": "I_kwDOExoRlc8AAAABWs4oJw",
+      "title": "Document CNAME-following validation risk when there are no unique tokens involved",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/issues/227",
+      "state": "OPEN",
+      "author": "ShivanKaul",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The [ALIASLEAP paper](https://www.usenix.org/system/files/usenixsecurity26-li-ruixuan.pdf) demonstrates that there are many providers who incorrectly do validation by simply following CNAMEs and relying on presence of static records, and not checking for random/unique tokens.\n\nShould we address this? How?",
+      "createdAt": "2026-10-12T18:17:33Z",
+      "updatedAt": "2026-10-12T18:19:35Z",
       "closedAt": null,
       "comments": []
     }
