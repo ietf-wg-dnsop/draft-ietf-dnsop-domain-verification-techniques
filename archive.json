@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-13T04:22:06.228037+00:00",
+  "timestamp": "2026-10-15T02:13:03.377589+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -3643,9 +3643,17 @@
       "labels": [],
       "body": "The [ALIASLEAP paper](https://www.usenix.org/system/files/usenixsecurity26-li-ruixuan.pdf) demonstrates that there are many providers who incorrectly do validation by simply following CNAMEs and relying on presence of static records, and not checking for random/unique tokens.\n\nShould we address this? How?",
       "createdAt": "2026-10-12T18:17:33Z",
-      "updatedAt": "2026-10-12T18:19:35Z",
+      "updatedAt": "2026-10-13T11:31:17Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "MaxHearnden",
+          "authorAssociation": "NONE",
+          "body": "One mitigation strategy that wasn't included in the paper and that this draft already recommends is using an underscored subdomain for domain control validation, this would keep the ability to delegate DCV for specific services while reducing the risk associated with a CNAME.\n\nExcluding CNAME records would also exclude domains covered by a DNAME record.",
+          "createdAt": "2026-10-13T11:31:17Z",
+          "updatedAt": "2026-10-13T11:31:17Z"
+        }
+      ]
     }
   ],
   "pulls": [
