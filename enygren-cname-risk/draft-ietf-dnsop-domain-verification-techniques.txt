@@ -936,8 +936,8 @@ _<identifier-unique-token>._example_service-challenge.example.com.  IN   CNAME  
               Hosting Service via CNAME-Following Cross-Domain
               Verification", 35th USENIX Security Symposium (USENIX
               Security 26), pp. 751-770, Baltimore, MD, USA, August
-              2026, <https://www.usenix.org/conference/usenixsecurity26/
-              technical-sessions>.
+              2026, <https://www.usenix.org/system/files/
+              usenixsecurity26-li-ruixuan.pdf>.
 
    [I-D.draft-tjw-dbound2-problem-statement]
               Wicinski, T., "Domain Boundaries 2.0 Problem Statement",
