@@ -102,6 +102,24 @@ informative:
           - ins: S. A. Janikowski
         target: https://datatracker.ietf.org/doc/draft-ietf-acme-dns-account-label/
 
+    ALIASLEAP:
+      title: "Alias Equals Zone? Large-Scale and Stealthy Takeover of Domain Hosting Service via CNAME-Following Cross-Domain Verification"
+      author:
+      - name: Ruixuan Li
+        org: Tsinghua University
+      - name: Xingyu Zhao
+        org: Zhejiang Gongshang University
+      - name: Yunyi Zhang
+        org: Tsinghua University
+      - name: Baojun Liu
+        org: Tsinghua University
+      - name: Jun Shao
+        org: Zhejiang Gongshang University
+      date: 2026-08
+      refcontent: "35th USENIX Security Symposium (USENIX Security 26), pp. 751-770, Baltimore, MD, USA"
+      target: https://www.usenix.org/system/files/usenixsecurity26-li-ruixuan.pdf
+
+
 --- abstract
 
 Many application services on the Internet need to verify ownership or control of a domain in the Domain Name System (DNS). The general term for this process is "Domain Control Validation", and it can be done using a variety of methods such as email, HTTP/HTTPS, or the DNS itself. This document focuses only on DNS-based methods, which typically involve the Application Service Provider requesting a DNS record with a specific format and content to be visible in the domain to be verified. There is wide variation in the details of these methods today. This document provides some best practices to avoid known problems.
@@ -176,7 +194,7 @@ Domain Control Validation attempts to address UL1 by having the User demonstrate
 For UL2, unintended control over a domain or domain name results as a side-effect of the Domain Control Validation process itself. Classes of Hazards include:
 
 * H6. The owner name of the Validation Record is meaningful in other contexts, enabling cross-protocol, privilege escalation, and/or confused deputy attacks. For example, if a Validation Record is a CNAME and has an owner name that is a valid hostname, the Application Service Provider could provide services on the Validation Record name within the domain.
-
+* H7. If a Validation Record were to share its name with the name being validated, and if the name being validated is itself a CNAME, then the DNS Administrator of the zone containing the CNAME target could perform validation (as described in {{ALIASLEAP}}).
 
 # Scope of Validation {#scope}
 
@@ -350,6 +368,12 @@ If token values are not long enough, lack adequate entropy, or are not unique th
 Application Service Providers MUST evaluate the threat model for their particular application to determine a token construction mechanism that guarantees uniqueness and meets their security requirements (UL1 in {{threat-model}}).
 
 When Random Tokens are used, they MUST be constructed in a way that provides sufficient unpredictability to avoid collisions and brute force attacks
+
+## Unintended Delegation
+
+If a distinct label is not use, as recommended in {{name}}, and if name being validated is a CNAME to another zone, then the DNS Administrator of the target zone can perform validations (see H7 in {{threat-ul2}} and {{ALIASLEAP}}).
+
+This is also a case when an entire zone has a wildcard CNAME (which would cover the distinct label) or if the zone has a DNAME, but in these cases it should be assumed that the target of the wildcard CNAME or the CNAME effectively has full control over the behavior of the zone.
 
 ## Service Confusion {#service-confusion}
 
