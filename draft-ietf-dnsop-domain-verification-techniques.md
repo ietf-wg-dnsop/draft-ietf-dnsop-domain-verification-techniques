@@ -117,7 +117,7 @@ informative:
         org: Zhejiang Gongshang University
       date: 2026-08
       refcontent: "35th USENIX Security Symposium (USENIX Security 26), pp. 751-770, Baltimore, MD, USA"
-      target: https://www.usenix.org/conference/usenixsecurity26/technical-sessions
+      target: https://www.usenix.org/system/files/usenixsecurity26-li-ruixuan.pdf
 
 
 --- abstract
