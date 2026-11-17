@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-15T02:13:03.377589+00:00",
+  "timestamp": "2026-11-17T05:35:20.032357+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -11086,6 +11086,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 228,
+      "id": "PR_kwDOExoRlc8AAAABPX6RhQ",
+      "title": "Add a threat documenting the ALIASLEAP case.  Fixes #227.",
+      "url": "https://github.com/ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques/pull/228",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Explain the risks of not following the recommendation to use an underscore prefix label when performing domain validation.\n",
+      "createdAt": "2026-11-15T20:07:10Z",
+      "updatedAt": "2026-11-15T20:11:26Z",
+      "baseRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "baseRefName": "main",
+      "baseRefOid": "6e7a851ec91b8829fa20e4b400ff836ce1ed8dd1",
+      "headRepository": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
+      "headRefName": "enygren-cname-risk",
+      "headRefOid": "59490378cd698a94e2d0b25ad25009dbb7eb8ef4",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
