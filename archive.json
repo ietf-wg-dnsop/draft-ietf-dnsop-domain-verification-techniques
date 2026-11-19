@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-17T05:35:20.032357+00:00",
+  "timestamp": "2026-11-19T04:54:24.921686+00:00",
   "repo": "ietf-wg-dnsop/draft-ietf-dnsop-domain-verification-techniques",
   "labels": [
     {
@@ -3624,10 +3624,12 @@
       "author": "moonshiner",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "question"
+      ],
       "body": "In walking through the security considerations and how they map to thje threat model, I found three sections which don't reference the threat model.  I think that is OK as long as we say so, but I also put some suggestions together. \n\n9.8 Application Usage Enumeration   - H3 \n\n9.9 Public Suffixes - H5\n\n9.12 Amplification Attacks - H3\n\nthoughts?  I am okay with no specific refernces but I think we should also mention that. \n",
       "createdAt": "2026-09-04T02:35:40Z",
-      "updatedAt": "2026-09-04T02:35:40Z",
+      "updatedAt": "2026-11-17T19:09:03Z",
       "closedAt": null,
       "comments": []
     },
